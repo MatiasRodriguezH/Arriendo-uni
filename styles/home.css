@@ -4,3 +4,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.catalog{
+  width: 90%;
+  padding: 1%;
+  display: flex;
+  margin-top: 4%;
+  justify-self: center;
+  background-color: rgb(210, 210, 210);
+  color: black;
+  flex-direction: column;
+}
