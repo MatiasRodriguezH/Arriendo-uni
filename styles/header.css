@@ -1,0 +1,113 @@
+.header {
+  width: 100%;             /* Ocupa todo el ancho */
+  height: 45px;            /* Altura del header (puedes ajustarla) */
+  background-color: #00638e; /* Color de fondo */
+  color: white;            /* Color del texto */
+  display: flex;           /* Para alinear elementos internamente */
+  justify-content: space-between; /* Espaciado entre elementos */
+  align-items: center;     /* Centrar verticalmente el contenido */
+  padding: 0 20px;         /* Espaciado interno a los lados */
+  box-sizing: border-box;  /* Incluye el padding dentro del ancho total */
+  position: fixed;         /* Fija el header en la parte superior (opcional) */
+  align-items: center;
+  padding-bottom: 0.1%;
+  top: 0;
+  left: 0;
+  z-index: 1000;           /* Asegura que quede sobre otros elementos */
+}
+
+.logo {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  height: 90%;
+  gap:3%;
+}
+
+.title {
+  text-align: center;
+  font-size: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.image{
+  width: 30%;
+  height: 100%;
+}
+
+.actions{
+  margin-left: auto;
+  display: flex;
+  justify-content: end;
+  max-height: 100%;
+  width: 30%;
+}
+  
+  /* Botón de ingresar */
+.login-btn {
+    height: 100%;
+    width: 100%;
+    align-self: center;
+    font-size: 0.8vw;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    background-color: inherit;
+    border: 1pt solid #fff;
+    padding: 0 1%;
+    border-radius: 0.5vw;
+    cursor: pointer;
+  }
+  
+.login-btn:hover {
+    color: #000;
+    background-color: #ffffff;
+  }
+
+.signin-btn {
+    height: 100%;
+    width: 100%;
+    align-self: center;
+    font-size: 0.8vw;
+    text-align: center;
+    font-weight: bold;
+    text-justify: distribute;
+    color: white;
+    background-color: inherit;
+    border: 1pt solid #fff;
+    padding: 0 1%;
+    border-radius: 0.5vw;
+    cursor: pointer;
+  }
+  
+.signin-btn:hover {
+    color: #000;
+    background-color: #ffffff;
+  }
+  
+.avatar {
+  position: absolute;
+  right: 0;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right:  0;
+}
+
+.avatar img {
+  height: 100%;
+  width: 100%;
+}
+.user-info {
+  position: relative;
+  margin-left: auto;
+  width: 10%;
+  min-width: 120px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10%;
+}
