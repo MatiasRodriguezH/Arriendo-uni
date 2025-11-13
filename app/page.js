@@ -7,8 +7,11 @@ export default function Home() {
     <div>
       <Header/>
         <div className="catalog">
-          <span style={{fontSize:'125%', fontWeight:'bold', marginBottom:'1%'}}>Principales Arriendos</span>
-          <Rentalview/>
+          <span style={{fontSize:'125%', fontWeight:'bold', marginBottom:'-3%'}}>Principales Arriendos</span>
+          <div className="catalog items">
+            <Rentalview/>
+            <Rentalview/>
+          </div>
         </div>
     </div>
   );

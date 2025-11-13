@@ -8,8 +8,13 @@
 }
 .rentview-container img{
     width: 100%;
-    height: 40%;
+    height: 45%;
     object-fit: cover;
+}
+
+.rentview-container:hover{
+    background-color: rgb(240, 240, 240);
+    transform: scale(1.01);
 }
 
 .info{
@@ -20,7 +25,21 @@
     font-size: 0.95vw;
 }
 
+.tags{
+    display: flex;
+    flex-direction: row;
+    gap:2%;
+}
 .type-property{
+    background:#00638e;
+    border-radius:1vw; 
+    text-align:center;
+    text-justify:center;
+    font-size:0.75vw;
+    width:fit-content;
+     margin-bottom:1%
+}
+.type-rental{
     background:#00638e;
     border-radius:1vw; 
     text-align:center;

@@ -9,9 +9,14 @@ body {
   width: 90%;
   padding: 1%;
   display: flex;
+  flex-direction: column;
   margin-top: 4%;
   justify-self: center;
   background-color: rgb(210, 210, 210);
   color: black;
-  flex-direction: column;
+}
+.catalog.items{
+  display: flexbox;
+  flex-direction: row;
+  gap: 2%;
 }
