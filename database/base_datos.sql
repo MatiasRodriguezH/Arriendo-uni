@@ -3,122 +3,202 @@
 
 --BORRADO DE TABLAS
 
-DROP TABLE TCDB_ARRIENDO;
-DROP TABLE TCDB_HABITACION;
-DROP TABLE TCDB_INMUEBLE;
-DROP TABLE TCDB_USUARIO;
-DROP TABLE TCDB_UBICACION;
-DROP TABLE TCDB_SEDE_INSTITUCION;
-DROP TABLE TCDB_INSTITUCION;
-DROP TABLE TCDB_CIUDAD;
-DROP TABLE TCDB_REGION;
+DROP TABLE TCDB_Imagen;
+DROP TABLE TCDB_Notificacion;
+DROP TABLE TCDB_Interaccion;
+DROP TABLE TCDB_Solicitud;
+DROP TABLE TCDB_Arriendo;
+DROP TABLE TCDB_Habitacion;
+DROP TABLE TCDB_Inmueble;
+DROP TABLE TCDB_Usuario;
+DROP TABLE TCDB_Sede_Institucion;
+DROP TABLE TCDB_Institucion;
+DROP TABLE TCDB_Direccion;
+DROP TABLE TCDB_Ciudad;
+DROP TABLE TCDB_Region;
+DROP TABLE TCDB_Contacto;
 
 --CREACION DE TABLAS
 
-CREATE TABLE TCDB_REGION(
-    ID_REGION NUMBER,
-    NOMBRE VARCHAR2(30),
-    CONSTRAINT PK_REGION PRIMARY KEY(ID_REGION)
+CREATE TABLE TCDB_Contacto (
+  id_contacto number,
+  origen_contacto varchar2(10),
+  telefono varchar2(20),
+  whatsapp varchar2(20),
+  correo varchar2(100),
+  CONSTRAINT PK_TCDB_Contacto PRIMARY KEY (id_contacto)
 );
 
-CREATE TABLE TCDB_CIUDAD(
-    ID_CIUDAD NUMBER,
-    NOMBRE VARCHAR2(50),
-    ID_REGION NUMBER,
-    CONSTRAINT PK_CIUDAD PRIMARY KEY(ID_CIUDAD),
-    CONSTRAINT FK_CIUDAD_REGION FOREIGN KEY(ID_REGION) REFERENCES TCDB_REGION(ID_REGION)
+CREATE TABLE TCDB_Region (
+  id_region number,
+  nombre varchar2(30),
+  CONSTRAINT PK_TCDB_Region PRIMARY KEY (id_region)
 );
 
-CREATE TABLE TCDB_INSTITUCION (
-    ID_INSTITUCION NUMBER,
-    TIPO_INSTITUCION VARCHAR2(30),
-    NOMBRE VARCHAR2(50),
-    CONSTRAINT PK_INSTITUCION PRIMARY KEY(ID_INSTITUCION)
+CREATE TABLE TCDB_Ciudad (
+  id_ciudad number,
+  nombre varchar2(50),
+  id_region number,
+  CONSTRAINT PK_TCDB_Ciudad PRIMARY KEY (id_ciudad),
+  CONSTRAINT FK_TCDB_Ciudad_id_region FOREIGN KEY (id_region)
+    REFERENCES TCDB_Region(id_region)
 );
 
-CREATE TABLE TCDB_SEDE_INSTITUCION (
-    ID_SEDE NUMBER,
-    NOMBRE_SEDE VARCHAR2(50),
-    ID_INSTITUCION NUMBER,
-    ID_CIUDAD NUMBER,
-    CONSTRAINT PK_SEDE_INSTITUCION PRIMARY KEY(ID_SEDE),
-    CONSTRAINT FK_SEDE_INSTITUCION FOREIGN KEY(ID_INSTITUCION)
-    REFERENCES TCDB_INSTITUCION(ID_INSTITUCION),
-    CONSTRAINT FK_SEDE_CIUDAD FOREIGN KEY(ID_CIUDAD)
-    REFERENCES TCDB_CIUDAD(ID_CIUDAD)
+CREATE TABLE TCDB_Direccion (
+  id_direccion number,
+  calle varchar2(50),
+  numero number,
+  ciudad number,
+  CONSTRAINT PK_TCDB_Direccion PRIMARY KEY (id_direccion),
+  CONSTRAINT FK_TCDB_Direccion_ciudad FOREIGN KEY (ciudad)
+    REFERENCES TCDB_Ciudad(id_ciudad)
 );
 
-CREATE TABLE TCDB_UBICACION(
-    ID_UBICACION NUMBER,
-    CALLE VARCHAR2(100),
-    NUM_CALLE NUMBER,
-    ID_CIUDAD NUMBER,
-    CONSTRAINT PK_UBICACION PRIMARY KEY(ID_UBICACION),
-    CONSTRAINT FK_UBICACION_CIUDAD FOREIGN KEY(ID_CIUDAD) REFERENCES TCDB_CIUDAD(ID_CIUDAD)
+CREATE TABLE TCDB_Institucion (
+  id_institucion number,
+  nombre varchar2(60),
+  tipo_institucion varchar2(30),
+  CONSTRAINT PK_TCDB_Institucion PRIMARY KEY (id_institucion)
 );
 
-CREATE TABLE TCDB_USUARIO(
-    ID_USUARIO NUMBER,
-    ROL_USUARIO VARCHAR2(30),
-    NOMBRE VARCHAR2(50),
-    APELLIDO1 VARCHAR2(30),
-    APELLIDO2 VARCHAR2(30),
-    CORREO VARCHAR2(50),
-    CONTRASENIA VARCHAR2(100),
-    FECHA_NACIMIENTO DATE,
-    IMAGEN_PERFIL VARCHAR2(100),
-    ID_INSTITUCION NUMBER,
-    CALLE VARCHAR2(100),
-    NUM_CALLE NUMBER,
-    ID_CIUDAD NUMBER,
-    CONSTRAINT PK_USUARIO PRIMARY KEY(ID_USUARIO),
-    CONSTRAINT FK_USUARIO_INSTITUCION FOREIGN KEY(ID_INSTITUCION) REFERENCES TCDB_SEDE_INSTITUCION(ID_SEDE),
-    CONSTRAINT FK_USUARIO_CIUDAD FOREIGN KEY(ID_CIUDAD) REFERENCES TCDB_CIUDAD(ID_CIUDAD)
+CREATE TABLE TCDB_Sede_Institucion (
+  id_sede number,
+  nombre varchar2(60),
+  id_institucion number,
+  id_direccion number,
+  CONSTRAINT PK_TCDB_Sede_Institucion PRIMARY KEY (id_sede),
+  CONSTRAINT FK_TCDB_Sede_Institucion_id_institucion FOREIGN KEY (id_institucion)
+    REFERENCES TCDB_Institucion(id_institucion),
+  CONSTRAINT FK_TCDB_Sede_Institucion_id_direccion FOREIGN KEY (id_direccion)
+    REFERENCES TCDB_Direccion(id_direccion)
 );
 
-CREATE TABLE TCDB_INMUEBLE(
-    ID_INMUEBLE NUMBER,
-    NOMBRE VARCHAR2(50),
-    TIPO_INMUEBLE VARCHAR2(50),
-    DESCRIPCION VARCHAR2(500),
-    NUM_HABITACIONES NUMBER,
-    NUM_BANIOS NUMBER,
-    ID_ARRENDADOR NUMBER,
-    ID_UBICACION NUMBER,
-    CONSTRAINT PK_INMUEBLE PRIMARY KEY(ID_INMUEBLE),
-    CONSTRAINT FK_INMUEBLE_ARRENDADOR FOREIGN KEY(ID_ARRENDADOR) REFERENCES TCDB_USUARIO(ID_USUARIO),
-    CONSTRAINT FK_INMUEBLE_UBICACION FOREIGN KEY(ID_UBICACION) REFERENCES TCDB_UBICACION(ID_UBICACION)
+CREATE TABLE TCDB_Usuario (
+  id_usuario number,
+  rol_usuario varchar2(30),
+  rut varchar2(11),
+  nombre varchar2(40),
+  apellido1 varchar2(30),
+  apellido2 varchar2(30),
+  correo varchar2(100),
+  contrasenia varchar2(100),
+  fecha_nacimiento date,
+  genero varchar2(10),
+  id_sede_institucion number,
+  id_contacto number,
+  id_ciudad number,
+  CONSTRAINT PK_TCDB_Usuario PRIMARY KEY (id_usuario),
+  CONSTRAINT FK_TCDB_Usuario_id_sede_institucion FOREIGN KEY (id_sede_institucion)
+    REFERENCES TCDB_Sede_Institucion(id_sede),
+  CONSTRAINT FK_TCDB_Usuario_id_ciudad FOREIGN KEY (id_ciudad)
+    REFERENCES TCDB_Ciudad(id_ciudad)
 );
 
-
-CREATE TABLE TCDB_HABITACION(
-    ID_HABITACION NUMBER,
-    NOMBRE VARCHAR2(50),
-    ID_INMUEBLE NUMBER,
-    DESCRIPCION VARCHAR2(200),
-    CONSTRAINT PK_HABITACION PRIMARY KEY(ID_HABITACION),
-    CONSTRAINT FK_HABITACION_INMUEBLE FOREIGN KEY(ID_INMUEBLE) REFERENCES TCDB_INMUEBLE(ID_INMUEBLE)
+CREATE TABLE TCDB_Inmueble (
+  id_inmueble number,
+  tipo_inmueble varchar2(20),
+  modalidad varchar2(20),
+  nombre varchar2(40),
+  propietario varchar2(50),
+  id_arrendador number,
+  descripcion varchar2(500),
+  num_habitaciones number,
+  num_banios number,
+  id_direccion number,
+  direccion_adicional varchar2(50),
+  estado varchar2(20),
+  contacto number,
+  CONSTRAINT PK_TCDB_Inmueble PRIMARY KEY (id_inmueble),
+  CONSTRAINT FK_TCDB_Inmueble_contacto FOREIGN KEY (contacto)
+    REFERENCES TCDB_Contacto(id_contacto),
+  CONSTRAINT FK_TCDB_Inmueble_id_direccion FOREIGN KEY (id_direccion)
+    REFERENCES TCDB_Direccion(id_direccion),
+  CONSTRAINT FK_TCDB_Inmueble_id_arrendador FOREIGN KEY (id_arrendador)
+    REFERENCES TCDB_Usuario(id_usuario)
 );
 
-CREATE TABLE TCDB_CONTACTO(
-    ID_CONTACTO NUMBER,
-    TELEFONO VARCHAR2(20),
-    WHATSAPP VARCHAR2(20),
-    PAGINA_WEB VARCHAR2(100),
-    CORREO_ELECTRONICO VARCHAR2(100),
-    CONSTRAINT PK_CONTACTO PRIMARY KEY(ID_CONTACTO)
+CREATE TABLE TCDB_Habitacion (
+  id_habitacion number,
+  nombre varchar2(40),
+  superficie number,
+  descripcion varchar2(500),
+  id_inmueble number,
+  CONSTRAINT PK_TCDB_Habitacion PRIMARY KEY (id_habitacion),
+  CONSTRAINT FK_TCDB_Habitacion_id_inmueble FOREIGN KEY (id_inmueble)
+    REFERENCES TCDB_Inmueble(id_inmueble)
 );
 
-CREATE TABLE TCDB_ARRIENDO(
-    ID_ARRIENDO NUMBER,
-    TIPO_ARRIENDO VARCHAR2(20),
-    ID_INMUEBLE NUMBER,
-    ID_HABITACION NUMBER,
-    PRECIO NUMBER,
-    ID_CONTACTO NUMBER,
-    ESTADO VARCHAR2(30),
-    CONSTRAINT PK_ARRIENDO PRIMARY KEY(ID_ARRIENDO),
-    CONSTRAINT FK_ARRIENDO_INMUEBLE FOREIGN KEY(ID_INMUEBLE) REFERENCES TCDB_INMUEBLE(ID_INMUEBLE),
-    CONSTRAINT FK_ARRIENDO_HABITACION FOREIGN KEY(ID_HABITACION) REFERENCES TCDB_HABITACION(ID_HABITACION),
-    CONSTRAINT FK_ARRIENDO_CONTACTO FOREIGN KEY(ID_CONTACTO)REFERENCES TCDB_CONTACTO(ID_CONTACTO)
+CREATE TABLE TCDB_Arriendo (
+  id_arriendo number,
+  tipo_arriendo varchar2(20),
+  titulo varchar2(50),
+  id_habitacion number,
+  id_inmueble number,
+  precio number,
+  descripcion varchar2(200),
+  estado varchar2(20),
+  imagen_portada varchar2(100),
+  fecha date,
+  CONSTRAINT PK_TCDB_Arriendo PRIMARY KEY (id_arriendo),
+  CONSTRAINT FK_TCDB_Arriendo_id_habitacion FOREIGN KEY (id_habitacion)
+    REFERENCES TCDB_Habitacion(id_habitacion),
+  CONSTRAINT FK_TCDB_Arriendo_id_inmueble FOREIGN KEY (id_inmueble)
+    REFERENCES TCDB_Inmueble(id_inmueble)
 );
+
+CREATE TABLE TCDB_Solicitud (
+  id_usuario number,
+  id_arriendo number,
+  estado_solicitud varchar2(30),
+  fecha_hora date,
+  CONSTRAINT PK_TCDB_Solicitud PRIMARY KEY (id_usuario, id_arriendo),
+  CONSTRAINT FK_TCDB_Solicitud_id_arriendo FOREIGN KEY (id_arriendo)
+    REFERENCES TCDB_Arriendo(id_arriendo),
+  CONSTRAINT FK_TCDB_Solicitud_id_usuario FOREIGN KEY (id_usuario)
+    REFERENCES TCDB_Usuario(id_usuario)
+);
+
+CREATE TABLE TCDB_Interaccion (
+  id_usuario number,
+  id_arriendo number,
+  tipo_interaccion varchar2(20),
+  fecha date,
+  CONSTRAINT PK_TCDB_Interaccion PRIMARY KEY (id_usuario, id_arriendo),
+  CONSTRAINT FK_TCDB_Interaccion_id_usuario FOREIGN KEY (id_usuario)
+    REFERENCES TCDB_Usuario(id_usuario),
+  CONSTRAINT FK_TCDB_Interaccion_id_arriendo FOREIGN KEY (id_arriendo)
+    REFERENCES TCDB_Arriendo(id_arriendo)
+);
+
+CREATE TABLE TCDB_Notificacion (
+  id_notiicacion number,
+  id_usuario number,
+  tipo_notificacion varchar2(20),
+  titulo varchar2(30),
+  mensaje varchar2(50),
+  estado varchar2(20),
+  enlace varchar2(100),
+  fecha_hora date,
+  CONSTRAINT PK_TCDB_Notificacion PRIMARY KEY (id_notiicacion),
+  CONSTRAINT FK_TCDB_Notificacion_id_usuario FOREIGN KEY (id_usuario)
+    REFERENCES TCDB_Usuario(id_usuario)
+);
+
+CREATE TABLE TCDB_Imagen (
+  id_imagen number,
+  id_inmueble number,
+  id_habitacion number,
+  orden_imagen number,
+  nombre varchar2(100),
+  CONSTRAINT PK_TCDB_Imagen PRIMARY KEY (id_imagen),
+  CONSTRAINT FK_TCDB_Imagen_id_inmueble FOREIGN KEY (id_inmueble)
+    REFERENCES TCDB_Inmueble(id_inmueble),
+  CONSTRAINT FK_TCDB_Imagen_id_habitacion FOREIGN KEY (id_habitacion)
+    REFERENCES TCDB_Habitacion(id_habitacion)
+);
+
+INSERT INTO TCDB_USUARIO VALUES(1,'estudiante','27142629-1','Angel','Silva','Arias','angeleduardosilvaarias@gmail.com','12345678','20/02/2005','masculino',1,null,null);
+INSERT INTO TCDB_USUARIO VALUES(2,'arrendador','99999999-9','Arrendador','Numero','Uno','angeleduardosilvaarias@gmail.com','12345678','31/12/1999','masculino',null,null,1);
+
+INSERT INTO TCDB_INMUEBLE VALUES(1,'casa','por completo','Casa de Prueba','Arrendador Numero Uno',2,'Esta es una descripcion de la Casa de Prueba',3,1,1,'a un lado de la universidad','disponible',null);
+INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',null,1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE,null);
