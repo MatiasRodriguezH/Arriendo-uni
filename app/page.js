@@ -7,13 +7,16 @@ import '../styles/home.css'
 
 export default function Home() {
   const [arriendos,setArriendos] = useState([]);
-  console.log(arriendos.length)
 
   useEffect(()=>{
     async function get_data() {
       try {
         const response = await fetch('http://localhost:3000/api/arriendos',{cache: "no-store",});
         const data = await response.json();
+
+        console.log("Respuesta completa:", data);
+        console.log("data.results:", data.results);
+
         setArriendos(data.results);
       } catch (err) {
         console.error("Error al obtener arriendos:", err);
