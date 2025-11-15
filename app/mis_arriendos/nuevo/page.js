@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import "@/styles/nuevo_arriendo.css"
+import RoomForm from "@/components/RoomForm";
+import ImageUploader from "@/components/ImageUploader";
 
 export default function NuevoArriendo() {
   const [inmuebles, setInmuebles] = useState([]);
@@ -45,9 +47,28 @@ export default function NuevoArriendo() {
     estado: "",
   });
 
+  // Datos de las habitaciones
+  const [habitaciones, setHabitaciones] = useState([]);
+  function agregarHabitacion() {
+    setHabitaciones([
+      ...habitaciones,
+      { nombre: "", descripcion: "", tamano: "", precio: "", imagen_portada: null }
+    ]);
+  }
+
+  function eliminarHabitacion(index) {
+    setHabitaciones(habitaciones.filter((_, i) => i !== index));
+  }
+
+  function actualizarHabitacion(index, campo, valor) {
+    const nuevasHabitaciones = [...habitaciones];
+    nuevasHabitaciones[index][campo] = valor;
+    setHabitaciones(nuevasHabitaciones);
+  }
+
   // Imágenes
+  const [imgPortadaInmueble, setImgPortadaInmueble] = useState(null);
   const [imgInmueble, setImgInmueble] = useState(null);
-  const [imgPortada, setImgPortada] = useState(null);
 
   // Cargar inmuebles existentes
   useEffect(() => {
@@ -76,11 +97,19 @@ export default function NuevoArriendo() {
     }
 
     formData.append("arriendo", JSON.stringify(arriendo));
+    if (arriendo.tipo_arriendo==="por habitaciones"){
+      formData.append("habitaciones", JSON.stringify(habitaciones));
+      habitaciones.forEach((hab, i) => {
+        if (hab.imagen_portada instanceof File) {
+          formData.append(`imgHabitacion_${i}`, hab.imagen_portada);
+        }
+      });
+    }
 
-    if (imgInmueble) formData.append("imgInmueble", imgInmueble);
-    if (imgPortada) formData.append("imgPortada", imgPortada);
+    (imgPortadaInmueble) ? formData.append("imgPortadaInmueble", imgPortadaInmueble): formData.append("imgPortadaInmueble", null);
+    (imgInmueble) ? formData.append("imgInmueble", imgInmueble): formData.append("imgInmueble", null) ;
 
-    const res = await fetch("/api/arriendos/nuevo", {
+    const res = await fetch("/api/nuevo/arriendo", {
       method: "POST",
       body: formData
     });
@@ -90,7 +119,7 @@ export default function NuevoArriendo() {
     alert("Arriendo creado con éxito");
   }
 
-  function Direccion(){
+  function Direccion({direccion, setDireccion}){
     return(
       <>
       <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
@@ -119,9 +148,9 @@ export default function NuevoArriendo() {
     )
   }
 
-  function Contacto(){
+  function Contacto({contacto, setContacto}){
     return(
-      <>
+      <div style={{marginBottom:'1%'}}>
       <h4>Usar medios de contacto</h4>
       <select
         style={{
@@ -151,7 +180,7 @@ export default function NuevoArriendo() {
       <input style={{width:'60%'}} onChange={(e) => setContacto({...contacto, correo: e.target.value})}/>
       </>
     )}
-      </>
+      </div>
     )
   }
 
@@ -223,10 +252,16 @@ export default function NuevoArriendo() {
             </div>
             
             <h3>Dirección</h3>
-            <Direccion/>
+            <Direccion direccion={direccion} setDireccion={setDireccion}/>
 
             <h3>Contacto</h3>
-            <Contacto/>
+            <Contacto contacto={contacto} setContacto={setContacto}/>
+
+            <h3>Imagenes</h3>
+            <h4>Imagen portada del inmueble</h4>
+            <ImageUploader imageOnChanges={(files) => setImgPortadaInmueble(files[0])}/>
+            <h4>Otras imagenes</h4>
+            <ImageUploader imageOnChanges={imgInmueble} multiple={true}/>
           </>
         )}
 
@@ -237,10 +272,12 @@ export default function NuevoArriendo() {
         <h4>Tipo de Arriendo</h4>
         
         <select
-          onChange={(e) =>
-            setNuevoInmueble({ ...nuevoInmueble, modalidad: e.target.value }) &&
-            setArriendo({...arriendo, tipo_arriendo: e.target.value})
-          }
+          onChange={(e) => {
+            const tipo = e.target.value;
+            setNuevoInmueble({ ...nuevoInmueble, modalidad: e.target.value });
+            setArriendo({...arriendo, tipo_arriendo: e.target.value});
+            if (tipo === "por completo") setHabitaciones([]);
+          }}
         >
           <option value="por completo">Por completo</option>
           <option value="por habitaciones">Por habitaciones</option>
@@ -250,16 +287,35 @@ export default function NuevoArriendo() {
         <h4>Precio</h4>
         <input type="number" onChange={(e) => setArriendo({...arriendo, precio: e.target.value})}/>
         <h4>Descripción</h4>
-        <textarea className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo..." onChange={(e) => setArriendo({...arriendo, descripcion: e.target.value})}/>
+        <textarea className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo o los arriendos..." onChange={(e) => setArriendo({...arriendo, descripcion: e.target.value})}/>
+        
+        {arriendo.tipo_arriendo === "por habitaciones" && (
+          <div style={{ marginTop: "30px" }}>
+            <h3>Habitaciones</h3>
 
-        {/* Imágenes */}
-        <h3 style={{ marginTop: "25px" }}>Imágenes</h3>
+            <button
+              type="button"
+              style={{
+                fontSize:'1vw',
+                padding: "7px 10px",
+                background: "#00638e",
+                color: "white",
+                border: "none",
+                borderRadius: "0.75vw",
+                cursor: "pointer",
+                marginBottom: "15px"
+              }}
+              onClick={agregarHabitacion}
+            >
+              + Agregar habitación
+            </button>
 
-        <label>Imagen del inmueble</label>
-        <input type="file" onChange={(e) => setImgInmueble(e.target.files[0])} />
-
-        <label>Imagen de portada del arriendo</label>
-        <input type="file" onChange={(e) => setImgPortada(e.target.files[0])} />
+            {/* Lista de habitaciones */}
+            {habitaciones.map((hab, index) => (
+              <RoomForm hab={hab} index={index} actualizarHabitacion={actualizarHabitacion} eliminarHabitacion={eliminarHabitacion}></RoomForm>
+            ))}
+          </div>
+        )}
 
         <br /><br />
 
