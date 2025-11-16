@@ -2,6 +2,7 @@
 
 import { useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import Link from "next/link";
 //import LoginForm from './LoginForm'; // Asegúrate de importar tu componente LoginForm
 //import SigninForm from './SigninForm';
 //import { useLoginContext } from '../context/LoginFormContext';
@@ -22,14 +23,18 @@ export default function Header() {
       {!isLogin ? (
         <>
           <div style={{height:'70%', width:'6%', marginLeft:'auto'}}>
-            <button className="signin-btn" id="signin-btn" onClick={() => setShowLogin(true)}>
-              Registrarse
-            </button>
+            <Link href='/registration'>
+              <button className="signin-btn" id="signin-btn">
+                Registrarse
+              </button>
+            </Link>
           </div>
           <div style={{height:'70%', width:'6%', marginLeft:'1%', marginRight:'1%'}}>
-            <button className="login-btn" id="login-btn" onClick={() => setShowLogin(true)}>
-              Ingresar
-            </button>
+            <Link href='/login'>
+              <button className="login-btn" id="login-btn">
+                Ingresar
+              </button>
+            </Link>
           </div>
         </>
       ) : (

@@ -1,21 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import "../styles/register.css";
+import "@/styles/register.css";
 
-export default function registerform(){
+export default function RegisterForm(){
     const[email, setEmail] = useState("")
     const[username, setUsername] = useState("")
     const[password, setPassword] = useState("")
     const[repeatPassword, setRepeatPassword] = useState("")
     const[error, setError] = useState("")
 
-    if (!email || !username || !password || !repeatPassword){
-        setError("Complete todos los campos")
-    }
+    async function handleRegister(e) {
+        if (!email || !username || !password || !repeatPassword){
+            setError("Complete todos los campos")
+        }
 
-    if (password !== repeatPassword){
-        setError("La contraseña no coincide")
+        if (password !== repeatPassword){
+            setError("La contraseña no coincide")
+        }
+        e.preventDefault();
+        console.log("Registrando usuario...");
+        // aquí haces el fetch o lo que quieras
     }
 
     return(
