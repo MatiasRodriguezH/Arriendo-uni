@@ -6,3 +6,23 @@
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
 }
+
+.boton {
+  width: 100%;
+  padding: 10px;
+  margin: 15px;
+  border: "none";
+  border-radius: 5px;
+  background: rgb(72, 72, 151);
+  color: rgb(233, 233, 241);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.forma {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border-Radius: 5px;
+  border: 1px solid #802424;
+}

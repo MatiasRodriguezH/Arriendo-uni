@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import "@/styles/register.css";
+import "../styles/nuevo_arriendo.css"
 
 export default function RegisterForm(){
     const[email, setEmail] = useState("")
@@ -18,47 +19,52 @@ export default function RegisterForm(){
         if (password !== repeatPassword){
             setError("La contraseña no coincide")
         }
-        e.preventDefault();
+        const handleRegister = (e) => {
+            e.preventDefault();}
+
         console.log("Registrando usuario...");
         // aquí haces el fetch o lo que quieras
-    }
+
+        setError("");
+    };
 
     return(
-        <div>
+        <div className="content">
             <h2>
                 Crear cuenta
             </h2>
-
+            <br />
             <form onSubmit={handleRegister}>
-                <label>Email</label>
-                <input 
+                <label >Email: </label>
+                <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
-
-                <label>Nombre de usuario</label>
+            <br />
+                <label>Usuario: </label>
                 <input 
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-
-                <label>Contraseña</label>
+            <br />
+                <label>Contraseña: </label>
                 <input 
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <label>Repetir Contraseña</label>
+            <br />
+                <label>Repetir Contraseña:</label>
                 <input 
                     type="password"
-                    value={password}
+                    value={repeatPassword}
                     onChange={(e) => setRepeatPassword(e.target.value)}
                 />
-
+                <button type="submit" className="boton">Enviar</button>
             </form>
         </div>
-    )
+    );
 }
 

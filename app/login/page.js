@@ -1,12 +1,16 @@
 "use client";
 
-import '@/styles/home.css'
-import Header from '@/components/Header';
+import LoginForm from "@/components/LoginForm";
+import Header from "@/components/Header";
+import '@/styles/home.css';
 
-export default function RegisterPage() {
+export default function LoginPage() {
   return (
     <>
-        <Header/>
+      <Header/>
+      <div className="register-container">
+        <Loginform />
+      </div>  
     </>
   );
 }
