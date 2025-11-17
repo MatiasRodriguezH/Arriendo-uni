@@ -9,7 +9,7 @@ export default function LoginPage() {
     <>
       <Header/>
       <div className="register-container">
-        <Loginform />
+        <LoginForm />
       </div>  
     </>
   );
