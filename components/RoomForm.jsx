@@ -60,6 +60,7 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
             <h4>Imagen portada</h4>
             <ImageUploader imageOnChanges={onImageChange}/>
             
+            
 
             <button
                 type="button"

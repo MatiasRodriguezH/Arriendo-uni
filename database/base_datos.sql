@@ -123,6 +123,7 @@ CREATE TABLE TCDB_Habitacion (
   superficie number,
   descripcion varchar2(500),
   id_inmueble number,
+  imagen_portada varchar2(100),
   CONSTRAINT PK_TCDB_Habitacion PRIMARY KEY (id_habitacion),
   CONSTRAINT FK_TCDB_Habitacion_id_inmueble FOREIGN KEY (id_inmueble)
     REFERENCES TCDB_Inmueble(id_inmueble)
@@ -137,7 +138,6 @@ CREATE TABLE TCDB_Arriendo (
   precio number,
   descripcion varchar2(200),
   estado varchar2(20),
-  imagen_portada varchar2(100),
   fecha date,
   CONSTRAINT PK_TCDB_Arriendo PRIMARY KEY (id_arriendo),
   CONSTRAINT FK_TCDB_Arriendo_id_habitacion FOREIGN KEY (id_habitacion)
@@ -187,18 +187,21 @@ CREATE TABLE TCDB_Notificacion (
 CREATE TABLE TCDB_Imagen (
   id_imagen number,
   id_inmueble number,
-  id_habitacion number,
   orden_imagen number,
   nombre varchar2(100),
   CONSTRAINT PK_TCDB_Imagen PRIMARY KEY (id_imagen),
   CONSTRAINT FK_TCDB_Imagen_id_inmueble FOREIGN KEY (id_inmueble)
-    REFERENCES TCDB_Inmueble(id_inmueble),
-  CONSTRAINT FK_TCDB_Imagen_id_habitacion FOREIGN KEY (id_habitacion)
-    REFERENCES TCDB_Habitacion(id_habitacion)
+    REFERENCES TCDB_Inmueble(id_inmueble)
 );
+
+INSERT INTO TCDB_REGION VALUES(1,'Maule');
+INSERT INTO TCDB_CIUDAD VALUES(1,'Talca',1);
+INSERT INTO TCDB_DIRECCION VALUES(1,'Avenida San Miguel',3605,1);
+INSERT INTO TCDB_INSTITUCION VALUES(1,'Universidad Católica del Maule','universidad');
+INSERT INTO TCDB_SEDE_INSTITUCION VALUES(1,'SEDE SAN MIGUEL',1,1);
 
 INSERT INTO TCDB_USUARIO VALUES(1,'estudiante','27142629-1','Angel','Silva','Arias','angeleduardosilvaarias@gmail.com','12345678','20/02/2005','masculino',1,null,null);
 INSERT INTO TCDB_USUARIO VALUES(2,'arrendador','99999999-9','Arrendador','Numero','Uno','angeleduardosilvaarias@gmail.com','12345678','31/12/1999','masculino',null,null,1);
 
 INSERT INTO TCDB_INMUEBLE VALUES(1,'casa','por completo','Casa de Prueba','Arrendador Numero Uno',2,'Esta es una descripcion de la Casa de Prueba',3,1,1,'a un lado de la universidad','disponible',null);
-INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',null,1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE,null);
+INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',null,1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE);

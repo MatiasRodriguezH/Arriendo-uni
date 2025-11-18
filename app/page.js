@@ -14,10 +14,7 @@ export default function Home() {
         const response = await fetch('http://localhost:3000/api/arriendos',{cache: "no-store",});
         const data = await response.json();
 
-        console.log("Respuesta completa:", data);
-        console.log("data.results:", data.results);
-
-        setArriendos(data.results);
+        setArriendos(data);
       } catch (err) {
         console.error("Error al obtener arriendos:", err);
       }
