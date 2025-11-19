@@ -16,18 +16,8 @@ DROP TABLE TCDB_Institucion;
 DROP TABLE TCDB_Direccion;
 DROP TABLE TCDB_Ciudad;
 DROP TABLE TCDB_Region;
-DROP TABLE TCDB_Contacto;
 
 --CREACION DE TABLAS
-
-CREATE TABLE TCDB_Contacto (
-  id_contacto number,
-  origen_contacto varchar2(10),
-  telefono varchar2(20),
-  whatsapp varchar2(20),
-  correo varchar2(100),
-  CONSTRAINT PK_TCDB_Contacto PRIMARY KEY (id_contacto)
-);
 
 CREATE TABLE TCDB_Region (
   id_region number,
@@ -49,6 +39,8 @@ CREATE TABLE TCDB_Direccion (
   calle varchar2(50),
   numero number,
   ciudad number,
+  latitud number,
+  longitud number,
   CONSTRAINT PK_TCDB_Direccion PRIMARY KEY (id_direccion),
   CONSTRAINT FK_TCDB_Direccion_ciudad FOREIGN KEY (ciudad)
     REFERENCES TCDB_Ciudad(id_ciudad)
@@ -82,10 +74,10 @@ CREATE TABLE TCDB_Usuario (
   apellido2 varchar2(30),
   correo varchar2(100),
   contrasenia varchar2(100),
+  telefono varchar2(20),
   fecha_nacimiento date,
   genero varchar2(10),
   id_sede_institucion number,
-  id_contacto number,
   id_ciudad number,
   CONSTRAINT PK_TCDB_Usuario PRIMARY KEY (id_usuario),
   CONSTRAINT FK_TCDB_Usuario_id_sede_institucion FOREIGN KEY (id_sede_institucion)
@@ -107,10 +99,10 @@ CREATE TABLE TCDB_Inmueble (
   id_direccion number,
   direccion_adicional varchar2(50),
   estado varchar2(20),
-  contacto number,
+  origen_contacto varchar2(15),
+  telefono_contacto varchar2(20),
+  correo_contacto varchar2(100),
   CONSTRAINT PK_TCDB_Inmueble PRIMARY KEY (id_inmueble),
-  CONSTRAINT FK_TCDB_Inmueble_contacto FOREIGN KEY (contacto)
-    REFERENCES TCDB_Contacto(id_contacto),
   CONSTRAINT FK_TCDB_Inmueble_id_direccion FOREIGN KEY (id_direccion)
     REFERENCES TCDB_Direccion(id_direccion),
   CONSTRAINT FK_TCDB_Inmueble_id_arrendador FOREIGN KEY (id_arrendador)
@@ -129,21 +121,29 @@ CREATE TABLE TCDB_Habitacion (
     REFERENCES TCDB_Inmueble(id_inmueble)
 );
 
+CREATE TABLE TCDB_Unidad_Arriendo (
+  id_unidad_arriendo number,
+  id_inmueble number,
+  id_habitacion number,
+  CONSTRAINT PK_TCDB_Unidad_Arriendo PRIMARY KEY (id_unidad_arriendo),
+  CONSTRAINT FK_TCDB_Unidad_Arriendo_id_inmueble FOREIGN KEY (id_inmueble)
+    REFERENCES TCDB_Inmueble(id_inmueble),
+  CONSTRAINT FK_TCDB_Unidad_Arriendo_id_habitacion FOREIGN KEY (id_habitacion)
+    REFERENCES TCDB_Habitacion(id_habitacion)
+);
+
 CREATE TABLE TCDB_Arriendo (
   id_arriendo number,
   tipo_arriendo varchar2(20),
   titulo varchar2(50),
-  id_habitacion number,
-  id_inmueble number,
+  id_unidad_arriendo number,
   precio number,
   descripcion varchar2(200),
   estado varchar2(20),
   fecha date,
   CONSTRAINT PK_TCDB_Arriendo PRIMARY KEY (id_arriendo),
-  CONSTRAINT FK_TCDB_Arriendo_id_habitacion FOREIGN KEY (id_habitacion)
-    REFERENCES TCDB_Habitacion(id_habitacion),
-  CONSTRAINT FK_TCDB_Arriendo_id_inmueble FOREIGN KEY (id_inmueble)
-    REFERENCES TCDB_Inmueble(id_inmueble)
+  CONSTRAINT FK_TCDB_Arriendo_id_unidad FOREIGN KEY (id_unidad_arriendo)
+    REFERENCES TCDB_Unidad_Arriendo(id_unidad_arriendo)
 );
 
 CREATE TABLE TCDB_Solicitud (
@@ -184,11 +184,11 @@ CREATE TABLE TCDB_Notificacion (
     REFERENCES TCDB_Usuario(id_usuario)
 );
 
-CREATE TABLE TCDB_Imagen (
+CREATE TABLE TCDB_Imagen_Inmueble (
   id_imagen number,
   id_inmueble number,
   orden_imagen number,
-  nombre varchar2(100),
+  nombre_imagen varchar2(100),
   CONSTRAINT PK_TCDB_Imagen PRIMARY KEY (id_imagen),
   CONSTRAINT FK_TCDB_Imagen_id_inmueble FOREIGN KEY (id_inmueble)
     REFERENCES TCDB_Inmueble(id_inmueble)
@@ -200,8 +200,9 @@ INSERT INTO TCDB_DIRECCION VALUES(1,'Avenida San Miguel',3605,1);
 INSERT INTO TCDB_INSTITUCION VALUES(1,'Universidad Católica del Maule','universidad');
 INSERT INTO TCDB_SEDE_INSTITUCION VALUES(1,'SEDE SAN MIGUEL',1,1);
 
-INSERT INTO TCDB_USUARIO VALUES(1,'estudiante','27142629-1','Angel','Silva','Arias','angeleduardosilvaarias@gmail.com','12345678','20/02/2005','masculino',1,null,null);
-INSERT INTO TCDB_USUARIO VALUES(2,'arrendador','99999999-9','Arrendador','Numero','Uno','angeleduardosilvaarias@gmail.com','12345678','31/12/1999','masculino',null,null,1);
+INSERT INTO TCDB_USUARIO VALUES(1,'estudiante','27142629-1','Angel','Silva','Arias','angeleduardosilvaarias@gmail.com','12345678',null,'20/02/2005','masculino',1,null,null);
+INSERT INTO TCDB_USUARIO VALUES(2,'arrendador','99999999-9','Arrendador','Numero','Uno','angeleduardosilvaarias@gmail.com','12345678',null,'31/12/1999','masculino',null,null,1);
 
-INSERT INTO TCDB_INMUEBLE VALUES(1,'casa','por completo','Casa de Prueba','Arrendador Numero Uno',2,'Esta es una descripcion de la Casa de Prueba',3,1,1,'a un lado de la universidad','disponible',null);
-INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',null,1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE);
+INSERT INTO TCDB_INMUEBLE VALUES(1,'casa','por completo','Casa de Prueba','Arrendador Numero Uno',2,'Esta es una descripcion de la Casa de Prueba',3,1,1,'a un lado de la universidad','disponible','arrendador',null,null);
+INSERT INTO TCDB_UNIDAD_ARRIENDO VALUES(1,1,null);
+INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE);
