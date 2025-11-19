@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import "@/styles/nuevo_arriendo.css"
 import RoomForm from "@/components/RoomForm";
@@ -60,11 +60,13 @@ export default function NuevoArriendo() {
     setHabitaciones(habitaciones.filter((_, i) => i !== index));
   }
 
-  function actualizarHabitacion(index, campo, valor) {
-    const nuevasHabitaciones = [...habitaciones];
-    nuevasHabitaciones[index][campo] = valor;
-    setHabitaciones(nuevasHabitaciones);
-  }
+  const actualizarHabitacion = useCallback((index, campo, valor) => {
+    setHabitaciones(prevHabitaciones => {
+        const nuevasHabitaciones = [...prevHabitaciones];
+        nuevasHabitaciones[index] = {...nuevasHabitaciones[index],[campo]: valor};
+        return nuevasHabitaciones;
+    });
+  }, []);
 
   // Imágenes
   const [imgPortadaInmueble, setImgPortadaInmueble] = useState(null);
@@ -73,7 +75,7 @@ export default function NuevoArriendo() {
   // Cargar inmuebles existentes
   useEffect(() => {
     async function fetchInmuebles() {
-      const res = await fetch("http://localhost:3000/api/inmuebles");
+      const res = await fetch("http://localhost:3000/api/my_properties/");
       const data = await res.json();
       setInmuebles(data);
     }
@@ -87,7 +89,6 @@ export default function NuevoArriendo() {
     const formData = new FormData();
 
     formData.append("usarExistente", usarExistente);
-
     if (usarExistente) {
       formData.append("id_inmueble", selectedInmueble);
     } else {
@@ -95,7 +96,6 @@ export default function NuevoArriendo() {
       formData.append("direccion", JSON.stringify(direccion));
       formData.append("contacto", JSON.stringify(contacto));
     }
-
     formData.append("arriendo", JSON.stringify(arriendo));
     if (arriendo.tipo_arriendo==="por habitaciones"){
       formData.append("habitaciones", JSON.stringify(habitaciones));
@@ -312,7 +312,7 @@ export default function NuevoArriendo() {
 
             {/* Lista de habitaciones */}
             {habitaciones.map((hab, index) => (
-              <RoomForm hab={hab} index={index} actualizarHabitacion={actualizarHabitacion} eliminarHabitacion={eliminarHabitacion}></RoomForm>
+              <RoomForm hab={hab} index={index} actualizarHabitacion={actualizarHabitacion} eliminarHabitacion={eliminarHabitacion}/>
             ))}
           </div>
         )}

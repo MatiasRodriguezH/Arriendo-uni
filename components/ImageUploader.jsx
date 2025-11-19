@@ -2,12 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 
-/**
- * Props:
- * - multiple: boolean (por defecto false)
- * - imageOnChanges: function(filesArray) => se llama cuando cambia la lista de archivos
- * - maxFiles: number opcional (limita cantidad en modo multiple)
- */
 export default function ImageUploader({
   multiple = false,
   imageOnChanges, // <-- callback hacia el padre
@@ -65,7 +59,6 @@ export default function ImageUploader({
     setItems((prev) => {
       const removed = prev[index];
       if (removed) URL.revokeObjectURL(removed.url);
-
       const next = prev.filter((_, i) => i !== index);
       return next;
     });
@@ -101,7 +94,7 @@ export default function ImageUploader({
           : `(${items.length}) imágenes seleccionadas`}
       </button>
 
-    {/* PREVIEW DE IMAGENES */}
+      {/* PREVIEW DE IMAGENES */}
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
         {items.map((it, i) => (
           <div

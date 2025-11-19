@@ -1,30 +1,28 @@
+export const runtime = "nodejs";
 import dotenv from 'dotenv';
 const oracledb = require('oracledb');
 
 dotenv.config();
+oracledb.initOracleClient({libDir:process.env.DB_LIBDIR, configDir: process.env.DB_CONFIGDIR});
 
-const dbConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  connectString: process.env.DB_CONNECTSTRING
-};
 
-export async function querydb(query, params = []) {
-  let connection;
-  try {
-    connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(query, params, { outFormat: oracledb.OUT_FORMAT_OBJECT });
-    return result.rows;
-  } catch (err) {
-    console.error("Error en consulta Oracle:", err);
-    throw err;
-  } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error al cerrar conexión:", err);
-      }
-    }
+let oraclePool;
+
+export async function getPool() {
+  if (!oraclePool) {
+    oraclePool = await oracledb.createPool({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: process.env.DB_STRING,
+      poolMin: 1,
+      poolMax: 10,
+      poolIncrement: 1
+    });
   }
+  return oraclePool;
+}
+
+export async function getConnection() {
+  const pool = await getPool();
+  return pool.getConnection();
 }
