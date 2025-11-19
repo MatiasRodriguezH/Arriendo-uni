@@ -25,6 +25,28 @@ export default function RegisterForm(){
         console.log("Registrando usuario...");
         // aquí haces el fetch o lo que quieras
 
+        try {
+            const response = await fetch("http://localhost:3000/api/login", {
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    username: username,
+                    password: password
+                })
+            }); 
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError("Error en el registro");
+                return;
+        }
+    }catch (err) {
+        console.error("Error en el registro:", err);
+    }
         setError("");
     };
 
