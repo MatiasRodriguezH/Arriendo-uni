@@ -95,3 +95,177 @@ BEGIN
         COMMIT;
     END IF;
 END;
+
+create or replace TRIGGER TRG_CIUDAD_ID
+BEFORE INSERT ON TCDB_CIUDAD
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_CIUDAD IS NULL THEN
+        SELECT NVL(MAX(ID_CIUDAD),0)+1
+        INTO :NEW.ID_CIUDAD
+        FROM TCDB_CIUDAD;
+    END IF;
+END;
+
+create or replace PROCEDURE CRUD_CIUDAD (
+    p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_ciudad   IN  OUT NUMBER,   -- Para insertar se retorna, para U/D se envía
+    p_nombre      IN  VARCHAR2 DEFAULT NULL,
+    p_id_region   IN  NUMBER   DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_CIUDAD IN EXCLUSIVE MODE;
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN 
+        INSERT INTO TCDB_CIUDAD (nombre, id_region)
+        VALUES (p_nombre, p_id_region)
+        RETURNING id_ciudad INTO p_id_ciudad;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN  
+        UPDATE TCDB_CIUDAD
+        SET nombre    = p_nombre,
+            id_region = p_id_region
+        WHERE id_ciudad = p_id_ciudad;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20010, 'No existe ciudad con ese ID.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_CIUDAD
+        WHERE id_ciudad = p_id_ciudad;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20011, 'No existe ciudad para eliminar.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END;
+
+create or replace FUNCTION FN_EXIST_CIUDAD (
+    p_nombre     IN VARCHAR2,
+    p_id_region  IN NUMBER
+) RETURN NUMBER IS
+    v_id_ciudad  NUMBER;
+BEGIN
+    SELECT id_ciudad
+    INTO v_id_ciudad
+    FROM TCDB_CIUDAD
+    WHERE UPPER(nombre) = UPPER(p_nombre)
+      AND id_region = p_id_region;
+
+    RETURN v_id_ciudad;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        CRUD_CIUDAD('I',v_id_ciudad,p_nombre,p_id_region);
+        RETURN v_id_ciudad;
+END;
+
+create or replace TRIGGER TRG_DIRECCION_ID
+BEFORE INSERT ON TCDB_DIRECCION
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_DIRECCION IS NULL THEN
+        SELECT NVL(MAX(ID_DIRECCION),0)+1
+        INTO :NEW.ID_DIRECCION
+        FROM TCDB_DIRECCION;
+    END IF;
+END;
+
+create or replace PROCEDURE CRUD_DIRECCION (
+    p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_direccion   IN  OUT NUMBER,   -- Para insertar se retorna, para U/D se envía
+    p_calle      IN  VARCHAR2 DEFAULT NULL,
+    p_numero  IN  NUMBER   DEFAULT NULL,
+    p_id_ciudad IN NUMBER DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_DIRECCION IN EXCLUSIVE MODE;
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN 
+        INSERT INTO TCDB_DIRECCION (calle, numero, id_ciudad)
+        VALUES (p_calle, p_numero, p_id_ciudad)
+        RETURNING id_direccion INTO p_id_direccion;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN  
+        UPDATE TCDB_DIRECCION
+        SET calle    = p_calle,
+            numero = p_numero,
+            id_ciudad = p_id_ciudad
+        WHERE id_direccion = p_id_direccion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20010, 'No existe direccion con ese ID.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_DIRECCION
+        WHERE id_direccion = p_id_direccion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20011, 'No existe direccion para eliminar.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END;
+
+create or replace FUNCTION FN_EXIST_DIRECCION (
+    p_calle    IN VARCHAR2,
+    p_numero  IN NUMBER,
+    p_id_ciudad IN NUMBER
+) RETURN NUMBER IS
+    v_id_direccion NUMBER;
+BEGIN
+    SELECT id_direccion
+    INTO v_id_direccion
+    FROM TCDB_DIRECCION
+    WHERE UPPER(calle) = UPPER(p_calle)
+      AND numero = p_numero
+      AND id_ciudad = p_id_ciudad;
+
+    RETURN v_id_direccion;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        CRUD_DIRECCION('I',v_id_direccion,p_calle,p_numero,p_id_ciudad);
+        RETURN v_id_direccion;
+END;

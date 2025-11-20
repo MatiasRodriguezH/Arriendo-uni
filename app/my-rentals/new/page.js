@@ -27,7 +27,18 @@ export default function NuevoArriendo() {
     calle: "",
     numero: "",
     ciudad: "",
+    region: ""
   });
+  const [regiones, setRegiones] = useState([])
+
+  useEffect(() => {
+    async function fetchRegiones() {
+      const res = await fetch("http://localhost:3000/api/data/regions");
+      const data = await res.json();
+      setRegiones(data);
+    }
+    fetchRegiones();
+  }, []);
 
   // Contacto
   const [nuevoContacto, setNuevoContacto] = useState(false);
@@ -139,7 +150,10 @@ export default function NuevoArriendo() {
         </div>
         <div style={{display:'flex', flexDirection:'column', width:'29%'}}>
           <h4>Región</h4>
-          <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, ciudad: e.target.value})}/>
+          <select style={{width: "100%", height:'100%'}} value={direccion.region} onChange={(e) => setDireccion({...direccion,region: e.target.value})}>
+            <option value="" disabled>Selecciona Región</option>
+            {regiones.map(reg => (<option value={reg.ID_REGION }>{reg.NOMBRE}</option>))}
+          </select>
         </div>
       </div>
       <h4>Dirección adicional</h4>
