@@ -269,3 +269,183 @@ EXCEPTION
         CRUD_DIRECCION('I',v_id_direccion,p_calle,p_numero,p_id_ciudad);
         RETURN v_id_direccion;
 END;
+
+create or replace TRIGGER TRG_INMUEBLE_ID
+BEFORE INSERT ON TCDB_INMUEBLE
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_INMUEBLE IS NULL THEN
+        SELECT NVL(MAX(ID_INMUEBLE),0)+1
+        INTO :NEW.ID_INMUEBLE
+        FROM TCDB_INMUEBLE;
+    END IF;
+END;
+
+create or replace PROCEDURE CRUD_INMUEBLE (
+    p_operacion            IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_inmueble          IN OUT NUMBER,    -- Retorna en insert, se envía en update/delete
+    p_tipo_inmueble        IN VARCHAR2 DEFAULT NULL,
+    p_modalidad            IN VARCHAR2 DEFAULT NULL,
+    p_nombre               IN VARCHAR2 DEFAULT NULL,
+    p_propietario          IN VARCHAR2 DEFAULT NULL,
+    p_id_arrendador        IN NUMBER   DEFAULT NULL,
+    p_descripcion          IN VARCHAR2 DEFAULT NULL,
+    p_num_habitaciones     IN NUMBER   DEFAULT NULL,
+    p_num_banios           IN NUMBER   DEFAULT NULL,
+    p_id_direccion         IN NUMBER   DEFAULT NULL,
+    p_direccion_adicional  IN VARCHAR2 DEFAULT NULL,
+    p_estado               IN VARCHAR2 DEFAULT NULL,
+    p_origen_contacto      IN VARCHAR2 DEFAULT NULL,
+    p_telefono_contacto    IN VARCHAR2 DEFAULT NULL,
+    p_correo_contacto      IN VARCHAR2 DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_INMUEBLE IN EXCLUSIVE MODE;
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN 
+
+        INSERT INTO TCDB_INMUEBLE (
+            tipo_inmueble, modalidad, nombre, propietario, id_arrendador, descripcion,
+            num_habitaciones, num_banios, id_direccion, direccion_adicional,
+            estado, origen_contacto, telefono_contacto, correo_contacto
+        )
+        VALUES (
+            p_tipo_inmueble, p_modalidad, p_nombre, p_propietario, p_id_arrendador, p_descripcion,
+            p_num_habitaciones, p_num_banios, p_id_direccion, p_direccion_adicional,
+            p_estado, p_origen_contacto, p_telefono_contacto, p_correo_contacto
+        )
+        RETURNING id_inmueble INTO p_id_inmueble;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+
+        UPDATE TCDB_INMUEBLE
+        SET tipo_inmueble       = p_tipo_inmueble,
+            modalidad           = p_modalidad,
+            nombre              = p_nombre,
+            propietario         = p_propietario,
+            id_arrendador       = p_id_arrendador,
+            descripcion         = p_descripcion,
+            num_habitaciones    = p_num_habitaciones,
+            num_banios          = p_num_banios,
+            id_direccion        = p_id_direccion,
+            direccion_adicional = p_direccion_adicional,
+            estado              = p_estado,
+            origen_contacto     = p_origen_contacto,
+            telefono_contacto   = p_telefono_contacto,
+            correo_contacto     = p_correo_contacto
+        WHERE id_inmueble = p_id_inmueble;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20020, 'No existe inmueble con ese ID.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_INMUEBLE
+        WHERE id_inmueble = p_id_inmueble;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20021, 'No existe inmueble para eliminar.');
+        END IF;
+        COMMIT;
+
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+END;
+
+create or replace TRIGGER TRG_ARRIENDO_ID
+BEFORE INSERT ON TCDB_ARRIENDO
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_ARRIENDO IS NULL THEN
+        SELECT NVL(MAX(ID_ARRIENDO),0)+1
+        INTO :NEW.ID_ARRIENDO
+        FROM TCDB_ARRIENDO;
+    END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE CRUD_ARRIENDO (
+    p_operacion        IN  VARCHAR2,    -- 'I', 'U', 'D'
+    p_id_arriendo      IN OUT NUMBER,   -- Retorna en insert, se envía en update/delete
+    p_tipo_arriendo    IN VARCHAR2 DEFAULT NULL,
+    p_titulo           IN VARCHAR2 DEFAULT NULL,
+    p_id_unidad        IN NUMBER   DEFAULT NULL,
+    p_precio           IN NUMBER   DEFAULT NULL,
+    p_descripcion      IN VARCHAR2 DEFAULT NULL,
+    p_estado           IN VARCHAR2 DEFAULT NULL,
+    p_fecha            IN DATE     DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_ARRIENDO IN EXCLUSIVE MODE;
+
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        INSERT INTO TCDB_ARRIENDO (
+            tipo_arriendo, titulo, id_unidad_arriendo, precio,
+            descripcion, estado, fecha
+        )
+        VALUES (
+            p_tipo_arriendo, p_titulo, p_id_unidad, p_precio,
+            p_descripcion, p_estado, p_fecha
+        )
+        RETURNING id_arriendo INTO p_id_arriendo;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+
+        UPDATE TCDB_ARRIENDO
+        SET tipo_arriendo      = p_tipo_arriendo,
+            titulo             = p_titulo,
+            id_unidad_arriendo = p_id_unidad,
+            precio             = p_precio,
+            descripcion        = p_descripcion,
+            estado             = p_estado,
+            fecha              = p_fecha
+        WHERE id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20030, 'No existe arriendo con ese ID.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_ARRIENDO
+        WHERE id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20031, 'No existe arriendo para eliminar.');
+        END IF;
+
+        COMMIT;
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+END;

@@ -7,8 +7,8 @@ DROP TABLE TCDB_Imagen;
 DROP TABLE TCDB_Notificacion;
 DROP TABLE TCDB_Interaccion;
 DROP TABLE TCDB_Solicitud;
-DROP TABLE TCDB_Arriendo;
 DROP TABLE TCDB_Habitacion;
+DROP TABLE TCDB_Arriendo;
 DROP TABLE TCDB_Inmueble;
 DROP TABLE TCDB_Usuario;
 DROP TABLE TCDB_Sede_Institucion;
@@ -109,41 +109,31 @@ CREATE TABLE TCDB_Inmueble (
     REFERENCES TCDB_Usuario(id_usuario)
 );
 
-CREATE TABLE TCDB_Habitacion (
-  id_habitacion number,
-  nombre varchar2(40),
-  superficie number,
-  descripcion varchar2(500),
-  id_inmueble number,
-  imagen_portada varchar2(100),
-  CONSTRAINT PK_TCDB_Habitacion PRIMARY KEY (id_habitacion),
-  CONSTRAINT FK_TCDB_Habitacion_id_inmueble FOREIGN KEY (id_inmueble)
-    REFERENCES TCDB_Inmueble(id_inmueble)
-);
-
-CREATE TABLE TCDB_Unidad_Arriendo (
-  id_unidad_arriendo number,
-  id_inmueble number,
-  id_habitacion number,
-  CONSTRAINT PK_TCDB_Unidad_Arriendo PRIMARY KEY (id_unidad_arriendo),
-  CONSTRAINT FK_TCDB_Unidad_Arriendo_id_inmueble FOREIGN KEY (id_inmueble)
-    REFERENCES TCDB_Inmueble(id_inmueble),
-  CONSTRAINT FK_TCDB_Unidad_Arriendo_id_habitacion FOREIGN KEY (id_habitacion)
-    REFERENCES TCDB_Habitacion(id_habitacion)
-);
-
 CREATE TABLE TCDB_Arriendo (
   id_arriendo number,
   tipo_arriendo varchar2(20),
   titulo varchar2(50),
-  id_unidad_arriendo number,
+  id_inmueble number,
   precio number,
   descripcion varchar2(200),
   estado varchar2(20),
   fecha date,
   CONSTRAINT PK_TCDB_Arriendo PRIMARY KEY (id_arriendo),
-  CONSTRAINT FK_TCDB_Arriendo_id_unidad FOREIGN KEY (id_unidad_arriendo)
-    REFERENCES TCDB_Unidad_Arriendo(id_unidad_arriendo)
+  CONSTRAINT FK_TCDB_Arriendo_id_inmueble FOREIGN KEY (id_inmueble)
+    REFERENCES TCDB_Inmueble(id_inmueble)
+);
+
+CREATE TABLE TCDB_Habitacion (
+  id_habitacion number,
+  id_arriendo number,
+  nombre varchar2(40),
+  superficie number,
+  descripcion varchar2(500),
+  precio number,
+  imagen_portada varchar2(100),
+  CONSTRAINT PK_TCDB_Habitacion PRIMARY KEY (id_habitacion),
+  CONSTRAINT FK_TCDB_Habitacion_id_arriendo FOREIGN KEY (id_arriendo)
+    REFERENCES TCDB_Arriendo(id_arriendo)
 );
 
 CREATE TABLE TCDB_Solicitud (
@@ -204,5 +194,4 @@ INSERT INTO TCDB_USUARIO VALUES(1,'estudiante','27142629-1','Angel','Silva','Ari
 INSERT INTO TCDB_USUARIO VALUES(2,'arrendador','99999999-9','Arrendador','Numero','Uno','angeleduardosilvaarias@gmail.com','12345678',null,'31/12/1999','masculino',null,null,1);
 
 INSERT INTO TCDB_INMUEBLE VALUES(1,'casa','por completo','Casa de Prueba','Arrendador Numero Uno',2,'Esta es una descripcion de la Casa de Prueba',3,1,1,'a un lado de la universidad','disponible','arrendador',null,null);
-INSERT INTO TCDB_UNIDAD_ARRIENDO VALUES(1,1,null);
 INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE);
