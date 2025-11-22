@@ -5,6 +5,7 @@
     border-radius: 1vw;
     color:black;
     overflow: hidden;
+    margin: 15px;
 }
 .rentview-container img{
     width: 100%;

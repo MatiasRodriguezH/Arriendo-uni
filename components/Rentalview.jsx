@@ -1,5 +1,5 @@
 "use client";
-
+import "./../styles/rentalview.css";
 import Link from "next/link";
 
 function slugify(str) {

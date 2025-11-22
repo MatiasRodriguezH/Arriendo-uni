@@ -26,9 +26,10 @@ export default function Home() {
   return (
     <div>
       <Header/>
+      <div className="page">
         <div className="catalog">
           <span style={{fontSize:'125%', fontWeight:'bold', marginBottom:'-3%'}}>Principales Arriendos</span>
-          <div className="catalog items">
+          <div className="catalog-items">
             {arriendos.length > 0 ? (
               arriendos.map((arriendo, index) => (
                 <Rentalview key={index} data={arriendo} />
@@ -38,6 +39,7 @@ export default function Home() {
             )}
           </div>
         </div>
+      </div>
     </div>
   );
 }
