@@ -9,11 +9,14 @@ body {
 
 .content{
     margin-top: 65px;
+    margin-bottom: 65px;
     justify-self: center;
     background-color: rgb(255, 255, 255);
     padding: 20px;
-    width: 80%;
-
+    width: 48%;
+    padding: 3%;
+    box-shadow: 1px 1px 2px 1px #c5c5c5;
+    border-radius: 1vw;
 }
 
 input{
@@ -32,7 +35,7 @@ select{
 }
 
 .descripcion {
-  width: 60%;
+  width: 100%;
   height: 15vh;      /* Alto del textarea */
   padding: 10px ;      /* Espaciado interior */
   border: 1px solid #8b8b8b;
@@ -60,6 +63,6 @@ h4{
 hr{
     border-width: 1px;
     border-color: #00638e;
-    width: 60%;
+    width: 100%;
     margin-bottom: 0.8vw;
 }

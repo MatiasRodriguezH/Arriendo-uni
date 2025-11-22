@@ -35,7 +35,7 @@ export default async function handler(req, res) {
   }
 
   const { user } = req.query; 
-  if (!id || isNaN(id)) {
+  if (!user || isNaN(user)) {
     return res.status(500).json({ error: "error en credenciales"})
   }
 
@@ -103,8 +103,13 @@ export default async function handler(req, res) {
   }
 
   async function insert_habitacion(data) {
-    const insertResult = await conn.execute(`BEGIN CRUD_HABITACION('I', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,
+    await conn.execute(`BEGIN CRUD_HABITACION('I', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,
        :p_precio, :p_imagen_portada); END;`,data);
+  }
+
+  async function insertImagen(data) {
+    await conn.execute(`BEGIN CRUD_IMAGEN_INMUEBLE('I', :p_id_imagen, :p_id_inmueble, :p_orden_imagen, :p_nombre_imagen); END;`,data);
+    
   }
 
   // Carpeta donde se guardarán las imágenes
@@ -134,7 +139,7 @@ export default async function handler(req, res) {
 
   form.parse(req, async (err, fields, files) => {
     if (err) return res.status(500).json({ error: "Error procesando archivos" });
-
+    
     // JSON recibidos dentro del formData
     const inmuebleExistente = fields.usarExistente[0];
     const direccion = JSON.parse(fields.direccion || "{}");
@@ -142,7 +147,7 @@ export default async function handler(req, res) {
     const inmueble = JSON.parse(fields.nuevoInmueble || "{}");
     const arriendo = JSON.parse(fields.arriendo || "{}");
     const habitaciones = JSON.parse(fields.habitaciones || "[]");
-
+    
     const id_ciudad = await insert_ciudad({
       p_nombre :direccion.ciudad,
       p_id_region: direccion.region
@@ -194,7 +199,7 @@ export default async function handler(req, res) {
     if (arriendo.tipo_arriendo == "por habitaciones"){
       habitaciones.map((hab, i) => {
         const file = files[`imgHabitacion_${i}`];
-        const imageUrl = guardarImagen(file?.[0] || file,'rooms');
+        const imageUrl = guardarImagen(file?.[0] || file,'room','rooms');
 
         insert_habitacion({
           p_id_habitacion: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
@@ -208,15 +213,22 @@ export default async function handler(req, res) {
       });
     };
 
-
     // Guardar imágenes principales
-    const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'properties');
-    const img_inmueble = guardarImagen(files.imgInmueble?.[0] || files.imgInmueble,'properties');
-
-    // Guardar imágenes por habitación
-    const urlsHabitaciones = habitaciones.map((_, i) => {
-      const file = files[`imgHabitacion_${i}`];
-      return guardarImagen(file?.[0] || file,'rooms');
+    const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'property','properties');
+    insertImagen({
+      p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+      p_id_inmueble: 2,
+      p_orden_imagen: 0,
+      p_nombre_imagen: img_portada
+    });
+    files.imgInmueble.map((img,i) => {
+      const img_inmueble = guardarImagen(img,'property','properties');
+      insertImagen({
+        p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+        p_id_inmueble: 2,
+        p_orden_imagen: i+1,
+        p_nombre_imagen: img_inmueble
+      });
     });
 
     console.log(inmuebleExistente);
@@ -224,12 +236,6 @@ export default async function handler(req, res) {
     console.log(inmueble);
     console.log(arriendo);
     console.log(habitaciones);
-    console.log({imagenes: {
-        img_portada,
-        img_inmueble,
-        img_habitaciones: urlsHabitaciones
-      }
-    });
 
     return res.status(200).json({
       mensaje: "Datos recibidos correctamente",

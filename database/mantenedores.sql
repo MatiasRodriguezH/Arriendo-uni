@@ -449,3 +449,161 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
     END IF;
 END;
+
+create or replace TRIGGER TRG_HABITACION_ID
+BEFORE INSERT ON TCDB_HABITACION
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_HABITACION IS NULL THEN
+        SELECT NVL(MAX(ID_HABITACION),0)+1
+        INTO :NEW.ID_HABITACION
+        FROM TCDB_HABITACION;
+    END IF;
+END;
+
+create or replace PROCEDURE CRUD_HABITACION (
+    p_operacion        IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_habitacion    IN OUT NUMBER,    -- Retorna en insert, se envía en update/delete
+    p_id_arriendo      IN NUMBER   DEFAULT NULL,
+    p_nombre           IN VARCHAR2 DEFAULT NULL,
+    p_superficie       IN NUMBER   DEFAULT NULL,
+    p_descripcion      IN VARCHAR2 DEFAULT NULL,
+    p_precio           IN NUMBER DEFAULT NULL,
+    p_imagen_portada   IN VARCHAR2 DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_HABITACION IN EXCLUSIVE MODE;
+
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        INSERT INTO TCDB_HABITACION (
+            nombre, id_arriendo, superficie, descripcion, precio, imagen_portada
+        )
+        VALUES (
+            p_nombre, p_id_arriendo, p_superficie, p_descripcion, p_precio, p_imagen_portada
+        )
+        RETURNING id_habitacion INTO p_id_habitacion;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+
+        UPDATE TCDB_HABITACION
+        SET id_arriendo    = p_id_arriendo,
+            nombre         = p_nombre,
+            superficie     = p_superficie,
+            descripcion    = p_descripcion,
+            precio         = p_precio,
+            imagen_portada = p_imagen_portada
+        WHERE id_habitacion = p_id_habitacion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20040, 'No existe habitación con ese ID.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_HABITACION
+        WHERE id_habitacion = p_id_habitacion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20041, 'No existe habitación para eliminar.');
+        END IF;
+
+        COMMIT;
+
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+END;
+
+create or replace TRIGGER TRG_IMAGEN_INMUEBLE_ID
+BEFORE INSERT ON TCDB_IMAGEN_INMUEBLE
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_IMAGEN IS NULL THEN
+        SELECT NVL(MAX(ID_IMAGEN),0)+1
+        INTO :NEW.ID_IMAGEN
+        FROM TCDB_IMAGEN_INMUEBLE;
+    END IF;
+END;
+
+create or replace PROCEDURE CRUD_IMAGEN_INMUEBLE(
+    p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_imagen   IN  OUT NUMBER,   -- Para insertar se retorna, para U/D se envía
+    p_id_inmueble     IN  NUMBER DEFAULT NULL,
+    p_orden_imagen    IN  NUMBER DEFAULT NULL,
+    p_nombre_imagen   IN  VARCHAR2   DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_IMAGEN_INMUEBLE IN EXCLUSIVE MODE;
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN 
+        INSERT INTO TCDB_IMAGEN_INMUEBLE (id_inmueble, orden_imagen, nombre_imagen)
+        VALUES (p_id_inmueble, p_orden_imagen, p_nombre_imagen);
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN  
+        UPDATE TCDB_IMAGEN_INMUEBLE
+        SET id_inmueble   = p_id_inmueble, 
+            orden_imagen  = p_orden_imagen,
+            nombre_imagen = p_nombre_imagen
+        WHERE id_imagen= p_id_imagen;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20010, 'No existe imagen con ese ID.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_IMAGEN_INMUEBLE
+        WHERE id_imagen = p_id_imagen;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20011, 'No existe imagen para eliminar.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END;
+
+create or replace TRIGGER TRG_INSTITUCION_ID
+BEFORE INSERT ON TCDB_INSTITUCION
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_INSTITUCION IS NULL THEN
+        SELECT NVL(MAX(ID_INSTITUCION),0)+1
+        INTO :NEW.ID_INSTITUCION
+        FROM TCDB_INSTITUCION;
+    END IF;
+END;

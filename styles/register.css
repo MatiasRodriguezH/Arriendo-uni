@@ -1,16 +1,83 @@
+body {
+  background-color: white;
+  color: black;
+  align-items: center;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.content{
+    margin-top: 65px;
+    justify-self: center;
+    background-color: rgb(255, 255, 255);
+    padding: 20px;
+    width: 100%;
+
+}
+
+
+input{
+    border: 1px solid #8b8b8b;
+    border-radius: 0.5vw;
+    margin: 0.2%;
+    font-size: 0.95vw;
+    padding: 7px 7px 7px 10px;
+}
+select{
+    border: 1px solid #8b8b8b;
+    border-radius: 0.5vw;
+    margin: 0.2%;
+    font-size: 0.95vw;
+    padding: 7px;
+}
+
+.descripcion {
+  width: 60%;
+  height: 15vh;      /* Alto del textarea */
+  padding: 10px ;      /* Espaciado interior */
+  border: 1px solid #8b8b8b;
+  border-radius: 0.5vw;
+  font-size: 1vw;
+  resize: vertical; 
+}
+
+h2{
+    font-size: 1.3vw;
+    font-weight: bold;
+}
+h3{
+    color: #00638e;
+    font-size: 1.1vw;
+    font-weight: bold;
+    margin-bottom: 1%;
+}
+h4{
+    margin-top: 0.2%;
+    font-size: 0.95vw;
+    font-weight: bold;
+}
+
+hr{
+    border-width: 1px;
+    border-color: #00638e;
+    width: 60%;
+    margin-bottom: 0.8vw;
+}
+
 .register-container {
-  width: 350px;
-  margin: 50px auto;
-  padding: 20px;
-  background: rgb(230, 223, 223);
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  width: 40%;
+  margin: 70px auto;
+  padding: 3%;
+  background: rgb(255, 255, 255);
+  border-radius: 1vw;
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.15);
 }
 
 .boton {
   width: 100%;
   padding: 10px;
-  margin: 15px;
+  margin-top: 5%;
   border: "none";
   border-radius: 5px;
   background: rgb(72, 72, 151);

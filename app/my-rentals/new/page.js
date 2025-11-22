@@ -117,9 +117,15 @@ export default function NuevoArriendo() {
     }
 
     (imgPortadaInmueble) ? formData.append("imgPortadaInmueble", imgPortadaInmueble): formData.append("imgPortadaInmueble", null);
-    (imgInmueble) ? formData.append("imgInmueble", imgInmueble): formData.append("imgInmueble", null) ;
+    if (imgInmueble) {
+      imgInmueble.forEach((file) => {
+        formData.append("imgInmueble", file);
+      });
+    } else {
+      formData.append("imgInmueble", null);
+    }
 
-    const res = await fetch("/api/nuevo/arriendo", {
+    const res = await fetch(`/api/nuevo/arriendo?user=${2}`, {
       method: "POST",
       body: formData
     });
@@ -133,21 +139,21 @@ export default function NuevoArriendo() {
     return(
       <>
       <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
-        <div style={{display:'flex', flexDirection:'column', width:'40%'}}>
+        <div style={{display:'flex', flexDirection:'column', width:'70%'}}>
           <h4>Calle</h4>
           <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, calle: e.target.value})}/>
         </div>
-        <div style={{display:'flex', flexDirection:'column', width:'18%'}}>
+        <div style={{display:'flex', flexDirection:'column', width:'28%'}}>
           <h4>Numero</h4>
           <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, numero: e.target.value})}/>
         </div>
       </div>
       <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
-        <div style={{display:'flex', flexDirection:'column', width:'29%'}}>
+        <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
           <h4>Ciudad</h4>
           <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, ciudad: e.target.value})}/>
         </div>
-        <div style={{display:'flex', flexDirection:'column', width:'29%'}}>
+        <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
           <h4>Región</h4>
           <select style={{width: "100%", height:'100%'}} value={direccion.region} onChange={(e) => setDireccion({...direccion,region: e.target.value})}>
             <option value="" disabled>Selecciona Región</option>
@@ -156,7 +162,7 @@ export default function NuevoArriendo() {
         </div>
       </div>
       <h4>Dirección adicional</h4>
-      <input style={{width:'60%', marginBottom:'1%'}} onChange={(e) => setDireccion({...direccion, adicional: e.target.value})}/>
+      <input style={{width:'100%', marginBottom:'1%'}} onChange={(e) => setDireccion({...direccion, adicional: e.target.value})}/>
       </>
     )
   }
@@ -166,7 +172,7 @@ export default function NuevoArriendo() {
       <div style={{marginBottom:'1%'}}>
       <h4>Usar medios de contacto</h4>
       <select
-        style={{width: "60%"}}
+        style={{width: "50%"}}
         value={nuevoContacto ? "arriendo" : "arrendador"}
         onChange={(e) => {setNuevoContacto(e.target.value === "arriendo"); 
           setContacto({...contacto, origen_contacto: e.target.value});
@@ -176,12 +182,16 @@ export default function NuevoArriendo() {
       </select>
 
       {nuevoContacto && (
-      <>
-      <h4>Teléfono</h4>
-      <input style={{width:'30%'}} onChange={(e) => setContacto({...contacto, telefono: e.target.value})}/>
-      <h4>Correo electrónico</h4>
-      <input style={{width:'60%'}} onChange={(e) => setContacto({...contacto, correo: e.target.value})}/>
-      </>
+      <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
+        <div style={{display:'flex', flexDirection:'column', width:'28%'}}>
+          <h4>Teléfono</h4>
+          <input style={{width:'100%'}} onChange={(e) => setContacto({...contacto, telefono: e.target.value})}/>
+        </div>
+        <div style={{display:'flex', flexDirection:'column', width:'70%'}}>
+          <h4>Correo electrónico</h4>
+          <input style={{width:'100%'}} onChange={(e) => setContacto({...contacto, correo: e.target.value})}/>
+        </div>
+      </div>
     )}
       </div>
     )
@@ -198,7 +208,7 @@ export default function NuevoArriendo() {
           <h4>Arrendar para un</h4>
           <select
             style={{
-              width: "60%"
+              width: "100%"
             }}
             value={usarExistente ? "existente" : "nuevo"}
             onChange={(e) => setUsarExistente(e.target.value === "existente")}
@@ -213,7 +223,7 @@ export default function NuevoArriendo() {
           <div>
             <h3>Seleccionar inmueble</h3>
             <select 
-              style={{ width: "300px" }}
+              style={{ width: "100%" }}
               onChange={(e) => setSelectedInmueble(e.target.value)}
             >
               <option value="">Seleccione...</option>
@@ -230,6 +240,7 @@ export default function NuevoArriendo() {
             <hr/>
             <h4>Tipo de Inmueble</h4>
             <select
+              style={{width:'50%'}}
               value={nuevoInmueble.tipo_inmueble}
               onChange={(e) => setNuevoInmueble({ ...nuevoInmueble, tipo_inmueble: e.target.value })}
             >
@@ -238,9 +249,9 @@ export default function NuevoArriendo() {
               <option value="departamento">Departamento</option>
             </select>
             <h4>Nombre del inmueble</h4>
-            <input style={{width:'60%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, nombre: e.target.value})}/>
+            <input style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, nombre: e.target.value})}/>
             <h4>Propietario</h4>
-            <input  style={{width:'60%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, propietario: e.target.value})}/>
+            <input  style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, propietario: e.target.value})}/>
             <h4>Descripción</h4>
             <textarea className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setNuevoInmueble({...nuevoInmueble, descripcion: e.target.value})}/>
             <div style={{display:'flex', flexDirection:'row', gap:'2%', marginBottom:'1%'}}>
@@ -264,7 +275,7 @@ export default function NuevoArriendo() {
             <h4>Imagen portada del inmueble</h4>
             <ImageUploader imageOnChanges={(files) => setImgPortadaInmueble(files[0])}/>
             <h4>Otras imagenes</h4>
-            <ImageUploader imageOnChanges={imgInmueble} multiple={true}/>
+            <ImageUploader imageOnChanges={(files) => setImgInmueble(files)} multiple={true}/>
           </>
         )}
 
@@ -275,6 +286,7 @@ export default function NuevoArriendo() {
         <h4>Tipo de Arriendo</h4>
         
         <select
+          style={{width:'50%'}}
           value={arriendo.tipo_arriendo}
           onChange={(e) => {
             const tipo = e.target.value;
@@ -289,9 +301,13 @@ export default function NuevoArriendo() {
           <option value="por habitaciones">Por habitaciones</option>
         </select>
         <h4>Título</h4>
-        <input style={{width:'60%'}} onChange={(e) => setArriendo({...arriendo, titulo: e.target.value})}/>
-        <h4>Precio</h4>
-        <input type="number" onChange={(e) => setArriendo({...arriendo, precio: e.target.value})}/>
+        <input style={{width:'100%'}} onChange={(e) => setArriendo({...arriendo, titulo: e.target.value})}/>
+        {arriendo.tipo_arriendo != "por habitaciones" && (
+          <>
+            <h4>Precio</h4>
+            <input type="number" onChange={(e) => setArriendo({...arriendo, precio: e.target.value})}/>
+          </>
+        )}
         <h4>Descripción</h4>
         <textarea className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo o los arriendos..." onChange={(e) => setArriendo({...arriendo, descripcion: e.target.value})}/>
         

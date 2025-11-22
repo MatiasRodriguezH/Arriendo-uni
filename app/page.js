@@ -28,7 +28,7 @@ export default function Home() {
       <Header/>
       <div className="page">
         <div className="catalog">
-          <span style={{fontSize:'125%', fontWeight:'bold', marginBottom:'-3%'}}>Principales Arriendos</span>
+          <span style={{fontSize:'125%', fontWeight:'bold', margin:'1%',}}>Principales Arriendos</span>
           <div className="catalog-items">
             {arriendos.length > 0 ? (
               arriendos.map((arriendo, index) => (
