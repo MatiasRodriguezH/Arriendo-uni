@@ -5,10 +5,12 @@ export default async function handler(req, res){
     return res.status(405).json({ error: "Método no permitido" });
   }
   let conn;
-  const body = await req.json();
+  const body = req.body;
+  console.log(body.prueba);
   
   try{
     conn = await getConnection();
+    /*
     const result = conn.execute(`BEGIN CRUD_USUARIO(:p_accion, 
         :p_id, 
         :p_nombre, 
@@ -16,10 +18,10 @@ export default async function handler(req, res){
         :p_apellido2,
         :p_correo,
         :p_contrasenia,
+        :p_telefono,
         :p_fecha_nac,
         :p_genero,
         :p_sede,
-        :p_contacto,
         :p_ciudad,
         :p_resp ); END;`,
     {
@@ -41,6 +43,7 @@ export default async function handler(req, res){
     });
 
     return res.json({ mensaje: result.outBinds.resp });
+    */
 
   }
   catch (error) {

@@ -13,6 +13,11 @@ export default async function handler(req, res) {
     conn = await getConnection();
     console.log("Successfully connected to Oracle Database");
     const result = await conn.execute("SELECT * FROM TCDB_REGION");
+    const response = await fetch("http://localhost:3000/api/registration",{
+      method:"POST", 
+      headers: { "Content-Type": "application/json"},
+      body: JSON.stringify({prueba:"esta es una prueba"})
+    });
     return res.json(result.rows);
   } catch (err) {
     console.error(err);

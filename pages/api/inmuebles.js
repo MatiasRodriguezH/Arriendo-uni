@@ -1,16 +1,19 @@
-import { querydb } from "@/database/oracle";
+import { getConnection } from "@/database/oracle";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Método no permitido" });
   }
+  let conn = await getConnection();
+
   try {
-    const results = await querydb(`
+    const results = await conn.execute(`
       SELECT i.id_inmueble,i.tipo_arriendo,i.nombre,m.nombre_imagen, d.calle||' '||d.numero 
       FROM TCDB_INMUEBLE i
       JOIN TCDB_IMAGES m ON (m.id_inmueble = i.id_inmueble)
       JOIN TCDB_DIRECCION d ON (d.id_direccion = i.id_direccion)
       WHERE m.orden_imagen = 0`);
+      
     return res.json({results});
 
   } catch (error) {

@@ -27,15 +27,26 @@ export default function NuevoArriendo() {
     calle: "",
     numero: "",
     ciudad: "",
+    region: "",
+    adicional:""
   });
+  const [regiones, setRegiones] = useState([])
+
+  useEffect(() => {
+    async function fetchRegiones() {
+      const res = await fetch("http://localhost:3000/api/data/regions");
+      const data = await res.json();
+      setRegiones(data);
+    }
+    fetchRegiones();
+  }, []);
 
   // Contacto
   const [nuevoContacto, setNuevoContacto] = useState(false);
   const [contacto, setContacto] = useState({
     origen_contacto: "",
     telefono: "",
-    whatsapp: "",
-    correo: "",
+    correo: ""
   });
 
   // Datos del arriendo
@@ -43,8 +54,7 @@ export default function NuevoArriendo() {
     tipo_arriendo: "",
     titulo: "",
     precio: "",
-    descripcion: "",
-    estado: "",
+    descripcion: ""
   });
 
   // Datos de las habitaciones
@@ -52,7 +62,7 @@ export default function NuevoArriendo() {
   function agregarHabitacion() {
     setHabitaciones([
       ...habitaciones,
-      { nombre: "", descripcion: "", tamano: "", precio: "", imagen_portada: null }
+      { nombre: "", superficie: "", descripcion: "", precio: "", imagen_portada: null }
     ]);
   }
 
@@ -139,11 +149,14 @@ export default function NuevoArriendo() {
         </div>
         <div style={{display:'flex', flexDirection:'column', width:'29%'}}>
           <h4>Región</h4>
-          <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, ciudad: e.target.value})}/>
+          <select style={{width: "100%", height:'100%'}} value={direccion.region} onChange={(e) => setDireccion({...direccion,region: e.target.value})}>
+            <option value="" disabled>Selecciona Región</option>
+            {regiones.map(reg => (<option value={reg.ID_REGION }>{reg.NOMBRE}</option>))}
+          </select>
         </div>
       </div>
       <h4>Dirección adicional</h4>
-      <input style={{width:'60%', marginBottom:'1%'}} onChange={(e) => setDireccion({...direccion, ciudad: e.target.value})}/>
+      <input style={{width:'60%', marginBottom:'1%'}} onChange={(e) => setDireccion({...direccion, adicional: e.target.value})}/>
       </>
     )
   }
@@ -153,29 +166,19 @@ export default function NuevoArriendo() {
       <div style={{marginBottom:'1%'}}>
       <h4>Usar medios de contacto</h4>
       <select
-        style={{
-          width: "60%"
-        }}
-        value={nuevoContacto ? "arriendo" : "usuario"}
-        onChange={(e) => setNuevoContacto(e.target.value === "arriendo") && 
-          setContacto({...contacto, origen_contacto: e.target.value})}
-      >
-        <option value="usuario">De la propia cuenta</option>
+        style={{width: "60%"}}
+        value={nuevoContacto ? "arriendo" : "arrendador"}
+        onChange={(e) => {setNuevoContacto(e.target.value === "arriendo"); 
+          setContacto({...contacto, origen_contacto: e.target.value});
+        }}>
+        <option value="arrendador">De la propia cuenta</option>
         <option value="arriendo">Nuevos para el arriendo</option>
       </select>
 
       {nuevoContacto && (
       <>
-      <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
-        <div style={{display:'flex', flexDirection:'column', width:'29%'}}>
-          <h4>Teléfono</h4>
-          <input onChange={(e) => setContacto({...contacto, telefono: e.target.value})}/>
-        </div>
-        <div style={{display:'flex', flexDirection:'column', width:'29%'}}>
-          <h4>WhatsApp</h4>
-          <input onChange={(e) => setContacto({...contacto, whatsapp: e.target.value})}/>
-        </div>        
-      </div>
+      <h4>Teléfono</h4>
+      <input style={{width:'30%'}} onChange={(e) => setContacto({...contacto, telefono: e.target.value})}/>
       <h4>Correo electrónico</h4>
       <input style={{width:'60%'}} onChange={(e) => setContacto({...contacto, correo: e.target.value})}/>
       </>
@@ -227,10 +230,10 @@ export default function NuevoArriendo() {
             <hr/>
             <h4>Tipo de Inmueble</h4>
             <select
-              onChange={(e) =>
-                setNuevoInmueble({ ...nuevoInmueble, tipo_inmueble: e.target.value })
-              }
+              value={nuevoInmueble.tipo_inmueble}
+              onChange={(e) => setNuevoInmueble({ ...nuevoInmueble, tipo_inmueble: e.target.value })}
             >
+              <option value="" disabled>Selecciona Tipo</option>
               <option value="casa">Casa</option>
               <option value="departamento">Departamento</option>
             </select>
@@ -272,13 +275,16 @@ export default function NuevoArriendo() {
         <h4>Tipo de Arriendo</h4>
         
         <select
+          value={arriendo.tipo_arriendo}
           onChange={(e) => {
             const tipo = e.target.value;
-            setNuevoInmueble({ ...nuevoInmueble, modalidad: e.target.value });
-            setArriendo({...arriendo, tipo_arriendo: e.target.value});
             if (tipo === "por completo") setHabitaciones([]);
+            if (tipo === "por completo") setArriendo({...arriendo, precio: null});
+            setNuevoInmueble({ ...nuevoInmueble, modalidad: e.target.value});
+            setArriendo({...arriendo, tipo_arriendo: e.target.value});
           }}
         >
+          <option value="" disabled>Selecciona Tipo</option>
           <option value="por completo">Por completo</option>
           <option value="por habitaciones">Por habitaciones</option>
         </select>

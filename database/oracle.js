@@ -1,6 +1,6 @@
 export const runtime = "nodejs";
 import dotenv from 'dotenv';
-const oracledb = require('oracledb');
+import oracledb from 'oracledb';
 
 dotenv.config();
 oracledb.initOracleClient({libDir:process.env.DB_LIBDIR, configDir: process.env.DB_CONFIGDIR});
