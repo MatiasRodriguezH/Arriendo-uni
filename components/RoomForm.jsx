@@ -12,11 +12,11 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
     return (
         <div
         key={index}
-        style={{ width:'60%',border: "1px solid #ccc", padding: "15px", marginBottom: "15px",borderRadius: "1vw", background: "#f7f7f7"}}
+        style={{ width:'100%',border: "1px solid #ccc", padding: "15px", marginBottom: "15px",borderRadius: "1vw", background: "#f7f7f7"}}
         >
             <h3>Habitación {index + 1}</h3>
 
-            <h4>Nombre habitación</h4>
+            <h4>Nombre habitación <span style={{ color: "red" }}>*</span></h4>
             <input
                 style={{width:'100%'}}
                 placeholder={"Habitacion "+(index+1)}
@@ -36,7 +36,7 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
         
             <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                 <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                    <h4>Tamaño</h4>
+                    <h4>Tamaño <span style={{ color: "red" }}>*</span></h4>
                     <input
                         type="number"
                         min="0"
@@ -46,7 +46,7 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
                     />
                 </div>
                 <div style={{display:'flex', flexDirection:'column', width:'49%', marginBottom:'1%'}}>
-                    <h4>Precio</h4>
+                    <h4>Precio <span style={{ color: "red" }}>*</span></h4>
                     <input
                         type="number"
                         min="0"

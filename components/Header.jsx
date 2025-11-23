@@ -3,21 +3,20 @@
 import { useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import Link from "next/link";
-//import LoginForm from './LoginForm'; // Asegúrate de importar tu componente LoginForm
-//import SigninForm from './SigninForm';
-//import { useLoginContext } from '../context/LoginFormContext';
-import '../styles/header.css'
+import '@/styles/header.css'
+import UserMenu from './UserMenu';
 
 export default function Header() {
   const { user, isLogin } =  useContext(AuthContext);
   const { showLogin, setShowLogin } = useState(false)//useLoginContext();
   const [showSignin, setShowSignin] = useState(false);
 
+
   return (
     <div className="header">
       <div className='logo'>
         <img className='image' src="/images/logo.png"/>
-        <a className='title' href="/">TUCAMPUS</a>
+        <a style={{color:'white', textDecoration:'none'}} className='title' href="/">TUCAMPUS</a>
       </div>
 
       {!isLogin ? (
@@ -38,10 +37,10 @@ export default function Header() {
           </div>
         </>
       ) : (
-        <div className='user-info'>
-            <span style={{position:'absolute', right:'40%'}}>{user.username}</span>
-            <img style={{textAlign:'right', height: '100%'}} src={`/static/images/avatars/${user.avatar ? user.avatar:'profile_picture.jpg'}`} alt="Avatar" className="avatar" />
-        </div>
+        <UserMenu user={user} onLogout={() => {
+        localStorage.removeItem("token");
+        window.location.reload();
+        }}/>
       )}
     </div>
     

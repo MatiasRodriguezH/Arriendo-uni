@@ -1,0 +1,93 @@
+.user-container {
+  width: fit-content;
+  height: 100%;
+  position: relative;
+  display: inline-block;
+}
+
+/* Sección del usuario */
+.user-info {
+  min-width: fit-content;
+  height: 100%;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  background: #00638e;
+  position: relative;
+}
+
+.user-picture{
+  margin-left: auto;
+  width: 45px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;   /* recorta lo que sobresalga */
+}
+.user-picture img{
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Hover de sección usuario */
+.user-info:hover {
+  background: #0074a6;
+}
+
+.user-name {
+  font-weight: bold;
+  margin-left: auto;
+  min-width: fit-content;
+}
+
+/* Menú desplegable */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #c0c0c0;
+  color: black;
+  border-radius: 8px;
+  padding: 8px 0;
+  margin-top: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 180px;
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+}
+
+/* Botones del menú */
+.menu-item {
+  width: 100%;
+  padding: 10px 15px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s ease;
+}
+
+/* Hover botones */
+.menu-item:hover {
+  background: #00638e;
+  color: #ffffff
+}
+
+/* Botón cerrar sesión */
+.logout {
+  color: #cc0000;
+  font-weight: bold;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -83,7 +83,7 @@ export default async function handler(req, res) {
         }
       );
 
-      id_direccion = insertResult.outBinds.p_id_ciudad;
+      id_direccion = insertResult.outBinds.p_id_direccion;
     }
     return id_direccion;
   }
@@ -180,7 +180,7 @@ export default async function handler(req, res) {
       p_num_banios: inmueble.num_banios,
       p_id_direccion: id_direccion, 
       p_direccion_adicional: direccion.adicional,
-      p_estado:'disponible', 
+      p_estado:'en arriendo', 
       p_origen_contacto:contacto.origen_contacto,
       p_telefono_contacto:contacto.telefono, 
       p_correo_contacto:contacto.correo

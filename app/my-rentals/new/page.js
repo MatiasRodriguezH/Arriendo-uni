@@ -11,7 +11,7 @@ export default function NuevoArriendo() {
   const [usarExistente, setUsarExistente] = useState(true);
 
   // Inmueble nuevo o seleccionado
-  const [selectedInmueble, setSelectedInmueble] = useState(null);
+  const [selectedInmueble, setSelectedInmueble] = useState("");
   const [nuevoInmueble, setNuevoInmueble] = useState({
     tipo_inmueble: "",
     modalidad: "",
@@ -34,11 +34,17 @@ export default function NuevoArriendo() {
 
   useEffect(() => {
     async function fetchRegiones() {
-      const res = await fetch("http://localhost:3000/api/data/regions");
-      const data = await res.json();
+      const result = await fetch("http://localhost:3000/api/data/regions");
+      const data = await result.json();
       setRegiones(data);
     }
+    async function fetchInmuebles(id){
+      const result = await fetch(`http://localhost:3000/api/data/user-properties?id=${id}`);
+      const data = await result.json();
+      setInmuebles(data);
+    }
     fetchRegiones();
+    fetchInmuebles(2);
   }, []);
 
   // Contacto
@@ -81,16 +87,6 @@ export default function NuevoArriendo() {
   // Imágenes
   const [imgPortadaInmueble, setImgPortadaInmueble] = useState(null);
   const [imgInmueble, setImgInmueble] = useState(null);
-
-  // Cargar inmuebles existentes
-  useEffect(() => {
-    async function fetchInmuebles() {
-      const res = await fetch("http://localhost:3000/api/my_properties/");
-      const data = await res.json();
-      setInmuebles(data);
-    }
-    fetchInmuebles();
-  }, []);
 
   // Envío del formulario
   async function handleSubmit(e) {
@@ -140,21 +136,21 @@ export default function NuevoArriendo() {
       <>
       <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
         <div style={{display:'flex', flexDirection:'column', width:'70%'}}>
-          <h4>Calle</h4>
+          <h4>Calle <span style={{ color: "red" }}>*</span></h4>
           <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, calle: e.target.value})}/>
         </div>
         <div style={{display:'flex', flexDirection:'column', width:'28%'}}>
-          <h4>Numero</h4>
+          <h4>Numero </h4>
           <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, numero: e.target.value})}/>
         </div>
       </div>
       <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
         <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-          <h4>Ciudad</h4>
+          <h4>Ciudad <span style={{ color: "red" }}>*</span></h4>
           <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, ciudad: e.target.value})}/>
         </div>
         <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-          <h4>Región</h4>
+          <h4>Región <span style={{ color: "red" }}>*</span></h4>
           <select style={{width: "100%", height:'100%'}} value={direccion.region} onChange={(e) => setDireccion({...direccion,region: e.target.value})}>
             <option value="" disabled>Selecciona Región</option>
             {regiones.map(reg => (<option value={reg.ID_REGION }>{reg.NOMBRE}</option>))}
@@ -184,7 +180,7 @@ export default function NuevoArriendo() {
       {nuevoContacto && (
       <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
         <div style={{display:'flex', flexDirection:'column', width:'28%'}}>
-          <h4>Teléfono</h4>
+          <h4>Teléfono <span style={{ color: "red" }}>*</span></h4>
           <input style={{width:'100%'}} onChange={(e) => setContacto({...contacto, telefono: e.target.value})}/>
         </div>
         <div style={{display:'flex', flexDirection:'column', width:'70%'}}>
@@ -221,24 +217,25 @@ export default function NuevoArriendo() {
         {/* Seleccionar inmueble existente */}
         {usarExistente ? (
           <div>
-            <h3>Seleccionar inmueble</h3>
+            <h3>Seleccionar inmueble <span style={{ color: "red" }}>*</span></h3>
             <select 
+              value = {selectedInmueble}
               style={{ width: "100%" }}
               onChange={(e) => setSelectedInmueble(e.target.value)}
             >
-              <option value="">Seleccione...</option>
-              {/*inmuebles.map((i) => (
-                <option key={i.id_inmueble} value={i.id_inmueble}>
-                  {i.nombre} — {i.direccion_adicional}
+              <option value="" disabled>Seleccione...</option>
+              {inmuebles.map((i) => (
+                <option key={i.ID_INMUEBLE} value={i.ID_INMUEBLE}>
+                  {i.NOMBRE} - {i.DIRECCION}
                 </option>
-              ))*/}
+              ))}
             </select>
           </div>
         ) : (
           <>
             <h3>Datos del inmueble</h3>
             <hr/>
-            <h4>Tipo de Inmueble</h4>
+            <h4>Tipo de Inmueble <span style={{ color: "red" }}>*</span> </h4>
             <select
               style={{width:'50%'}}
               value={nuevoInmueble.tipo_inmueble}
@@ -248,7 +245,7 @@ export default function NuevoArriendo() {
               <option value="casa">Casa</option>
               <option value="departamento">Departamento</option>
             </select>
-            <h4>Nombre del inmueble</h4>
+            <h4>Nombre del inmueble <span style={{ color: "red" }}>*</span> </h4>
             <input style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, nombre: e.target.value})}/>
             <h4>Propietario</h4>
             <input  style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, propietario: e.target.value})}/>
@@ -256,16 +253,16 @@ export default function NuevoArriendo() {
             <textarea className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setNuevoInmueble({...nuevoInmueble, descripcion: e.target.value})}/>
             <div style={{display:'flex', flexDirection:'row', gap:'2%', marginBottom:'1%'}}>
               <div style={{display:'flex', flexDirection:'column'}}>
-                <h4>Numero de habitaciones</h4>
+                <h4>Numero de habitaciones <span style={{ color: "red" }}>*</span> </h4>
                 <input type="number" min='0' onChange={(e) => setNuevoInmueble({...nuevoInmueble, num_habitaciones: e.target.value})}/>
               </div>
               <div style={{display:'flex', flexDirection:'column'}}>
-              <h4>Numero de baños</h4>
+              <h4>Numero de baños <span style={{ color: "red" }}>*</span> </h4>
               <input type="number" min='0' onChange={(e) => setNuevoInmueble({...nuevoInmueble, num_banios: e.target.value})}/>
               </div>
             </div>
             
-            <h3>Dirección</h3>
+            <h3>Dirección </h3>
             <Direccion direccion={direccion} setDireccion={setDireccion}/>
 
             <h3>Contacto</h3>
@@ -283,8 +280,7 @@ export default function NuevoArriendo() {
           
         <h3 style={{ marginTop: "25px" }}>Datos del arriendo</h3>
         <hr/>
-        <h4>Tipo de Arriendo</h4>
-        
+        <h4>Tipo de Arriendo <span style={{ color: "red" }}>*</span></h4>
         <select
           style={{width:'50%'}}
           value={arriendo.tipo_arriendo}
@@ -300,11 +296,11 @@ export default function NuevoArriendo() {
           <option value="por completo">Por completo</option>
           <option value="por habitaciones">Por habitaciones</option>
         </select>
-        <h4>Título</h4>
+        <h4>Título <span style={{ color: "red" }}>*</span></h4>
         <input style={{width:'100%'}} onChange={(e) => setArriendo({...arriendo, titulo: e.target.value})}/>
         {arriendo.tipo_arriendo != "por habitaciones" && (
           <>
-            <h4>Precio</h4>
+            <h4>Precio <span style={{ color: "red" }}>*</span></h4>
             <input type="number" onChange={(e) => setArriendo({...arriendo, precio: e.target.value})}/>
           </>
         )}
@@ -313,7 +309,7 @@ export default function NuevoArriendo() {
         
         {arriendo.tipo_arriendo === "por habitaciones" && (
           <div style={{ marginTop: "30px" }}>
-            <h3>Habitaciones</h3>
+            <h3>Habitaciones <span style={{ color: "red" }}>*</span></h3>
 
             <button
               type="button"

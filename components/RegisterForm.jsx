@@ -69,7 +69,6 @@ export default function RegisterForm(){
                 },
                 body: JSON.stringify({
                     email: email,
-                    username: username,
                     password: password,
                     nombre: nombre,
                     apellido: apellido,
@@ -78,7 +77,8 @@ export default function RegisterForm(){
                     telefono: telefono,
                     sedeInstitucional: sedeInstitucional,
                     ciudad: ciudad,
-                    fechaNacimiento: fechaNacimiento
+                    fechaNacimiento: fechaNacimiento,
+                    genero: genero
                 })
             }); 
 

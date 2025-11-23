@@ -3,14 +3,24 @@
 import LoginForm from "@/components/LoginForm";
 import Header from "@/components/Header";
 import '@/styles/home.css';
+import { useEffect, useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
-  return (
+  const {isLogin, loading} = useContext(AuthContext);
+
+  useEffect(() => {
+    if (isLogin) {
+      window.location.replace("/"); // o la ruta que quieras
+    }
+  }, [isLogin]);
+
+  if (loading) return (<></>);
+
+  if (!loading && !isLogin) return (
     <>
       <Header/>
-      <div className="register-container">
-        <LoginForm />
-      </div>  
+      <LoginForm />
     </>
   );
 }
