@@ -5,10 +5,14 @@ import Header from "@/components/Header";
 import "@/styles/nuevo_arriendo.css"
 import RoomForm from "@/components/RoomForm";
 import ImageUploader from "@/components/ImageUploader";
+import Direccion from "@/components/new-rental/Direccion";
+import Contacto from "@/components/new-rental/Contacto";
 
 export default function NuevoArriendo() {
   const [inmuebles, setInmuebles] = useState([]);
   const [usarExistente, setUsarExistente] = useState(true);
+
+  const [error, SetError] = useState("");
 
   // Inmueble nuevo o seleccionado
   const [selectedInmueble, setSelectedInmueble] = useState("");
@@ -18,8 +22,8 @@ export default function NuevoArriendo() {
     nombre: "",
     propietario: "",
     descripcion: "",
-    num_habitaciones: "",
-    num_banios: "",
+    num_habitaciones: 0,
+    num_banios: 0,
   });
 
   // Dirección
@@ -50,7 +54,7 @@ export default function NuevoArriendo() {
   // Contacto
   const [nuevoContacto, setNuevoContacto] = useState(false);
   const [contacto, setContacto] = useState({
-    origen_contacto: "",
+    origen_contacto: "arrendador",
     telefono: "",
     correo: ""
   });
@@ -68,7 +72,7 @@ export default function NuevoArriendo() {
   function agregarHabitacion() {
     setHabitaciones([
       ...habitaciones,
-      { nombre: "", superficie: "", descripcion: "", precio: "", imagen_portada: null }
+      { nombre: "", superficie: 0, descripcion: "", precio: 0, imagen_portada: null }
     ]);
   }
 
@@ -88,9 +92,58 @@ export default function NuevoArriendo() {
   const [imgPortadaInmueble, setImgPortadaInmueble] = useState(null);
   const [imgInmueble, setImgInmueble] = useState(null);
 
+  const handleImgInmueble = useCallback((files) => {
+    setImgInmueble(files);
+  }, []);
+
   // Envío del formulario
   async function handleSubmit(e) {
     e.preventDefault();
+
+    //Verificar datos de los campos
+    if (!usarExistente){
+      if (nuevoInmueble.tipo_inmueble == "" || nuevoInmueble.nombre == ""){
+        SetError("Campos del inmueble obligatorios no pueden estar vacíos");
+        return null;
+      }
+      if (nuevoInmueble.num_habitaciones < habitaciones.length){
+        SetError("Habitaciones del inmueble no pueden ser menor a las habitaciones en arriendo");
+        return null;
+      }
+      if (direccion.calle == "" || direccion.numero == "" || direccion.region == ""){
+        SetError("Campos de direccion obligatorios no pueden estar vacíos");
+        return null;
+      }
+      if (nuevoContacto){
+        if (direccion.calle == "" || direccion.numero == "" || direccion.region == ""){
+          SetError("Campos de contacto obligatorios no pueden estar vacíos");
+          return null;
+        }
+      }
+    }
+    else{
+      if (selectedInmueble == ""){
+        SetError("Inmueble existente no seleccionado"); 
+        return null;
+      } 
+      if (inmuebles.find(i => i.ID_INMUEBLE == selectedInmueble)?.NUM_HABITACIONES < habitaciones.length){
+        SetError("Habitaciones del inmueble no pueden ser menor a las habitaciones en arriendo");
+        return null;
+      }
+    }
+    if (arriendo.tipo_arriendo == "" || arriendo.titulo =="" || arriendo.precio == ""){
+      SetError("Campos del arriendo obligatorios no pueden estar vacíos")
+      return null;
+    }
+    if(arriendo.tipo_arriendo == "por habitaciones"){
+      if (habitaciones.length = 0) SetError("Debe existir mínimo una habitación en el arriendo"); return null;
+      habitaciones.forEach(hab => {
+        if (hab.nombre == "" || hab.superficie == "" || hab.precio == ""){
+          SetError("Campos de habitacion obligatorios no pueden estar vacíos");
+          return null;
+        }
+      });
+    }
 
     const formData = new FormData();
 
@@ -120,6 +173,7 @@ export default function NuevoArriendo() {
     } else {
       formData.append("imgInmueble", null);
     }
+  
 
     const res = await fetch(`/api/nuevo/arriendo?user=${2}`, {
       method: "POST",
@@ -129,68 +183,6 @@ export default function NuevoArriendo() {
     const resultado = await res.json();
     console.log("Guardado:", resultado);
     alert("Arriendo creado con éxito");
-  }
-
-  function Direccion({direccion, setDireccion}){
-    return(
-      <>
-      <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
-        <div style={{display:'flex', flexDirection:'column', width:'70%'}}>
-          <h4>Calle <span style={{ color: "red" }}>*</span></h4>
-          <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, calle: e.target.value})}/>
-        </div>
-        <div style={{display:'flex', flexDirection:'column', width:'28%'}}>
-          <h4>Numero </h4>
-          <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, numero: e.target.value})}/>
-        </div>
-      </div>
-      <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
-        <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-          <h4>Ciudad <span style={{ color: "red" }}>*</span></h4>
-          <input style={{width:'100%'}} onChange={(e) => setDireccion({...direccion, ciudad: e.target.value})}/>
-        </div>
-        <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-          <h4>Región <span style={{ color: "red" }}>*</span></h4>
-          <select style={{width: "100%", height:'100%'}} value={direccion.region} onChange={(e) => setDireccion({...direccion,region: e.target.value})}>
-            <option value="" disabled>Selecciona Región</option>
-            {regiones.map(reg => (<option value={reg.ID_REGION }>{reg.NOMBRE}</option>))}
-          </select>
-        </div>
-      </div>
-      <h4>Dirección adicional</h4>
-      <input style={{width:'100%', marginBottom:'1%'}} onChange={(e) => setDireccion({...direccion, adicional: e.target.value})}/>
-      </>
-    )
-  }
-
-  function Contacto({contacto, setContacto}){
-    return(
-      <div style={{marginBottom:'1%'}}>
-      <h4>Usar medios de contacto</h4>
-      <select
-        style={{width: "50%"}}
-        value={nuevoContacto ? "arriendo" : "arrendador"}
-        onChange={(e) => {setNuevoContacto(e.target.value === "arriendo"); 
-          setContacto({...contacto, origen_contacto: e.target.value});
-        }}>
-        <option value="arrendador">De la propia cuenta</option>
-        <option value="arriendo">Nuevos para el arriendo</option>
-      </select>
-
-      {nuevoContacto && (
-      <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
-        <div style={{display:'flex', flexDirection:'column', width:'28%'}}>
-          <h4>Teléfono <span style={{ color: "red" }}>*</span></h4>
-          <input style={{width:'100%'}} onChange={(e) => setContacto({...contacto, telefono: e.target.value})}/>
-        </div>
-        <div style={{display:'flex', flexDirection:'column', width:'70%'}}>
-          <h4>Correo electrónico</h4>
-          <input style={{width:'100%'}} onChange={(e) => setContacto({...contacto, correo: e.target.value})}/>
-        </div>
-      </div>
-    )}
-      </div>
-    )
   }
 
   return (
@@ -209,7 +201,7 @@ export default function NuevoArriendo() {
             value={usarExistente ? "existente" : "nuevo"}
             onChange={(e) => setUsarExistente(e.target.value === "existente")}
           >
-            <option value="existente">Inmueble existente</option>
+            <option value="existente">Inmueble existente y disponible</option>
             <option value="nuevo">Nuevo inmueble</option>
           </select>
         </div>
@@ -223,10 +215,10 @@ export default function NuevoArriendo() {
               style={{ width: "100%" }}
               onChange={(e) => setSelectedInmueble(e.target.value)}
             >
-              <option value="" disabled>Seleccione...</option>
+              <option value="" disabled>Seleccione inmueble disponible...</option>
               {inmuebles.map((i) => (
                 <option key={i.ID_INMUEBLE} value={i.ID_INMUEBLE}>
-                  {i.NOMBRE} - {i.DIRECCION}
+                  {i.NOMBRE} - {i.DIRECCION} {`(${i.ESTADO})`}
                 </option>
               ))}
             </select>
@@ -254,16 +246,18 @@ export default function NuevoArriendo() {
             <div style={{display:'flex', flexDirection:'row', gap:'2%', marginBottom:'1%'}}>
               <div style={{display:'flex', flexDirection:'column'}}>
                 <h4>Numero de habitaciones <span style={{ color: "red" }}>*</span> </h4>
-                <input type="number" min='0' onChange={(e) => setNuevoInmueble({...nuevoInmueble, num_habitaciones: e.target.value})}/>
+                <input type="number" min='0' value={nuevoInmueble.num_habitaciones}
+                onChange={(e) => { (e.target.value < 0) ? setNuevoInmueble({...nuevoInmueble, num_habitaciones: 0}): setNuevoInmueble({...nuevoInmueble, num_habitaciones: e.target.value}) }}/>
               </div>
               <div style={{display:'flex', flexDirection:'column'}}>
               <h4>Numero de baños <span style={{ color: "red" }}>*</span> </h4>
-              <input type="number" min='0' onChange={(e) => setNuevoInmueble({...nuevoInmueble, num_banios: e.target.value})}/>
+              <input type="number" min='0' value={nuevoInmueble.num_banios}
+              onChange={(e) => { (e.target.value < 0) ? setNuevoInmueble({...nuevoInmueble, num_banios: 0}) : setNuevoInmueble({...nuevoInmueble, num_banios: e.target.value}) }}/>
               </div>
             </div>
             
             <h3>Dirección </h3>
-            <Direccion direccion={direccion} setDireccion={setDireccion}/>
+            <Direccion direccion={direccion} setDireccion={setDireccion} regiones={regiones}/>
 
             <h3>Contacto</h3>
             <Contacto contacto={contacto} setContacto={setContacto}/>
@@ -272,7 +266,7 @@ export default function NuevoArriendo() {
             <h4>Imagen portada del inmueble</h4>
             <ImageUploader imageOnChanges={(files) => setImgPortadaInmueble(files[0])}/>
             <h4>Otras imagenes</h4>
-            <ImageUploader imageOnChanges={(files) => setImgInmueble(files)} multiple={true}/>
+            <ImageUploader imageOnChanges={handleImgInmueble} multiple={true}/>
           </>
         )}
 
@@ -323,7 +317,9 @@ export default function NuevoArriendo() {
                 cursor: "pointer",
                 marginBottom: "15px"
               }}
-              onClick={agregarHabitacion}
+              onClick={() => {if (habitaciones.length >= nuevoInmueble.num_habitaciones) setNuevoInmueble({ ...nuevoInmueble, num_habitaciones: habitaciones.length +1 });
+                              agregarHabitacion();
+              }}
             >
               + Agregar habitación
             </button>
@@ -335,7 +331,10 @@ export default function NuevoArriendo() {
           </div>
         )}
 
-        <br /><br />
+        <br />
+        <div style={{margin:"1% 0% 2% 0%"}}>
+          <span style={{color:'red', fontSize:'1vw'}}>{error}</span>
+        </div>
 
         <button 
           onClick={handleSubmit}
@@ -347,4 +346,5 @@ export default function NuevoArriendo() {
     </div>
   );
 }
+
 

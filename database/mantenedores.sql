@@ -25,7 +25,8 @@ create or replace PROCEDURE crud_usuario(
     p_fecha_nacimiento IN DATE DEFAULT NULL,
     p_genero           IN VARCHAR2 DEFAULT NULL,
     p_id_sede_inst     IN NUMBER DEFAULT NULL,
-    p_id_ciudad        IN NUMBER DEFAULT NULL
+    p_id_ciudad        IN NUMBER DEFAULT NULL,
+    p_imagen_perfil    IN VARCHAR2 DEFAULT NULL
 ) AS
 BEGIN
     LOCK TABLE TCDB_USUARIO IN ROW EXCLUSIVE MODE;
@@ -36,7 +37,7 @@ BEGIN
         INSERT INTO TCDB_USUARIO(
             rol_usuario, rut, nombre, apellido1, apellido2,
             correo, contrasenia, telefono, fecha_nacimiento, genero,
-            id_sede_institucion, id_ciudad
+            id_sede_institucion, id_ciudad, imagen_perfil
         )
         VALUES (
             p_rol_usuario,
@@ -50,7 +51,8 @@ BEGIN
             p_fecha_nacimiento,
             p_genero,
             p_id_sede_inst,
-            p_id_ciudad
+            p_id_ciudad,
+            p_imagen_perfil
         );
         COMMIT;
     END IF;
@@ -70,7 +72,8 @@ BEGIN
             fecha_nacimiento    = p_fecha_nacimiento,
             genero              = p_genero,
             id_sede_institucion = p_id_sede_inst,
-            id_ciudad           = p_id_ciudad
+            id_ciudad           = p_id_ciudad,
+            imagen_perfil       = p_imagen_perfil
         WHERE id_usuario = p_id_usuario;
 
         IF SQL%ROWCOUNT = 0 THEN
@@ -606,4 +609,214 @@ BEGIN
         INTO :NEW.ID_INSTITUCION
         FROM TCDB_INSTITUCION;
     END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE CRUD_INSTITUCION (
+    p_operacion       IN  VARCHAR2,        -- 'I', 'U', 'D'
+    p_id_institucion  IN OUT NUMBER,       -- Se retorna en inserción
+    p_nombre          IN VARCHAR2 DEFAULT NULL,
+    p_tipo_institucion IN VARCHAR2 DEFAULT NULL
+) IS
+    v_tipo_normalizado VARCHAR2(50);
+BEGIN
+    --------------------------------------------------------------------
+    -- Normalizar tipo de institución
+    --------------------------------------------------------------------
+    v_tipo_normalizado := LOWER(p_tipo_institucion);
+
+    IF p_operacion = 'I' OR p_operacion = 'U' THEN
+        IF v_tipo_normalizado NOT IN (
+            'universidad',
+            'instituto profesional',
+            'centro de formacion tecnica'
+        ) THEN
+            RAISE_APPLICATION_ERROR(-20020,
+                'Tipo de institución inválido. Debe ser: universidad, instituto profesional o centro de formacion tecnica.');
+        END IF;
+    END IF;
+
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion)
+        VALUES (p_nombre, v_tipo_normalizado)
+        RETURNING id_institucion INTO p_id_institucion;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+        UPDATE TCDB_INSTITUCION
+        SET nombre = p_nombre,
+            tipo_institucion = v_tipo_normalizado
+        WHERE id_institucion = p_id_institucion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20021, 'No existe institución con ese ID.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+        DELETE FROM TCDB_INSTITUCION
+        WHERE id_institucion = p_id_institucion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20022, 'No existe institución para eliminar.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END;
+
+create or replace TRIGGER TRG_SEDE_INSTITUCION_ID
+BEFORE INSERT ON TCDB_SEDE_INSTITUCION
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_SEDE IS NULL THEN
+        SELECT NVL(MAX(ID_SEDE),0)+1
+        INTO :NEW.ID_SEDE
+        FROM TCDB_SEDE_INSTITUCION;
+    END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE CRUD_SEDE_INSTITUCION (
+    p_operacion      IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_sede        IN OUT NUMBER,    -- Solo OUT en insert, IN en update/delete
+    p_nombre         IN  VARCHAR2 DEFAULT NULL,
+    p_id_institucion IN  NUMBER   DEFAULT NULL,
+    p_id_direccion   IN  NUMBER   DEFAULT NULL
+)
+IS
+BEGIN
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        
+        INSERT INTO TCDB_SEDE_INSTITUCION (
+            nombre, id_institucion, id_direccion
+        ) VALUES (
+            p_nombre, p_id_institucion, p_id_direccion
+        )
+        RETURNING id_sede INTO p_id_sede;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+
+        UPDATE TCDB_SEDE_INSTITUCION
+        SET nombre         = p_nombre,
+            id_institucion = p_id_institucion,
+            id_direccion   = p_id_direccion
+        WHERE id_sede = p_id_sede;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20020, 'No existe sede con ese ID.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_SEDE_INSTITUCION
+        WHERE id_sede = p_id_sede;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20021, 'No existe sede para eliminar.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END CRUD_SEDE_INSTITUCION;
+
+
+create or replace TRIGGER TRG_REGION_ID
+BEFORE INSERT ON TCDB_REGION
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_REGION IS NULL THEN
+        SELECT NVL(MAX(ID_REGION),0)+1
+        INTO :NEW.ID_REGION
+        FROM TCDB_REGION;
+    END IF;
+END;
+
+create or replace PROCEDURE CRUD_REGION (
+    p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_REGION   IN  OUT NUMBER,   -- Para insertar se retorna, para U/D se envía
+    p_nombre      IN  VARCHAR2 DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_REGION IN EXCLUSIVE MODE;
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN 
+        INSERT INTO TCDB_REGION (nombre)
+        VALUES (p_nombre)
+        RETURNING id_REGION INTO p_id_REGION;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN  
+        UPDATE TCDB_REGION
+        SET nombre    = p_nombre
+        WHERE id_REGION = p_id_REGION;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20010, 'No existe region con ese ID.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+
+        DELETE FROM TCDB_REGION
+        WHERE id_REGION = p_id_REGION;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20011, 'No existe region para eliminar.');
+        END IF;
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
 END;

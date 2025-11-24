@@ -5,7 +5,17 @@ import Header from "@/components/Header";
 import '@/styles/register.css'
 
 export default function RegisterPage() {
-  return (
+  const {isLogin, loading} = useContext(AuthContext);
+  
+  useEffect(() => {
+    if (isLogin) {
+      window.location.replace("/"); // o la ruta que quieras
+    }
+  }, [isLogin]);
+
+  if (loading) return (<></>);
+
+  if (!loading && !isLogin) return (
     <>
       <Header/>
       <RegisterForm />

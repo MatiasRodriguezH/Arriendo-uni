@@ -36,13 +36,13 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
         
             <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                 <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                    <h4>Tamaño <span style={{ color: "red" }}>*</span></h4>
+                    <h4>Superficie <span style={{ color: "red" }}>*</span></h4>
                     <input
                         type="number"
                         min="0"
                         placeholder="Tamaño (m²)"
-                        value={hab.tamano}
-                        onChange={(e) => actualizarHabitacion(index, "tamano", e.target.value)}
+                        value={hab.superficie}
+                        onChange={(e) => { (e.target.value < 0) ? actualizarHabitacion(index, "superficie", 0) : actualizarHabitacion(index, "superficie", e.target.value)}}
                     />
                 </div>
                 <div style={{display:'flex', flexDirection:'column', width:'49%', marginBottom:'1%'}}>
@@ -52,7 +52,7 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
                         min="0"
                         placeholder="Precio"
                         value={hab.precio}
-                        onChange={(e) => actualizarHabitacion(index, "precio", e.target.value)}
+                        onChange={(e) => { (e.target.value < 0) ? actualizarHabitacion(index, "precio", 0) : actualizarHabitacion(index, "precio", e.target.value)}}
                     />
                 </div>
             </div>

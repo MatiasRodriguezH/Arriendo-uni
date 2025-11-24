@@ -143,48 +143,74 @@ export default async function handler(req, res) {
     // JSON recibidos dentro del formData
     const inmuebleExistente = fields.usarExistente[0];
     const direccion = JSON.parse(fields.direccion || "{}");
-    const contacto = JSON.parse(fields.direccion || "{}");
+    const contacto = JSON.parse(fields.contacto|| "{}");
     const inmueble = JSON.parse(fields.nuevoInmueble || "{}");
     const arriendo = JSON.parse(fields.arriendo || "{}");
     const habitaciones = JSON.parse(fields.habitaciones || "[]");
+
+    var id_inmueble = null;
+    console.log(inmuebleExistente);
     
-    const id_ciudad = await insert_ciudad({
-      p_nombre :direccion.ciudad,
-      p_id_region: direccion.region
-    });
+    if(inmuebleExistente == "true"){
+      id_inmueble = fields.id_inmueble[0];
+      console.log(id_inmueble);
+    }
+    else{
+      const id_ciudad = await insert_ciudad({
+        p_nombre :direccion.ciudad,
+        p_id_region: direccion.region
+      });
 
-    const coordenadas = await getCoords(direccion.calle + " " + direccion.numero + "," + direccion.ciudad + " Chile");
+      const coordenadas = await getCoords(direccion.calle + " " + direccion.numero + "," + direccion.ciudad + " Chile");
 
-    const id_direccion = await insert_direccion({
-      p_calle:direccion.calle,
-      p_numero:direccion.numero,
-      p_id_ciudad:id_ciudad,
-      p_latitud: coordenadas.latitud,
-      p_longitud: coordenadas.longitud
-    });
+      const id_direccion = await insert_direccion({
+        p_calle:direccion.calle,
+        p_numero:direccion.numero,
+        p_id_ciudad:id_ciudad,
+        p_latitud: coordenadas.latitud,
+        p_longitud: coordenadas.longitud
+      });
 
-    if (contacto.origen_contacto == 'arrendador'){
-      contacto.telefono = null;
-      contacto.correo = null;
-    } 
+      if (contacto.origen_contacto == 'arrendador'){
+        contacto.telefono = null;
+        contacto.correo = null;
+      } 
 
-    const id_inmueble = await insert_inmueble({
-      p_id_inmueble: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-      p_tipo_inmueble: inmueble.tipo_inmueble,
-      p_modalidad: inmueble.modalidad,
-      p_nombre: inmueble.nombre,
-      p_propietario: inmueble.propietario, 
-      p_id_arrendador: 2, 
-      p_descripcion: inmueble.descripcion,
-      p_num_habitaciones: inmueble.num_habitaciones, 
-      p_num_banios: inmueble.num_banios,
-      p_id_direccion: id_direccion, 
-      p_direccion_adicional: direccion.adicional,
-      p_estado:'en arriendo', 
-      p_origen_contacto:contacto.origen_contacto,
-      p_telefono_contacto:contacto.telefono, 
-      p_correo_contacto:contacto.correo
-    });
+      id_inmueble = await insert_inmueble({
+        p_id_inmueble: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+        p_tipo_inmueble: inmueble.tipo_inmueble,
+        p_modalidad: inmueble.modalidad,
+        p_nombre: inmueble.nombre,
+        p_propietario: inmueble.propietario, 
+        p_id_arrendador: 2, 
+        p_descripcion: inmueble.descripcion,
+        p_num_habitaciones: inmueble.num_habitaciones, 
+        p_num_banios: inmueble.num_banios,
+        p_id_direccion: id_direccion, 
+        p_direccion_adicional: direccion.adicional,
+        p_estado:'en arriendo', 
+        p_origen_contacto:contacto.origen_contacto,
+        p_telefono_contacto:contacto.telefono, 
+        p_correo_contacto:contacto.correo
+      });
+      //guardar imagenes del inmueble
+      const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'property','properties');
+      insertImagen({
+        p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+        p_id_inmueble: id_inmueble,
+        p_orden_imagen: 0,
+        p_nombre_imagen: img_portada
+      });
+      files.imgInmueble.map((img,i) => {
+        const img_inmueble = guardarImagen(img,'property','properties');
+        insertImagen({
+          p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+          p_id_inmueble: id_inmueble,
+          p_orden_imagen: i+1,
+          p_nombre_imagen: img_inmueble
+        });
+      });
+    }
 
     const id_arriendo = await insert_arriendo({
         p_id_arriendo: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
@@ -213,26 +239,9 @@ export default async function handler(req, res) {
       });
     };
 
-    // Guardar imágenes principales
-    const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'property','properties');
-    insertImagen({
-      p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-      p_id_inmueble: 2,
-      p_orden_imagen: 0,
-      p_nombre_imagen: img_portada
-    });
-    files.imgInmueble.map((img,i) => {
-      const img_inmueble = guardarImagen(img,'property','properties');
-      insertImagen({
-        p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-        p_id_inmueble: 2,
-        p_orden_imagen: i+1,
-        p_nombre_imagen: img_inmueble
-      });
-    });
-
     console.log(inmuebleExistente);
     console.log(direccion);
+    console.log(contacto);
     console.log(inmueble);
     console.log(arriendo);
     console.log(habitaciones);

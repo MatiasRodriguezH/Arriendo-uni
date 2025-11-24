@@ -12,7 +12,7 @@ export default function UserMenu({ user, onLogout }) {
         <span className="user-name">{user.NOMBRE + " " + user.APELLIDO1}</span>
         <div className="user-picture">
              <img
-                src={`./images/profile_pictures/example.jpg`}
+                src={`../images/profile_pictures/example.jpg`}
                 alt="avatar"
             />
         </div>
@@ -34,8 +34,13 @@ export default function UserMenu({ user, onLogout }) {
             <button className="menu-item">Guardados</button>
             </>
           )}
-
+  
           <hr style={{width:'90%', justifySelf:'center', color:'#00638e', margin:'1%'}}></hr>
+          { (user.ROL_USUARIO == "administrador") &&(
+            <>
+            <button className="menu-item">Panel de administración</button>
+            </>
+          )}
           <button className="menu-item">Configuración</button>
           <button className="menu-item logout" onClick={onLogout}>
             Cerrar sesión

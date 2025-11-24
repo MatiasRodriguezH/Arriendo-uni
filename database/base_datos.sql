@@ -79,6 +79,7 @@ CREATE TABLE TCDB_Usuario (
   genero varchar2(10),
   id_sede_institucion number,
   id_ciudad number,
+  imagen_perfil varchar2(100),
   CONSTRAINT PK_TCDB_Usuario PRIMARY KEY (id_usuario),
   CONSTRAINT FK_TCDB_Usuario_id_sede_institucion FOREIGN KEY (id_sede_institucion)
     REFERENCES TCDB_Sede_Institucion(id_sede),
