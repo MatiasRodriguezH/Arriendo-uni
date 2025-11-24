@@ -7,12 +7,12 @@ body {
   justify-content: center;
 }
 
-.page{
+.search-page{
   margin-top: 5%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
   justify-content: center;
+  gap: 1rem;
   width: 100%;
 }
 
@@ -22,7 +22,6 @@ body {
   padding: 1%;
   display: flex;
   flex-direction: column;
-  margin-top: 4%;
   justify-self: center;
   background-color: rgb(210, 210, 210);
   color: black;
@@ -35,5 +34,27 @@ body {
   justify-content: space-between;
   margin-bottom: 16px;
   margin-right: 0;
+  width: min()100%;
+}
+
+.search{
+  background-color: pink;
+  width: 25%;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.filters {
+  color: black;
+  margin-top: 80px;
+  height: 300px;
   width: 100%;
+  background-color: lightblue;
 }

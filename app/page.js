@@ -26,17 +26,25 @@ export default function Home() {
   return (
     <div>
       <Header/>
-      <div className="page">
-        <div className="catalog">
-          <span style={{fontSize:'125%', fontWeight:'bold', margin:'1%',}}>Principales Arriendos</span>
-          <div className="catalog-items">
-            {arriendos.length > 0 ? (
-              arriendos.map((arriendo, index) => (
-                <Rentalview key={index} data={arriendo} />
-              ))
-            ) : (
-              <p>Cargando arriendos...</p>
-            )}
+      <div className="content">
+        <span className="filters">
+          Aqui van los Filtros
+        </span>
+        <div className="search-page">
+          <span className="search">
+            Filtros de busqueda
+          </span>
+          <div className="catalog">
+            <span style={{fontSize:'125%', fontWeight:'bold', margin:'1%',}}>Principales Arriendos</span>
+            <div className="catalog-items">
+              {arriendos.length > 0 ? (
+                arriendos.map((arriendo, index) => (
+                  <Rentalview key={index} data={arriendo} />
+                ))
+              ) : (
+                <p>Cargando arriendos...</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
