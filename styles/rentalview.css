@@ -1,48 +1,51 @@
 .rentview-container{
-    width: 16vw;
-    height: 20vw;
+    width: 100%;
+    max-width: 300px;
     background-color: rgb(255, 255, 255);
-    border-radius: 1vw;
+    border-radius: 15px;
     color:black;
     overflow: hidden;
-    margin: 15px;
+    margin: 0;
+    position: relative;
 }
 .rentview-container img{
     width: 100%;
     height: 45%;
+    min-height: 250px;
     object-fit: cover;
+    border-radius: 15px;
 }
 
 .rentview-container:hover{
     background-color: rgb(240, 240, 240);
-    transform: scale(1.01);
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.2);
 }
 
 .info{
     display: flex;
     flex-direction: column;
-    padding: 5%;
+    padding: 10px;
     height: 100%;
-    font-size: 0.95vw;
 }
 
 .tags-container{
-    width: 100%;
     display: flex;
-    flex-direction: row;
-    margin-bottom: 1%;
-    gap:2%;
+    justify-content: space-between;
+    padding: 12px;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
 }
 .tag{
     background:#00638e;
     display: flex;
-    align-items: center;
-    border-radius:1vw; 
+    border-radius: 15px; 
     text-align:center;
     text-justify:center;
-    font-size:0.75vw;
+    font-size: 12px;
     width:fit-content;
     height: fit-content;
-    margin-bottom:1%;
-    padding: 0.5% 5% 0.5% 5%;
+    margin-bottom: 2px;
+    padding: 5px 8px;
+    color: white;
 }

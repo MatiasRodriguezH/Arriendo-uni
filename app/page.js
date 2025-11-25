@@ -24,18 +24,21 @@ export default function Home() {
   },[]);
 
   return (
-    <div>
+    <div className="page">
       <Header/>
       <div className="content">
-        <span className="filters">
-          Aqui van los Filtros
+        <span className="uni-search">
+          <button className="region-search">
+            Region
+          </button>
+          
         </span>
         <div className="search-page">
           <span className="search">
             Filtros de busqueda
           </span>
           <div className="catalog">
-            <span style={{fontSize:'125%', fontWeight:'bold', margin:'1%',}}>Principales Arriendos</span>
+            <span style={{fontSize:'125%', fontWeight:'bold', margin:'15px 0 0 15px',}}>Principales Arriendos</span>
             <div className="catalog-items">
               {arriendos.length > 0 ? (
                 arriendos.map((arriendo, index) => (
