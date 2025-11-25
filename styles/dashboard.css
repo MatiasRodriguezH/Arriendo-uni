@@ -1,0 +1,69 @@
+/* CONTENEDOR GENERAL */
+h1{
+    color: black;
+}
+h2{
+    color: #00638e;
+}
+h3{
+    color: black;
+}
+label{
+    color: black;
+}
+select{
+    color: black;
+}
+input{
+    color: black;
+}
+
+
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  background: #f4f4f4;
+  font-family: Arial, sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #111827;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-title {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* MENÚ */
+.sidebar-menu h4 {
+  color: #9ca3af;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.sidebar-menu button {
+  width: 100%;
+  padding: 10px;
+  color: white;
+  background: #1f2937;
+  border: none;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s ease;
+}
+
+.sidebar-menu button:hover {
+  background: #374151;
+}
