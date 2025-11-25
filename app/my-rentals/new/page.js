@@ -131,18 +131,31 @@ export default function NuevoArriendo() {
         return null;
       }
     }
-    if (arriendo.tipo_arriendo == "" || arriendo.titulo =="" || arriendo.precio == ""){
-      SetError("Campos del arriendo obligatorios no pueden estar vacíos")
+    if (arriendo.tipo_arriendo == "" || arriendo.titulo ==""){
+      SetError("Campos del arriendo obligatorios no pueden estar vacíos");
       return null;
     }
     if(arriendo.tipo_arriendo == "por habitaciones"){
-      if (habitaciones.length = 0) SetError("Debe existir mínimo una habitación en el arriendo"); return null;
-      habitaciones.forEach(hab => {
-        if (hab.nombre == "" || hab.superficie == "" || hab.precio == ""){
+      if (habitaciones.length = 0){
+        SetError("Debe existir mínimo una habitación en el arriendo"); 
+        return null;
+      }
+      for (const hab of habitaciones){
+        if (!hab.nombre || !hab.superficie|| !hab.precio ){
           SetError("Campos de habitacion obligatorios no pueden estar vacíos");
           return null;
         }
-      });
+      }
+    }
+    else{
+      if(!arriendo.precio){
+        SetError("Campos del arriendo obligatorios no pueden estar vacíos");
+        return null;
+      }
+    }
+    if(imgPortadaInmueble){
+      SetError("Inmueble debe tener una imagen de portada");
+      return null;
     }
 
     const formData = new FormData();
@@ -165,7 +178,7 @@ export default function NuevoArriendo() {
       });
     }
 
-    (imgPortadaInmueble) ? formData.append("imgPortadaInmueble", imgPortadaInmueble): formData.append("imgPortadaInmueble", null);
+    formData.append("imgPortadaInmueble", imgPortadaInmueble);
     if (imgInmueble) {
       imgInmueble.forEach((file) => {
         formData.append("imgInmueble", file);
@@ -175,7 +188,7 @@ export default function NuevoArriendo() {
     }
   
 
-    const res = await fetch(`/api/nuevo/arriendo?user=${2}`, {
+    const res = await fetch(`/api/new/arriendo?user=${2}`, {
       method: "POST",
       body: formData
     });

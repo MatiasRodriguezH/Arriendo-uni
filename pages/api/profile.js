@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { OUT_FORMAT_OBJECT, outFormat } from "oracledb";
 import { getConnection } from "@/database/oracle";
 
-const SECRET = "mi_clave_secreta_super_segura";
+const SECRET = "tctoken";
 
 async function getUserData(id, email) {
     let conn = await getConnection();

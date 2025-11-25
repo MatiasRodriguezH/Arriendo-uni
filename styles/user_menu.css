@@ -18,8 +18,11 @@
 }
 
 .user-picture{
+  object-fit: cover;
   margin-left: auto;
-  width: 45px;
+  margin-right: 20px;
+  max-width: 30px;
+  min-width: 30px;
   height: 30px;
   border-radius: 50%;
   overflow: hidden;   /* recorta lo que sobresalga */
@@ -45,13 +48,13 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background: #c0c0c0;
+  background: #ffffff;
   color: black;
   border-radius: 8px;
   padding: 8px 0;
   margin-top: 5px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  width: 12vw;
   z-index: 100;
   animation: fadeIn 0.15s ease;
 }

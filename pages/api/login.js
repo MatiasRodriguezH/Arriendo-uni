@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { getConnection } from "@/database/oracle";
 import { OUT_FORMAT_OBJECT, outFormat } from "oracledb";
 
-const SECRET = "mi_clave_secreta_super_segura";
+const SECRET = "tctoken";
 
 async function getPassword(email){
     let conn = await getConnection();
@@ -20,7 +20,6 @@ export default async function handler(req, res) {
     const {email, password} = req.body;
 
     const user = await getPassword(email);
-    console.log(user);
 
     if (!user.CONTRASENIA){
         return res.status(410).json({error:'correo no valido'});

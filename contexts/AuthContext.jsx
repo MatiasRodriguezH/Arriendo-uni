@@ -23,8 +23,15 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const user = await response.json();
-        setUser(user[0]);
-        setIsLogin(true);
+        if(user[0]){
+          setUser(user[0]);
+          setIsLogin(true);
+        }
+        else{
+          localStorage.removeItem("token");
+          setUser(null);
+          setIsLogin(false);
+        }
       } else {
         localStorage.removeItem("token");
         setUser(null);

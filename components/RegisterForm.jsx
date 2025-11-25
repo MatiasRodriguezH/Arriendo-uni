@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import "@/styles/register.css";
 import { useRut } from 'react-rut-formatter';
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function RegisterForm(){
+    const {cargarUsuario} = useContext(AuthContext);
+    const[loading, setLoading] = useState(false);
+
     const[rol,setRol] = useState("estudiante");
     const[email, setEmail] = useState("")
     const[password, setPassword] = useState("")
@@ -18,19 +22,27 @@ export default function RegisterForm(){
     const[institucion,SetInstitucion] = useState("");
     const[sedeInstitucional, setSedeInstitucional] = useState("");
     const[ciudad, setCiudad] = useState("");
+    const[idRegion,setIdRegion] = useState("");
     const[genero, setGenero] = useState("");
     const[fechaNacimiento, setFechaNacimiento] = useState("");
     const[error, setError] = useState("");
     
+    const[regiones,setRegiones] = useState([]);
     const[instituciones, setInstituciones] = useState([]);
     const[sedes, setSedes] = useState([]);
 
     useEffect(() => {
+        async function fetchRegiones() {
+            const result = await fetch("http://localhost:3000/api/data/regions");
+            const data = await result.json();
+            setRegiones(data);
+        }
         async function fetchInstituciones() {
           const result = await fetch("http://localhost:3000/api/data/institutions")
           const data = await result.json();
           setInstituciones(data);
         }
+        fetchRegiones();
         fetchInstituciones();
     }, []);
 
@@ -40,44 +52,87 @@ export default function RegisterForm(){
           setSedes(data);
     }
 
+    function calcularEdad(dateString) {
+        const fechaNacimiento = new Date(dateString);
+        const fechaActual = new Date();
+
+        const diferenciaMs = fechaActual - fechaNacimiento;
+
+        // Fórmula para convertir milisegundos a años
+        const msEnUnAnio = 1000 * 60 * 60 * 24 * 365.25;
+        const edadExacta = diferenciaMs / msEnUnAnio;
+        const edad = Math.floor(edadExacta);
+        return edad;
+    }
+    function verificarEmail(email) {
+        // Expresión Regular para un formato de email estándar
+        const regexEmail = new RegExp(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+
+        // El método test() de la expresión regular devuelve true o false
+        return regexEmail.test(email);
+    }
+
     async function handleRegister(e) {
         e.preventDefault(); 
         
         setError("");
-
-        if (!email || !username || !password || !repeatPassword || !nombre || !apellido || !segundoApellido ||!rut || !telefono || !ciudad || !sedeInstitucional){
-            setError("Complete todos los campos");
-            return;
+        //verificar datos
+        if (!email || !password || !nombre || !apellido || !rut || !genero || !fechaNacimiento){
+            setError("Los campos obligatorios no deben quedar vacíos");
+            return null;
+        }
+        if (!verificarEmail(email)){ 
+            setError("Correo ingresado no valido"); 
+            return null;
+        }
+        if (rol == "estudiante"){
+            if (!institucion || !sedeInstitucional){
+                setError("Los campos obligatorios no deben quedar vacíos");
+                return null;
+            }
+        }
+        if (rol == "arrendador"){
+            if (idRegion && !ciudad || ciudad && !idRegion){
+                setError("Ingresa una ciudad y region de residencia");
+                return null;
+            }
         }
 
+        if (calcularEdad(fechaNacimiento) < 17){
+            setError("Debes ser mayor de 17 años");
+            return null;
+        }
         if (password !== repeatPassword){
             setError("La contraseña no coincide");
-            return;
+            return null;
         }
-
         if (!isValid) {
             setError("RUT inválido");
-            return;
+            return null;
         }
 
-        console.log("Registrando usuario...");
+        setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/api/register", { 
+            const response = await fetch("http://localhost:3000/api/registration", { 
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email: email,
-                    password: password,
+                    rol: rol,
+                    correo: email,
+                    contrasenia: password,
                     nombre: nombre,
-                    apellido: apellido,
-                    segundoApellido: segundoApellido,
+                    apellido1: apellido,
+                    apellido2: segundoApellido,
                     rut: rut.raw,
                     telefono: telefono,
-                    sedeInstitucional: sedeInstitucional,
+                    sede_institucion: sedeInstitucional,
                     ciudad: ciudad,
-                    fechaNacimiento: fechaNacimiento,
+                    id_region: idRegion,
+                    fecha_nacimiento: fechaNacimiento,
                     genero: genero
                 })
             }); 
@@ -85,13 +140,22 @@ export default function RegisterForm(){
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.message || "Error en el registro");
-                return;
+                if (response.status == 410){
+                    setError("Correo o Rut ya estan usados");
+                    return null;
+                }
+                setError("Error al registrarse");
+                return null;
             }
-
-            console.log("Usuario registrado:", data);
+            
+            localStorage.setItem("token",data.token);
+            await cargarUsuario();
+            setError("");
+            setLoading(false);
+            window.location.replace("http://localhost:3000");
 
         } catch (err) {
+            setLoading(false);
             console.error("Error en el registro:", err);
             setError("Error de conexión");
         }
@@ -107,13 +171,13 @@ export default function RegisterForm(){
                 <h4>Eres...</h4>
                 <select style={{width:'100%', height:'37px', marginBottom:'4%'}} 
                     value={rol} 
-                    onChange={(e) => setRol(e.target.value)}
+                    onChange={(e) => {setRol(e.target.value); SetInstitucion(""); setIdRegion(""); setCiudad("");}}
                 >
                     <option value="estudiante" >Estudiante</option>
                     <option value="arrendador" >Arrendador / Propietario</option>
                 </select>
                 <br />
-                <h4 >Email</h4>
+                <h4 >Email <span style={{ color: "red" }}>*</span></h4>
                 <input
                     style={{width:'100%'}} 
                     type="email"
@@ -121,7 +185,7 @@ export default function RegisterForm(){
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <br />
-                <h4 >Nombre</h4>
+                <h4 >Nombre <span style={{ color: "red" }}>*</span></h4>
                 <input
                     style={{width:'100%'}} 
                     type="text"
@@ -131,7 +195,7 @@ export default function RegisterForm(){
                 <br />
                 <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                     <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                        <h4>Primer apellido </h4>
+                        <h4>Primer apellido <span style={{ color: "red" }}>*</span></h4>
                         <input 
                             type="text"
                             value={apellido}
@@ -150,7 +214,7 @@ export default function RegisterForm(){
                 <br />
                 <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                     <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                        <h4>RUT</h4>
+                        <h4>RUT <span style={{ color: "red" }}>*</span></h4>
                         <input 
                             type="text"
                             value={rut.formatted}
@@ -170,7 +234,7 @@ export default function RegisterForm(){
                 <br />
                 {(rol == "estudiante") ?(
                     <>
-                    <h4>Institucion</h4>
+                    <h4>Institucion en la que estudias <span style={{ color: "red" }}>*</span></h4>
                     <select style={{width:'100%',height:'37px'}} 
                         value={institucion} 
                         onChange={(e) => {SetInstitucion(e.target.value);
@@ -180,20 +244,20 @@ export default function RegisterForm(){
                     >
                         <option value="" disabled>Seleciona institución...</option>
                         {instituciones.map((s, index) => (
-                            <option value={s.ID_INSTITUCION}>
+                            <option key={s.ID_INSTITUCION} value={s.ID_INSTITUCION}>
                                 {s.NOMBRE}
                             </option>
                         ))}
                     </select>
                     {(institucion != '') &&(
                         <>
-                        <h4>Sede</h4>
+                        <h4>Sede en la que estudias <span style={{ color: "red" }}>*</span></h4>
                         <select style={{width:'100%',height:'37px'}} 
                             value={sedeInstitucional} 
                             onChange={(e) => setSedeInstitucional(e.target.value)}>
                             <option value="" disabled>Seleciona sede...</option>
                             {sedes.map((s, index) => (
-                                <option value={s.ID_SEDE}>
+                                <option key={s.ID_INSTITUCION} value={s.ID_SEDE}>
                                     {s.NOMBRE}
                                 </option>
                             ))}
@@ -204,12 +268,23 @@ export default function RegisterForm(){
                     </>
                 ):(
                     <>
-                    <h4>Ciudad de residencia</h4>
-                    <input 
-                        type="text"
-                        value={ciudad}
-                        onChange={(e)=> setCiudad(e.target.value)}
-                    />
+                    <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
+                        <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
+                        <h4>Ciudad de residencia</h4>
+                        <input 
+                            type="text"
+                            value={ciudad}
+                            onChange={(e)=> setCiudad(e.target.value)}
+                        />
+                        </div>
+                        <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
+                        <h4>Región de residencia</h4>
+                        <select style={{width: "100%", height:'100%'}} value={idRegion} onChange={(e) => setIdRegion(e.target.value)}>
+                            <option value="" disabled>Selecciona Región</option>
+                            {regiones.map(reg => (<option key={reg.ID_REGION} value={reg.ID_REGION }>{reg.NOMBRE}</option>))}
+                        </select>
+                        </div>
+                    </div>
                     <br/>
                     </>
                 )}
@@ -217,7 +292,7 @@ export default function RegisterForm(){
                 <br />
                 <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                     <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                        <h4>Fecha de nacimiento</h4>
+                        <h4>Fecha de nacimiento <span style={{ color: "red" }}>*</span></h4>
                         <input 
                         type="date"
                         value={fechaNacimiento}
@@ -225,7 +300,7 @@ export default function RegisterForm(){
                         />
                     </div>
                     <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                        <h4>Género</h4>
+                        <h4>Género <span style={{ color: "red" }}>*</span></h4>
                         <select style={{height:'100%'}}
                         value={genero}
                         onChange={(e)=> setGenero(e.target.value)}
@@ -240,7 +315,7 @@ export default function RegisterForm(){
                 <br /> 
                 <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                     <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                        <h4>Contraseña: </h4>
+                        <h4>Contraseña <span style={{ color: "red" }}>*</span></h4>
                         <input 
                             type="password"
                             value={password}
@@ -248,7 +323,7 @@ export default function RegisterForm(){
                         />
                     </div>
                     <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                        <h4>Repetir Contraseña:</h4>
+                        <h4>Repetir contraseña</h4>
                         <input 
                             type="password"
                             value={repeatPassword}
@@ -256,7 +331,13 @@ export default function RegisterForm(){
                         />
                     </div>
                 </div>
-                <button type="submit" className="boton">Enviar</button>
+                <div style={{margin:'3% 0% 0% 0%'}}>
+                    <span style={{color:'red'}}>{error}</span>
+                </div>
+                <button style={{opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer"}} 
+                    type="submit" className="boton">
+                    {!loading ? "Registrarse":"Registrando..."}
+                </button>
             </form>
         </div>
     );

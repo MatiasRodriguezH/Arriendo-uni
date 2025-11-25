@@ -201,15 +201,17 @@ export default async function handler(req, res) {
         p_orden_imagen: 0,
         p_nombre_imagen: img_portada
       });
-      files.imgInmueble.map((img,i) => {
-        const img_inmueble = guardarImagen(img,'property','properties');
-        insertImagen({
-          p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-          p_id_inmueble: id_inmueble,
-          p_orden_imagen: i+1,
-          p_nombre_imagen: img_inmueble
+      if(files.imgInmueble){
+        files.imgInmueble.map((img,i) => {
+          const img_inmueble = guardarImagen(img,'property','properties');
+          insertImagen({
+            p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+            p_id_inmueble: id_inmueble,
+            p_orden_imagen: i+1,
+            p_nombre_imagen: img_inmueble
+          });
         });
-      });
+      }
     }
 
     const id_arriendo = await insert_arriendo({

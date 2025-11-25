@@ -1,9 +1,13 @@
 "use client";
 
 import '@/styles/nuevo_arriendo.css'
-import ImageUploader from './ImageUploader'
+import ImagePreview from '@/components/ImagePreview';
+import ImageUploader from '@/components/ImageUploader';
+import { useState } from 'react';
 
-export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabitacion}){
+export default function RoomForm({hab, index, actualizarHabitacion, eliminarHabitacion}){
+
+    const [imagen, setImagen] = useState(hab.imagen_portada);
 
     const onImageChange = useCallback((files) => {
     actualizarHabitacion(index, "imagen_portada", files[0]);
@@ -36,7 +40,7 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
         
             <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                 <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
-                    <h4>Superficie (m²) <span style={{ color: "red" }}>*</span></h4>
+                    <h4>Superficie (m²)<span style={{ color: "red" }}>*</span></h4>
                     <input
                         type="number"
                         min="0"
@@ -58,9 +62,14 @@ export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabit
             </div>
 
             <h4>Imagen portada</h4>
-            <ImageUploader imageOnChanges={onImageChange}/>
-            
-            
+
+            {imagen ?(
+                <ImagePreview imagenUrl={imagen} setImagen={setImagen}/>
+            ):
+            (
+                <ImageUploader imageOnChanges={onImageChange}/>
+            )
+            }
 
             <button
                 type="button"

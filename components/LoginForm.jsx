@@ -26,25 +26,35 @@ export default function LoginForm(){
             password : password
         }
         setLoading(true);
-        const res = await fetch("http://localhost:3000/api/login",
-            {   method:"POST",
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(form)
-            });
-        if (res.ok){
-            const data = await res.json();
-            localStorage.setItem("token",data.token);
-            await cargarUsuario();
-            setError("");
-            setLoading(false);
-            window.location.replace("http://localhost:3000")
+        try{
+            const res = await fetch("http://localhost:3000/api/login",
+                {   method:"POST",
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(form)
+                });
+            if (res.ok){
+                const data = await res.json();
+                localStorage.setItem("token",data.token);
+                await cargarUsuario();
+                setError("");
+                setLoading(false);
+                window.location.replace("http://localhost:3000")
+            }
+            else if (res.status == 410){
+                setError("Correo no valido");
+                setLoading(false);
+            }
+            else if (res.status == 411){
+                setError("Contraseña incorrecta");
+                setLoading(false);
+            }
+            else if (res.status == 400){
+                setError("Error al iniciar sesión");
+                setLoading(false);
+            }
         }
-        else if (res.status == 410){
-            setError("Correo no valido");
-            setLoading(false);
-        }
-        else if (res.status == 411){
-            setError("Contraseña incorrecta");
+        catch(error){
+            setError("Error al iniciar sesión");
             setLoading(false);
         }
     }
