@@ -28,10 +28,11 @@ export default function Home() {
       <Header/>
       <div className="content">
         <span className="uni-search">
+          <h1 className="search-titulo">Busca según tu universidad</h1>
           <button className="region-search">
             Region
           </button>
-          
+          <input type="text" name="universidad" placeholder="Universidad Católica del Maule"></input>
         </span>
         <div className="search-page">
           <span className="search">

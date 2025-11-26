@@ -15,22 +15,36 @@ body {
 .uni-search {
   color: black;
   margin-top: 80px;
-  height: 300px;
+  height: 250px;
   width: 100%;
   background-color: lightblue;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  padding-left: 12rem;
+}
+
+.search-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  font-style: normal;
+  color: #2e2d36;
 }
 
 .region-search{
-  height: 4rem;
+  height: 3rem;
   width: 8rem;
   padding: 5px 10px;
   border-radius: 5px;
   background-color: white;
   cursor: pointer;
+}
+
+.universidad {
+  background-color: white;
+  height: 4rem;
+  width: 15rem;
 }
 
 .content {
@@ -49,18 +63,34 @@ body {
 
 .catalog{
   width: 100%;
+  min-width: 330px;
+  max-width: 1000px;
   height: auto;
   display: flex;
   flex-direction: column;
-  justify-self: center;
+  justify-content: flex-start;
+  align-items: center;
   background-color: rgb(210, 210, 210);
   color: black;
 }
+
+@media (max-width: 767px) {
+  .catalog {
+    width: 100%;
+  }
+}
+
+@media (min-width: 767px) and (max-width: 1206px) {
+  .catalog {
+    width: 670px;
+  }
+}
+
 .catalog-items{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: spa;
+  justify-content: flex-start;
   align-items: center;
   gap: 16px;
   max-width: 1400px;
@@ -75,4 +105,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+@media (max-width: 767px) {
+    .search {
+      display: none;
+    }
 }
