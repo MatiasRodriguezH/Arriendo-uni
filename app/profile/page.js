@@ -15,6 +15,7 @@ export default function ProfilePage() {
       <p><strong>Email:</strong> {user.EMAIL}</p>
       <p><strong>RUT:</strong> {user.RUT}</p>
 
+      <br />
       <a href="/profile/edit">Editar Perfil</a>
     </div>
   );
