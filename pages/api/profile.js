@@ -14,6 +14,7 @@ async function getUserData(id, email) {
         LEFT JOIN TCDB_INSTITUCION i ON (i.id_institucion = si.id_institucion)
         WHERE u.id_usuario = :p_id AND u.correo = :p_correo`,
         {p_id: id, p_correo: email}, {outFormat: OUT_FORMAT_OBJECT});
+    if (conn) await conn.close();
     return result.rows;
 }
 
