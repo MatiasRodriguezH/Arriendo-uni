@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
     const user = await getPassword(email);
 
-    if (!user.CONTRASENIA){
+    if (!user){
         return res.status(410).json({error:'correo no valido'});
     }
     

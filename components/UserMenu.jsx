@@ -20,7 +20,7 @@ export default function UserMenu({ user, onLogout }) {
 
       {open && (
         <div className="dropdown-menu">
-          <button className="menu-item">Perfil</button>
+          <button className="menu-item" onClick={() => window.location.replace("/profile")}>Perfil</button>
           { (user.ROL_USUARIO == "arrendador") &&(
             <>
             <button className="menu-item">Mis Inmuebles</button>

@@ -1,18 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useState, useContext, useEffect } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
+import "@/styles/nuevo_arriendo.css"
 
 export default function EditProfile() {
-    const { user, setUser } = useAuth();
-
+    const { user, setUser, loading } = useContext(AuthContext);
     const [form, setForm] = useState({
-        NOMBRE: user.NOMBRE || "",
-        EMAIL: user.EMAIL || "",
-        RUT: user.RUT || ""
+        nombre: "",
+        email: "",
+        rut: ""
     });
 
-      function handleChange(e) {
+    useEffect(() => { 
+      if (!loading && user) {
+        setForm({
+            nombre: user.NOMBRE || "",
+            email: user.CORREO || "",
+            rut: user.RUT || ""
+        });
+      }
+    },[loading]);
+
+    function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
     async function handleSubmit(e) {
@@ -22,7 +32,7 @@ export default function EditProfile() {
 
     
 
-    return (
+   if(user) return (
     <div style={{ padding: "20px" }}>
       <h1>Editar Perfil</h1>
 
