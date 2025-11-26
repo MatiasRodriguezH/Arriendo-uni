@@ -27,13 +27,15 @@ export default function Home() {
     <div className="page">
       <Header/>
       <div className="content">
-        <span className="uni-search">
+        <div className="uni-search">
           <h1 className="search-titulo">Busca según tu universidad</h1>
+          <div className="uni-inputs">
           <button className="region-search">
             Region
           </button>
-          <input type="text" name="universidad" placeholder="Universidad Católica del Maule"></input>
-        </span>
+          <input className="universidad" type="text" name="universidad" placeholder="Universidad Católica del Maule"></input>
+          </div>
+        </div>
         <div className="search-page">
           <span className="search">
             Filtros de busqueda
