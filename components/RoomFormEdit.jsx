@@ -64,7 +64,7 @@ export default function RoomForm({hab, index, actualizarHabitacion, eliminarHabi
             <h4>Imagen portada</h4>
 
             {imagen ?(
-                <ImagePreview imagenUrl={imagen} setImagen={setImagen}/>
+                <ImagePreview imagenes={imagen} setImagenes={setImagen} multiple={false}/>
             ):
             (
                 <ImageUploader imageOnChanges={onImageChange}/>

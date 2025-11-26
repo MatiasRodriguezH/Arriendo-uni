@@ -52,7 +52,6 @@ export default function NuevoArriendo() {
   }, []);
 
   // Contacto
-  const [nuevoContacto, setNuevoContacto] = useState(false);
   const [contacto, setContacto] = useState({
     origen_contacto: "arrendador",
     telefono: "",
@@ -114,8 +113,8 @@ export default function NuevoArriendo() {
         SetError("Campos de direccion obligatorios no pueden estar vacíos");
         return null;
       }
-      if (nuevoContacto){
-        if (direccion.calle == "" || direccion.numero == "" || direccion.region == ""){
+      if (contacto.origen_contacto == "arriendo"){
+        if (!contacto.telefono){
           SetError("Campos de contacto obligatorios no pueden estar vacíos");
           return null;
         }
@@ -153,7 +152,7 @@ export default function NuevoArriendo() {
         return null;
       }
     }
-    if(imgPortadaInmueble){
+    if(!imgPortadaInmueble){
       SetError("Inmueble debe tener una imagen de portada");
       return null;
     }

@@ -29,6 +29,11 @@ export default async function handler(req, res) {
           :p_descripcion, 
           :p_estado, 
           SYSDATE
+        );
+        CRUD_INMUEBLE(
+          p_operacion   => 'U',
+          p_id_arriendo => :p_id_arriendo,
+          p_modalidad   => :p_modalidad
         ); 
       END;`,
       data
@@ -100,7 +105,8 @@ export default async function handler(req, res) {
       p_id_inmueble: arriendo.id_inmueble,
       p_precio: arriendo.precio,
       p_descripcion: arriendo.descripcion,
-      p_estado: "disponible"
+      p_estado: "disponible",
+      p_modalidad: arriendo.tipo_arriendo
     });
 
     if (arriendo.tipo_arriendo == "por habitaciones") {

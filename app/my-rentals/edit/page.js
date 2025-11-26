@@ -92,7 +92,7 @@ export default function NuevoArriendo() {
     return (
         <div className="inmueble-card">
         <div className="inmueble-imagen" style={{width:'30%'}}>
-            <img src={inmueble.imagen_portada ? inmueble.imagen_portada :'../images/example.jpg'} alt="" />
+            <img src={inmueble.imagen_portada ? '../images/'+inmueble.imagen_portada :'../images/example.jpg'} alt="" />
         </div>
 
         <div className="inmueble-info">

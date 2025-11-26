@@ -7,9 +7,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Método no permitido" });
   }
   const { id } = req.query
+  //conexion a BD
+  let conn = await getConnection();
 
   async function getArriendo(id){
-    let conn = await getConnection();
     const result = await conn.execute(`SELECT a.*, i.nombre, i.num_banios, i.num_habitaciones, d.calle||' '||d.numero as "DIRECCION", img.nombre_imagen 
         FROM TCDB_ARRIENDO a 
         JOIN TCDB_INMUEBLE i ON i.id_inmueble = a.id_inmueble
@@ -20,7 +21,6 @@ export default async function handler(req, res) {
     return data;
   }
   async function getHabitaciones(id){
-    let conn = await getConnection();
     const result = await conn.execute(`SELECT * FROM TCDB_HABITACION WHERE id_arriendo = :p_id_arriendo`,{p_id_arriendo: id},{outFormat: OUT_FORMAT_OBJECT});
     const data = result.rows;
     return data;
@@ -28,7 +28,8 @@ export default async function handler(req, res) {
   
   const arriendo = await getArriendo(id);
   const habitaciones = await getHabitaciones(id);
-  arriendo["HABITACIONES"] = habitaciones
+  arriendo["HABITACIONES"] = habitaciones;
   
+  if (conn) await conn.close();
   return res.json(arriendo);
 }
