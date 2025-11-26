@@ -11,9 +11,9 @@ export default function ProfilePage() {
     <div style={{ padding: "20px" }}>
       <h1>Mi Perfil</h1>
 
-      <p><strong>Nombre:</strong> {user.nombre}</p>
-      <p><strong>Email:</strong> {user.email}</p>
-      <p><strong>RUT:</strong> {user.rut}</p>
+      <p><strong>Nombre:</strong> {user.NOMBRE}</p>
+      <p><strong>Email:</strong> {user.EMAIL}</p>
+      <p><strong>RUT:</strong> {user.RUT}</p>
 
       <a href="/profile/edit">Editar Perfil</a>
     </div>
