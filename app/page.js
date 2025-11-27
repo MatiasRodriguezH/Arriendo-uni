@@ -9,8 +9,11 @@ export default function Home() {
   const [arriendos,setArriendos] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [region, setRegion] = useState("Metropolitana");
+  const [universidadInput, setUniversidadInput] = useState("");
+  const [universidad, setUniversidad] = useState("");
   const dropdownRef = useRef(null);
 
+  // Effect para obtener los arriendos al cargar por primera vez la pagina
   useEffect(()=>{
     async function get_data() {
       try {
@@ -25,6 +28,7 @@ export default function Home() {
     get_data();
   },[]);
 
+  // Effect para el menu de regiones
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -37,6 +41,25 @@ export default function Home() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Effect para buscar por universidad especifica
+  useEffect(() => {
+  if (universidad.trim() === "") return;
+
+  async function fetchByUniversity() {
+    try {
+      const response = await fetch(`http://localhost:3000/api/rentals?universidad=${encodeURIComponent(universidad)}`, {
+        cache: "no-store"
+      });
+      const data = await response.json();
+      setArriendos(data);
+    } catch (error) {
+      console.error("Error filtrando por universidad:", error);
+    }
+  }
+
+  fetchByUniversity();
+}, [universidad]);
 
   const handleRegionSelect = (regionNombre) => {
     console.log(`Región seleccionada: ${regionNombre}`);
@@ -96,7 +119,18 @@ export default function Home() {
             </div>
             <div className="universidad-div">
               <span style={{fontWeight:'700', fontSize:'20px'}}>Ingresa tu universidad:</span>
-              <input className="universidad" type="text" name="universidad" placeholder="Ej: Universidad Católica del Maule"></input>
+              <input
+                className="universidad"
+                type="text"
+                placeholder="Ej: Universidad Católica del Maule"
+                value={universidadInput}
+                onChange={(e) => setUniversidadInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setUniversidad(universidadInput); // dispara la búsqueda
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
