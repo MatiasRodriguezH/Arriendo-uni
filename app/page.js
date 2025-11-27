@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef} from "react";
 import Header from "../components/Header";
 import Rentalview from "../components/Rentalview";
 import '../styles/home.css'
@@ -8,6 +8,8 @@ import '../styles/home.css'
 export default function Home() {
   const [arriendos,setArriendos] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [region, setRegion] = useState("Metropolitana");
+  const dropdownRef = useRef(null);
 
   useEffect(()=>{
     async function get_data() {
@@ -20,13 +22,25 @@ export default function Home() {
         console.error("Error al obtener arriendos:", err);
       }
     }
-
     get_data();
   },[]);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleRegionSelect = (regionNombre) => {
     console.log(`Región seleccionada: ${regionNombre}`);
-    // Aquí puedes añadir la lógica para filtrar los arriendos
+    setRegion(regionNombre);
     setIsDropdownOpen(false); // Cierra el dropdown después de la selección
   }
 
@@ -61,30 +75,29 @@ export default function Home() {
           <h1 className="search-titulo">Busca según tu universidad</h1>
           <div className="uni-inputs">
             <div className="button-div">
-              {/* 2. Asignamos la función toggleDropdown al click del botón principal */}
+              <span style={{fontWeight:'700', fontSize:'20px'}}>Ingresa tu region:</span>
               <button className="region-search" type="button" onClick={toggleDropdown}>
-                Region
+                {region}
               </button>
-              {/* 3. Renderizado Condicional: El div solo se muestra si isDropdownOpen es true */}
               {isDropdownOpen && (
-                <div className="region-dropdown" name="dropdown">
-                  <ul>
+                <div className="region-dropdown" name="dropdown"
+                ref={dropdownRef}>
                   {Object.keys(regiones).map((regionNombre) => (
-                    <li key={regionNombre}>
-                      {/* 4. Usamos handleRegionSelect en los botones del dropdown */}
                       <button 
+                        key={regionNombre}
                         className="dropdown-item" 
                         onClick={() => handleRegionSelect(regionNombre)}
                       >
-                        {regionNombre}
+                        <span className="region-texto">{regionNombre}</span>
                       </button>
-                    </li>
                   ))}
-                  </ul>
                 </div>
               )}
             </div>
-            <input className="universidad" type="text" name="universidad" placeholder="Universidad Católica del Maule"></input>
+            <div className="universidad-div">
+              <span style={{fontWeight:'700', fontSize:'20px'}}>Ingresa tu universidad:</span>
+              <input className="universidad" type="text" name="universidad" placeholder="Ej: Universidad Católica del Maule"></input>
+            </div>
           </div>
         </div>
         <div className="search-page">
