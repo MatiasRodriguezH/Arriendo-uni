@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "@/components/Header";
 import ContactButton from "./ContactButton";
-import '../../../styles/home.css';
+import '@/styles/home.css';
 
 async function fetchArriendo(slug) {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";

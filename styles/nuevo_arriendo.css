@@ -13,20 +13,21 @@ body {
     justify-self: center;
     background-color: rgb(255, 255, 255);
     padding: 20px;
-    width: 48%;
-    padding: 3%;
+    width: 48vw;
+    min-width: 480px;
+    padding: 2.5rem;
     box-shadow: 1px 1px 2px 1px #c5c5c5;
     border-radius: 1vw;
 }
 
-input{
+.content input{
     border: 1px solid #8b8b8b;
     border-radius: 0.5vw;
     margin: 0.2%;
     font-size: 0.95vw;
     padding: 7px 7px 7px 10px;
 }
-select{
+.content select{
     border: 1px solid #8b8b8b;
     border-radius: 0.5vw;
     margin: 0.2%;
@@ -45,23 +46,23 @@ select{
 }
 
 
-h2{
+.content h2{
     font-size: 1.3vw;
     font-weight: bold;
 }
-h3{
+.content h3{
     color: #00638e;
     font-size: 1.1vw;
     font-weight: bold;
     margin-bottom: 1%;
 }
-h4{
+.content h4{
     margin-top: 0.2%;
     font-size: 0.95vw;
     font-weight: bold;
 }
 
-hr{
+.content hr{
     border-width: 1px;
     border-color: #00638e;
     width: 100%;

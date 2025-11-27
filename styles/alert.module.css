@@ -1,11 +1,11 @@
-button {
+.button {
     background: #00638e ;
     padding: 0.5rem 1rem ;
     border-radius: 0.5rem ;
     color: white 
 }
 
-button:hover{
+.button:hover {
     background: #004867;
 }
 

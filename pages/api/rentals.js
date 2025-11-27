@@ -12,10 +12,13 @@ export default async function handler(req, res) {
       { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }}, {outFormat: OUT_FORMAT_OBJECT});
 
     const data = await results.outBinds.cursor.getRows(); 
+
+    if(conn) await conn.close();
     return res.json(data);
 
   } catch (error) {
     console.error("Error al conectar a Oracle:", error);
+    if(conn) await conn.close();
     return res.json({ error: error.message }, { status: 500 });
   }
 }

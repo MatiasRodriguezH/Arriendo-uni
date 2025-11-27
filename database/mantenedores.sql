@@ -849,3 +849,21 @@ BEGIN
             a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo, a.precio,
             i.num_habitaciones, i.num_banios, m.nombre_imagen, d.calle, d.numero;
 END;
+
+CREATE OR REPLACE TRIGGER TRG_UPDATE_ESTADO_INMUEBLE_DEL
+AFTER DELETE ON TCDB_ARRIENDO
+FOR EACH ROW
+BEGIN
+    UPDATE TCDB_INMUEBLE
+    SET estado = 'disponible'
+    WHERE id_inmueble = :OLD.id_inmueble;
+END;
+
+CREATE OR REPLACE TRIGGER TRG_UPDATE_ESTADO_INMUEBLE_INS
+AFTER INSERT ON TCDB_ARRIENDO
+FOR EACH ROW
+BEGIN
+    UPDATE TCDB_INMUEBLE
+    SET estado = 'en arriendo'
+    WHERE id_inmueble = :NEW.id_inmueble;
+END;

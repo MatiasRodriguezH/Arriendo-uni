@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     const updateResult = await conn.execute(
       `BEGIN 
         CRUD_ARRIENDO('U', :p_id_arriendo, :p_tipo_arriendo, :p_titulo, :p_id_inmueble,:p_precio, :p_descripcion, :p_estado, SYSDATE);
-        CRUD_INMUEBLE( p_operacion   => 'U', p_id_arriendo => :p_id_arriendo, p_modalidad   => :p_modalidad); 
+        CRUD_INMUEBLE( p_operacion => 'U', p_id_inmueble => :p_id_inmueble, p_modalidad => :p_modalidad); 
       END;`,data);
   }
 

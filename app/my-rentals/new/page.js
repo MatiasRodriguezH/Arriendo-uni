@@ -350,7 +350,7 @@ export default function NuevoArriendo() {
 
         <button 
           onClick={handleSubmit}
-          style={{ padding: "10px 20px", background: "blue", color: "#fff", border: "none", borderRadius: "6px" }}
+          style={{ padding: "10px 20px", background: "#00638e", color: "white", border: "none", borderRadius: "0.5rem" }}
         >
           Crear arriendo
         </button>

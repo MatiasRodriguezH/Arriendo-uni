@@ -1,14 +1,14 @@
 "use client";
-import "@/styles/inmueblecard.css";
+import styles from "@/styles/inmueblecard.module.css";
 
 export default function InmuebleCard({ inmueble }) {
     return (
-        <div className="inmueble-card">
-        <div className="inmueble-imagen" style={{width:'30%'}}>
+        <div className={styles['inmueble-card']}>
+        <div className={styles['inmueble-imagen']} style={{width:'30%'}}>
             <img src={inmueble.imagen_portada ? '/images/'+inmueble.imagen_portada :'/images/example.jpg'} alt="" />
         </div>
 
-        <div className="inmueble-info">
+        <div className={styles['inmueble-info']}>
             <h2>{inmueble.nombre}</h2>
             <p><strong>Baños:</strong> {inmueble.banos}</p>
             <p><strong>Habitaciones:</strong> {inmueble.habitaciones}</p>
