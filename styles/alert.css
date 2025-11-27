@@ -1,0 +1,20 @@
+button {
+    background: #00638e ;
+    padding: 0.5rem 1rem ;
+    border-radius: 0.5rem ;
+    color: white 
+}
+
+button:hover{
+    background: #004867;
+}
+
+.titulo {
+    font-size:'1.25rem';
+    font-weight:'bold'
+}
+.message {
+    font-size:'1rem';
+    font-weight:'normal';
+    white-space: pre-line;
+}

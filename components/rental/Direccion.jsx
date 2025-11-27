@@ -26,7 +26,7 @@ function Direccion({direccion, setDireccion, regiones}){
         </div>
       </div>
       <h4>Dirección adicional</h4>
-      <input value={direccion.adicional} style={{width:'100%', marginBottom:'1%'}} onChange={(e) => setDireccion({...direccion, adicional: e.target.value})}/>
+      <input value={direccion.adicional || ""} style={{width:'100%', marginBottom:'1%'}} onChange={(e) => setDireccion({...direccion, adicional: e.target.value})}/>
       </>
     )
 }

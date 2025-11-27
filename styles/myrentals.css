@@ -1,0 +1,59 @@
+body {
+  background-color: white;
+  color: black;
+  align-items: center;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.rentals-wrapper {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.rentals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.rental-card {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.rental-card:hover {
+  transform: translateY(-4px);
+}
+
+.rental-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #eee;
+}
+
+.rental-info {
+  padding: 14px;
+}
+
+.rental-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}

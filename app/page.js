@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(()=>{
     async function get_data() {
       try {
-        const response = await fetch('http://localhost:3000/api/arriendos',{cache: "no-store",});
+        const response = await fetch('http://localhost:3000/api/rentals',{cache: "no-store",});
         const data = await response.json();
 
         setArriendos(data);

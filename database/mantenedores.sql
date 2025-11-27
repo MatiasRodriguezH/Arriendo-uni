@@ -820,3 +820,32 @@ BEGIN
     END IF;
 
 END;
+
+CREATE OR REPLACE PROCEDURE SP_MOSTRAR_ARRIENDOS (
+    p_cursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN p_cursor FOR
+        SELECT 
+            a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo,
+            CASE 
+                WHEN a.tipo_arriendo = 'por habitaciones' THEN
+                    TO_CHAR(MIN(h.precio), '$999,999') || ' - ' || TO_CHAR(MAX(h.precio), '$999,999')
+                ELSE
+                    TO_CHAR(a.precio, '$999,999')
+            END AS precio_mostrado,
+            i.num_habitaciones,i.num_banios, m.nombre_imagen AS imagen_portada, d.calle || ' ' || d.numero AS direccion
+        FROM TCDB_ARRIENDO a
+        JOIN TCDB_INMUEBLE i 
+            ON i.id_inmueble = a.id_inmueble
+        LEFT JOIN TCDB_DIRECCION d 
+            ON d.id_direccion = i.id_direccion
+        LEFT JOIN TCDB_IMAGEN_INMUEBLE m 
+            ON m.id_inmueble = i.id_inmueble AND m.orden_imagen = 0
+        LEFT JOIN TCDB_HABITACION h
+            ON h.id_arriendo = a.id_arriendo
+        GROUP BY 
+            a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo, a.precio,
+            i.num_habitaciones, i.num_banios, m.nombre_imagen, d.calle, d.numero;
+END;

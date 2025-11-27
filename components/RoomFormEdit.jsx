@@ -32,7 +32,7 @@ export default function RoomForm({hab, index, actualizarHabitacion, eliminarHabi
                 className='descripcion'
                 style={{width:'100%'}}
                 placeholder="Descripción de la habitacion..."
-                value={hab.descripcion}
+                value={hab.descripcion || ""}
                 onChange={(e) =>
                 actualizarHabitacion(index, "descripcion", e.target.value)
                 }
