@@ -821,6 +821,64 @@ BEGIN
 
 END;
 
+CREATE OR REPLACE PROCEDURE CRUD_INTERACCION (
+    p_operacion     IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_usuario    IN  NUMBER,
+    p_id_arriendo   IN  NUMBER,
+    p_tipo_interaccion   IN  VARCHAR2 DEFAULT NULL,
+    p_fecha         IN  DATE DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_INTERACCION IN EXCLUSIVE MODE;
+
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        INSERT INTO TCDB_INTERACCION (id_usuario, id_arriendo, tipo_interaccion, fecha)
+        VALUES (p_id_usuario, p_id_arriendo, p_tipo_interaccion, p_fecha);
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+        UPDATE TCDB_INTERACCION
+        SET tipo_interaccion = p_tipo_interaccion,
+            fecha       = p_fecha
+        WHERE id_usuario  = p_id_usuario
+          AND id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20020, 'No existe interacción con ese usuario y arriendo.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+        DELETE FROM TCDB_INTERACCION
+        WHERE id_usuario  = p_id_usuario
+          AND id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20021, 'No existe interacción para eliminar.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END;
+
 CREATE OR REPLACE PROCEDURE SP_MOSTRAR_ARRIENDOS (
     p_cursor OUT SYS_REFCURSOR
 )

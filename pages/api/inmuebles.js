@@ -1,6 +1,15 @@
 import { getConnection } from "@/database/oracle";
 
 export default async function handler(req, res) {
+  
+  const allowedReferer = 'http://localhost:3000'; // En producción: https://tu-dominio.com
+
+  const referer = req.headers.referer;
+
+  if (!referer || !referer.startsWith(allowedReferer)) {
+    return res.status(403).json({ message: 'Acceso prohibido.' });
+  }
+
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Método no permitido" });
   }
