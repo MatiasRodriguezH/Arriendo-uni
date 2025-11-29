@@ -19,48 +19,21 @@ export default async function handler(req, res) {
   async function updateArriendo(data) {
     const updateResult = await conn.execute(
       `BEGIN 
-        CRUD_ARRIENDO(
-          'U', 
-          :p_id_arriendo, 
-          :p_tipo_arriendo, 
-          :p_titulo, 
-          :p_id_inmueble,
-          :p_precio, 
-          :p_descripcion, 
-          :p_estado, 
-          SYSDATE
-        );
-        CRUD_INMUEBLE(
-          p_operacion   => 'U',
-          p_id_arriendo => :p_id_arriendo,
-          p_modalidad   => :p_modalidad
-        ); 
-      END;`,
-      data
-    );
+        CRUD_ARRIENDO('U', :p_id_arriendo, :p_tipo_arriendo, :p_titulo, :p_id_inmueble,:p_precio, :p_descripcion, :p_estado, SYSDATE);
+        CRUD_INMUEBLE( p_operacion => 'U', p_id_inmueble => :p_id_inmueble, p_modalidad => :p_modalidad); 
+      END;`,data);
   }
 
   async function insertHabitacion(data) {
     await conn.execute(`BEGIN CRUD_HABITACION('I', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,
-       :p_precio, :p_imagen_portada); END;`,data);
+       :p_precio, :p_imagen_portada); END;`, data);
   }
 
   async function updateHabitacion(data) {
     await conn.execute(
       `BEGIN 
-        CRUD_HABITACION(
-          'U', 
-          :p_id_habitacion, 
-          :p_id_arriendo, 
-          :p_nombre, 
-          :p_superficie, 
-          :p_descripcion,
-          :p_precio, 
-          :p_imagen_portada
-        ); 
-      END;`,
-      data
-    );
+        CRUD_HABITACION('U', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,:p_precio, :p_imagen_portada); 
+      END;`, data);
   }
 
 

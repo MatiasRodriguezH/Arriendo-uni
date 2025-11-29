@@ -5,16 +5,17 @@ import { OUT_FORMAT_OBJECT, outFormat } from "oracledb";
 
 const SECRET = "tctoken";
 
-async function getPassword(email){
-    let conn = await getConnection();
-    const result = await conn.execute(`SELECT id_usuario, contrasenia FROM TCDB_USUARIO WHERE correo = :p_correo`,
-        {p_correo: email}, {outFormat: OUT_FORMAT_OBJECT});
-    return result.rows[0];
-}
-
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Método no permitido" });
+    }
+
+    let conn = await getConnection();
+
+    async function getPassword(email){
+        const result = await conn.execute(`SELECT id_usuario, contrasenia FROM TCDB_USUARIO WHERE correo = :p_correo`,
+            {p_correo: email}, {outFormat: OUT_FORMAT_OBJECT});
+        return result.rows[0];
     }
 
     const {email, password} = req.body;
@@ -39,5 +40,6 @@ export default async function handler(req, res) {
         expiresIn: "10h" // expira en 10 horas
         }
     );
+    if(conn) await conn.close();
     return res.status(200).json({token})
   }

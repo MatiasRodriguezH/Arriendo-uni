@@ -1,10 +1,11 @@
 body {
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(244, 240, 240);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: flex;
   justify-content: center;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .page{
@@ -25,6 +26,13 @@ body {
   padding-left: 12rem;
 }
 
+.uni-inputs{
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
 .search-titulo {
   font-size: 2rem;
   font-weight: 700;
@@ -32,19 +40,70 @@ body {
   color: #2e2d36;
 }
 
+.button-div{
+  position: relative;
+  display: inline-block;
+  display: flex;
+  flex-direction: column;
+}
+
 .region-search{
   height: 3rem;
-  width: 8rem;
+  width: 9rem;
   padding: 5px 10px;
+  margin-right: 15rem;
   border-radius: 5px;
   background-color: white;
   cursor: pointer;
+  font-weight: 600;
+}
+
+.region-search:hover{
+  background-color: whitesmoke;
+}
+
+.region-dropdown{
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  position: absolute;
+  max-height: 20rem;
+  margin-top: 5rem;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 2;
+
+}
+
+.region-dropdown button{
+  width: 100%;
+  color: black;
+  padding: 10px 14px;
+  text-decoration: none;
+  display: block;
+}
+
+.region-dropdown button:hover{
+  background-color: whitesmoke;
+}
+
+.region-texto{
+  font-weight: 600;
+}
+
+.universidad-div{
+  display: flex;
+  flex-direction: column;
 }
 
 .universidad {
   background-color: white;
-  height: 4rem;
-  width: 15rem;
+  height: 3rem;
+  width: 18rem;
+  padding-left: 4px;
 }
 
 .content {

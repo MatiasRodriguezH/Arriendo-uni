@@ -820,3 +820,108 @@ BEGIN
     END IF;
 
 END;
+
+CREATE OR REPLACE PROCEDURE CRUD_INTERACCION (
+    p_operacion     IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_usuario    IN  NUMBER,
+    p_id_arriendo   IN  NUMBER,
+    p_tipo_interaccion   IN  VARCHAR2 DEFAULT NULL,
+    p_fecha         IN  DATE DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_INTERACCION IN EXCLUSIVE MODE;
+
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        INSERT INTO TCDB_INTERACCION (id_usuario, id_arriendo, tipo_interaccion, fecha)
+        VALUES (p_id_usuario, p_id_arriendo, p_tipo_interaccion, p_fecha);
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+        UPDATE TCDB_INTERACCION
+        SET tipo_interaccion = p_tipo_interaccion,
+            fecha       = p_fecha
+        WHERE id_usuario  = p_id_usuario
+          AND id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20020, 'No existe interacción con ese usuario y arriendo.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+        DELETE FROM TCDB_INTERACCION
+        WHERE id_usuario  = p_id_usuario
+          AND id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20021, 'No existe interacción para eliminar.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END;
+
+CREATE OR REPLACE PROCEDURE SP_MOSTRAR_ARRIENDOS (
+    p_cursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN p_cursor FOR
+        SELECT 
+            a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo,
+            CASE 
+                WHEN a.tipo_arriendo = 'por habitaciones' THEN
+                    TO_CHAR(MIN(h.precio), '$999,999') || ' - ' || TO_CHAR(MAX(h.precio), '$999,999')
+                ELSE
+                    TO_CHAR(a.precio, '$999,999')
+            END AS precio_mostrado,
+            i.num_habitaciones,i.num_banios, m.nombre_imagen AS imagen_portada, d.calle || ' ' || d.numero AS direccion
+        FROM TCDB_ARRIENDO a
+        JOIN TCDB_INMUEBLE i 
+            ON i.id_inmueble = a.id_inmueble
+        LEFT JOIN TCDB_DIRECCION d 
+            ON d.id_direccion = i.id_direccion
+        LEFT JOIN TCDB_IMAGEN_INMUEBLE m 
+            ON m.id_inmueble = i.id_inmueble AND m.orden_imagen = 0
+        LEFT JOIN TCDB_HABITACION h
+            ON h.id_arriendo = a.id_arriendo
+        GROUP BY 
+            a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo, a.precio,
+            i.num_habitaciones, i.num_banios, m.nombre_imagen, d.calle, d.numero;
+END;
+
+CREATE OR REPLACE TRIGGER TRG_UPDATE_ESTADO_INMUEBLE_DEL
+AFTER DELETE ON TCDB_ARRIENDO
+FOR EACH ROW
+BEGIN
+    UPDATE TCDB_INMUEBLE
+    SET estado = 'disponible'
+    WHERE id_inmueble = :OLD.id_inmueble;
+END;
+
+CREATE OR REPLACE TRIGGER TRG_UPDATE_ESTADO_INMUEBLE_INS
+AFTER INSERT ON TCDB_ARRIENDO
+FOR EACH ROW
+BEGIN
+    UPDATE TCDB_INMUEBLE
+    SET estado = 'en arriendo'
+    WHERE id_inmueble = :NEW.id_inmueble;
+END;

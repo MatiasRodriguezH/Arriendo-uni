@@ -30,7 +30,8 @@
   text-align: center;
   font-size: 100%;
   text-decoration: none;
-  color: inherit;
+  color: white;
+  text-decoration: none;
 }
 
 .image{
@@ -45,48 +46,24 @@
   max-height: 100%;
   width: 30%;
 }
-  
-  /* Botón de ingresar */
-.login-btn {
-    height: 100%;
-    width: 100%;
-    align-self: center;
-    font-size: 0.8vw;
-    font-weight: bold;
-    text-align: center;
-    color: white;
-    background-color: inherit;
-    border: 1pt solid #fff;
-    padding: 0 1%;
-    border-radius: 0.5vw;
-    cursor: pointer;
-  }
-  
-.login-btn:hover {
-    color: #000;
-    background-color: #ffffff;
-  }
 
-.signin-btn {
-    height: 100%;
-    width: 100%;
-    align-self: center;
-    font-size: 0.8vw;
-    text-align: center;
-    font-weight: bold;
-    text-justify: distribute;
-    color: white;
-    background-color: inherit;
-    border: 1pt solid #fff;
-    padding: 0 1%;
-    border-radius: 0.5vw;
-    cursor: pointer;
-  }
-  
-.signin-btn:hover {
-    color: #000;
-    background-color: #ffffff;
-  }
+.action-btn{
+  width: fit-content;
+  align-self: center;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  background-color: inherit;
+  border: 0.75pt solid #fff;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.action-btn:hover{
+  color: #000;
+  background-color: #ffffff;
+}
   
 .avatar {
   position: absolute;

@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
-import "@/styles/nuevo_arriendo.css"
 import RoomFormEdit from "@/components/RoomFormEdit";
+import InmuebleCard from "@/components/rental/InmuebleCard";
+import "@/styles/nuevo_arriendo.css"
+import Alert from "@/components/Alert";
 
 export default function NuevoArriendo() {
     const searchParams = useSearchParams();
     const idArriendo = searchParams.get("id");
+    const router = useRouter();
 
-    const[cambios, setCambios] = useState(false);
-    const [error, SetError] = useState("");
+    const [error, setError] = useState("");
+    const [alerta, setAlerta] = useState(false);
 
   // Datos del inmueble asociado
   const [inmueble, setInmueble] = useState({
@@ -42,12 +45,10 @@ export default function NuevoArriendo() {
   }
 
   function eliminarHabitacion(index) {
-    setCambios(true);
     setHabitaciones(habitaciones.filter((_, i) => i !== index));
   }
 
   const actualizarHabitacion = useCallback((index, campo, valor) => {
-    setCambios(true);
     setHabitaciones(prevHabitaciones => {
         const nuevasHabitaciones = [...prevHabitaciones];
         nuevasHabitaciones[index] = {...nuevasHabitaciones[index],[campo]: valor};
@@ -57,7 +58,7 @@ export default function NuevoArriendo() {
 
   useEffect(()=>{
     async function fecthArriendo(id) {
-        const result = await fetch(`/api/edit/arriendo-get?id=${id}`);
+        const result = await fetch(`/api/edit/rental-get?id=${id}`);
         const data = await result.json();
         setArriendo({
             id_arriendo: data.ID_ARRIENDO,
@@ -88,62 +89,13 @@ export default function NuevoArriendo() {
     fecthArriendo(idArriendo);
   },[]);
 
-    function InmuebleCard({ inmueble }) {
-    return (
-        <div className="inmueble-card">
-        <div className="inmueble-imagen" style={{width:'30%'}}>
-            <img src={inmueble.imagen_portada ? '../images/'+inmueble.imagen_portada :'../images/example.jpg'} alt="" />
-        </div>
-
-        <div className="inmueble-info">
-            <h2>{inmueble.nombre}</h2>
-            <p><strong>Baños:</strong> {inmueble.banos}</p>
-            <p><strong>Habitaciones:</strong> {inmueble.habitaciones}</p>
-            <p><strong>Dirección:</strong> {inmueble.direccion}</p>
-        </div>
-
-        <style jsx>{`
-            .inmueble-card {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-            width: 100%;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 10px;
-            background: #fff;
-            margin-top: 10px;
-            }
-
-            .inmueble-imagen img {
-            width: 100%;
-            height: 120px;
-            background-color: grey;
-            object-fit: cover;
-            border-radius: 8px;
-            }
-
-            .inmueble-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 6px;
-            flex: 1;
-            }
-
-            .inmueble-info h2 {
-            margin: 0;
-            font-size: 1vw;
-            }
-
-            .inmueble-info p {
-            margin: 0;
-            font-size: 0.9vw
-            }
-        `}</style>
-        </div>
-    );
+  async function eliminarArriendo(){
+    const response = await fetch(`/api/delete/rental?id=${idArriendo}`, {method: "DELETE"});
+    if (response.ok){
+      window.location.replace('/my-rentals');
     }
+    setAlerta(false);
+  }
 
   // Envío del formulario
   async function handleSubmit(e) {
@@ -151,17 +103,17 @@ export default function NuevoArriendo() {
 
     //Verificar datos de los campos
     if (arriendo.tipo_arriendo == "" || arriendo.titulo =="" || arriendo.precio == ""){
-      SetError("Campos del arriendo obligatorios no pueden estar vacíos")
+      setError("Campos del arriendo obligatorios no pueden estar vacíos")
       return null;
     }
     if(arriendo.tipo_arriendo == "por habitaciones"){
       if (habitaciones.length == 0){
-        SetError("Debe existir mínimo una habitación en el arriendo"); 
+        setError("Debe existir mínimo una habitación en el arriendo"); 
         return null;
       }
       for (const hab of habitaciones){
         if (!hab.nombre|| !hab.superficie || !hab.precio){
-          SetError("Campos de habitacion obligatorios no pueden estar vacíos");
+          setError("Campos de habitacion obligatorios no pueden estar vacíos");
           return null;
         }
       };
@@ -179,13 +131,19 @@ export default function NuevoArriendo() {
       });
     }
 
-    const res = await fetch(`/api/edit/arriendo-post`, {
+    const res = await fetch(`/api/edit/rental-post`, {
       method: "POST",
       body: formData
     });
 
     const resultado = await res.json();
     alert("Arriendo actualizado con exito");
+  }
+
+  function Alerta(){
+    return(
+      <div style={{zIndex:'2',justifySelf:'center',background:'#8c5656ff'}}>Desea eliminar arriendo?</div>
+    );
   }
 
   return (
@@ -208,7 +166,7 @@ export default function NuevoArriendo() {
             if (tipo === "por completo") setHabitaciones([]);
             if (tipo === "por completo") setArriendo({...arriendo, precio: null});
             setArriendo({...arriendo, tipo_arriendo: e.target.value});
-            setCambios(true);
+        ;
           }}
         >
           <option value="" disabled>Selecciona Tipo</option>
@@ -216,16 +174,16 @@ export default function NuevoArriendo() {
           <option value="por habitaciones">Por habitaciones</option>
         </select>
         <h4>Título <span style={{ color: "red" }}>*</span></h4>
-        <input style={{width:'100%'}} value={arriendo.titulo} onChange={(e) => {setArriendo({...arriendo, titulo: e.target.value}); setCambios(true);}}/>
+        <input style={{width:'100%'}} value={arriendo.titulo} onChange={(e) => {setArriendo({...arriendo, titulo: e.target.value});}}/>
         {arriendo.tipo_arriendo != "por habitaciones" && (
           <>
             <h4>Precio <span style={{ color: "red" }}>*</span></h4>
-            <input type="number" value={arriendo.precio} onChange={(e) => {setArriendo({...arriendo, precio: e.target.value}); setCambios(true);}}/>
+            <input type="number" value={arriendo.precio} onChange={(e) => {setArriendo({...arriendo, precio: e.target.value});}}/>
           </>
         )}
         <h4>Descripción</h4>
         <textarea className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo o los arriendos..." 
-        value={arriendo.descripcion} onChange={(e) => {setArriendo({...arriendo, descripcion: e.target.value}); setCambios(true);}}/>
+        value={arriendo.descripcion || ""} onChange={(e) => {setArriendo({...arriendo, descripcion: e.target.value});}}/>
         
         {arriendo.tipo_arriendo === "por habitaciones" && (
           <div style={{ marginTop: "30px" }}>
@@ -239,13 +197,13 @@ export default function NuevoArriendo() {
                 background: "#00638e",
                 color: "white",
                 border: "none",
-                borderRadius: "0.75vw",
+                borderRadius: "0.5rem",
                 opacity: (habitaciones.length < inmueble.habitaciones)? 1 : 0.5,
                 cursor: (habitaciones.length < inmueble.habitaciones)? "pointer" : "not-allowed",
                 marginBottom: "15px"
               }}
               disabled={!(habitaciones.length < inmueble.habitaciones)}
-              onClick={() => {agregarHabitacion(); setCambios(true);}}
+              onClick={() => {agregarHabitacion();}}
             >
               + Agregar habitación
             </button>
@@ -262,19 +220,27 @@ export default function NuevoArriendo() {
           <span style={{color:'red', fontSize:'1vw'}}>{error}</span>
         </div>
 
-        <button 
-          onClick={handleSubmit}
-          disabled={!cambios}
-          style={{ padding: "10px 20px", background: "blue", color: "#fff", border: "none", borderRadius: "6px", opacity: cambios? 1:0.5, cursor: cambios? "pointer":"not-allowed"}}
-        >
-          Guardar Cambios
-        </button>
-        <button 
-          onClick={() => window.location.replace("/")}
-          style={{ padding: "10px 20px", background: "blue", color: "#fff", border: "none", borderRadius: "6px", marginLeft:"2%", cursor:"pointer" }}
-        >
-          Cancelar
-        </button>
+        <Alert message={"¿Desea eliminar arriendo?"} onAccept={()=>eliminarArriendo()} open={alerta} setOpen={setAlerta}/>
+
+        <div style={{display:'flex'}}>
+          <button 
+            onClick={handleSubmit}
+            style={{ padding: "10px 20px", background: "#00638e", color: "#fff", border: "none", borderRadius: "0.5rem", cursor: "pointer"}}
+          >
+            Guardar Cambios
+          </button>
+          <button 
+            onClick={() => router.push('/my-rentals')}
+            style={{ padding: "10px 20px", background: "#00638e", color: "#fff", border: "none", borderRadius: "0.5rem", marginLeft:"1rem", cursor:"pointer" }}
+          >
+            Cancelar
+          </button>
+          <button onClick={() => setAlerta(true)}
+            style={{ padding: "10px 20px", background: "red", color: "#fff", border: "none", borderRadius: "0.5rem", marginLeft:"auto", cursor:"pointer" }}
+          >
+            Eliminar Arriendo
+          </button>
+        </div>
       </div>
     </div>
   );

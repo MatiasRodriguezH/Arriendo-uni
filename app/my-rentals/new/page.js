@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
-import "@/styles/nuevo_arriendo.css"
 import RoomForm from "@/components/RoomForm";
 import ImageUploader from "@/components/ImageUploader";
-import Direccion from "@/components/new-rental/Direccion";
-import Contacto from "@/components/new-rental/Contacto";
+import Direccion from "@/components/rental/Direccion";
+import Contacto from "@/components/rental/Contacto";
+import "@/styles/nuevo_arriendo.css"
 
 export default function NuevoArriendo() {
   const [inmuebles, setInmuebles] = useState([]);
@@ -350,7 +350,7 @@ export default function NuevoArriendo() {
 
         <button 
           onClick={handleSubmit}
-          style={{ padding: "10px 20px", background: "blue", color: "#fff", border: "none", borderRadius: "6px" }}
+          style={{ padding: "10px 20px", background: "#00638e", color: "white", border: "none", borderRadius: "0.5rem" }}
         >
           Crear arriendo
         </button>

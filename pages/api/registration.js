@@ -13,13 +13,14 @@ export default async function handler(req, res){
 
   const dataUser = req.body;
 
+  let conn = await getConnection();
+
   function convertirFecha(fecha) {
     const [dia, mes, anio] = fecha.split("/");
     return `${anio}-${mes}-${dia}`;  // formato correcto para Oracle
   }
 
   async function verificarDuplicado(data) {
-    let conn = await getConnection();
     const result = await conn.execute(`SELECT COUNT(*) as "RESULT" FROM TCDB_USUARIO WHERE (correo = :p_correo) OR (rut = :p_rut)`,data,
       {outFormat: OUT_FORMAT_OBJECT});
     
@@ -30,7 +31,6 @@ export default async function handler(req, res){
   }
 
   async function insertCiudad(data) {
-    let conn = await getConnection();
     const result = await conn.execute(
       'SELECT FN_EXIST_CIUDAD(:p_nombre, :p_id_region) AS "id" FROM DUAL',data,{ outFormat: OUT_FORMAT_OBJECT });
     let id_ciudad = result.rows[0].id;
@@ -52,7 +52,6 @@ export default async function handler(req, res){
   }
 
   async function insertUsuario(data) {
-    let conn = await getConnection();
     const resultInsert = await conn.execute(`BEGIN CRUD_USUARIO('I', 
       :p_id_usuario,        
       :p_rol_usuario,
@@ -117,5 +116,6 @@ export default async function handler(req, res){
     }
   );
 
+  if(conn) await conn.console();
   return res.status(200).json({token});
 }

@@ -257,7 +257,8 @@ export default function RegisterForm(){
                             onChange={(e) => setSedeInstitucional(e.target.value)}>
                             <option value="" disabled>Seleciona sede...</option>
                             {sedes.map((s, index) => (
-                                <option key={s.ID_INSTITUCION} value={s.ID_SEDE}>
+                                // Cambie la key, antes era {s.ID_INSTITUCION}
+                                <option key={index} value={s.ID_SEDE}>  
                                     {s.NOMBRE}
                                 </option>
                             ))}
@@ -288,7 +289,6 @@ export default function RegisterForm(){
                     <br/>
                     </>
                 )}
-
                 <br />
                 <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
                     <div style={{display:'flex', flexDirection:'column', width:'49%'}}>

@@ -1,20 +1,23 @@
 "use client";
 
 import { useEffect, useState, useCallback} from "react";
-import { useSearchParams } from "next/navigation";
-import "@/styles/nuevo_arriendo.css";
+import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import ImageUploader from "@/components/ImageUploader";
-import Direccion from "@/components/new-rental/Direccion";
-import Contacto from "@/components/new-rental/Contacto";
+import Direccion from "@/components/rental/Direccion";
+import Contacto from "@/components/rental/Contacto";
 import ImagePreview from "@/components/ImagePreview";
+import Alert from "@/components/Alert";
+import "@/styles/nuevo_arriendo.css";
 
 export default function EditarInmueble() {
     const searchParams = useSearchParams();
     const idInmueble = searchParams.get("id");
+    const router = useRouter();
 
     const [regiones, setRegiones] = useState([])
     const [error, SetError] = useState("");
+    const [alerta, setAlerta] = useState(false);
 
     const [inmueble, setInmueble] = useState({
         id_inmueble: "",
@@ -99,6 +102,14 @@ export default function EditarInmueble() {
         fetchInmueble(idInmueble);
     }, []);
 
+    async function eliminarInmueble() {
+        const response = await fetch(`/api/delete/property?id=${idInmueble}`, {method: "DELETE"});
+        if (response.ok){
+        window.location.replace('/my-properties');
+        }
+        setAlerta(false);
+    }
+
     async function handleSubmit(e) {
         e.preventDefault();
 
@@ -178,9 +189,9 @@ export default function EditarInmueble() {
             <h4>Nombre del inmueble <span style={{ color: "red" }}>*</span> </h4>
             <input value={inmueble.nombre} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, nombre: e.target.value})}/>
             <h4>Propietario</h4>
-            <input value={inmueble.propietario} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, propietario: e.target.value})}/>
+            <input value={inmueble.propietario || ""} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, propietario: e.target.value})}/>
             <h4>Descripción</h4>
-            <textarea value={inmueble.descripcion} className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setInmueble({...inmueble, descripcion: e.target.value})}/>
+            <textarea value={inmueble.descripcion || ""} className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setInmueble({...inmueble, descripcion: e.target.value})}/>
             <div style={{display:'flex', flexDirection:'row', gap:'2%', marginBottom:'1%'}}>
             <div style={{display:'flex', flexDirection:'column'}}>
                 <h4>Numero de habitaciones <span style={{ color: "red" }}>*</span> </h4>
@@ -217,24 +228,33 @@ export default function EditarInmueble() {
 
             <h4 style={{color:'grey', margin:'1% 0% 0% 0%'}}>añadir nuevas imagenes</h4>
             <ImageUploader imageOnChanges={handlNuevasImgInmueble} multiple={true}/>
+            
             <br/>
-
             <div style={{margin:"1% 0% 2% 0%"}}>
                 <span style={{color:'red', fontSize:'1vw'}}>{error}</span>
             </div>
 
-            <button 
-              onClick={handleSubmit}
-              style={{ padding: "10px 20px", background: "blue", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer", marginTop:'2%'}}
-            >
-              Guardar Cambios
-            </button>
-            <button 
-              onClick={() => window.location.replace("/")}
-              style={{ padding: "10px 20px", background: "blue", color: "#fff", border: "none", borderRadius: "6px", marginLeft:"2%", cursor:"pointer" }}
-            >
-              Cancelar
-            </button>
+            <Alert message={"¿Desea eliminar inmueble?\nSe eliminara el arriendo asociado"} onAccept={()=>eliminarInmueble()} open={alerta} setOpen={setAlerta}/>
+
+            <div style={{display:'flex'}}>
+                <button 
+                onClick={handleSubmit}
+                style={{ padding: "10px 20px", background: "#00638e", color: "white", border: "none", borderRadius: "0.5rem", cursor: "pointer"}}
+                >
+                Guardar Cambios
+                </button>
+                <button 
+                onClick={() => router.push('/my-properties')}
+                style={{ padding: "10px 20px", background: "#00638e", color: "white", border: "none", borderRadius: "0.5rem", marginLeft:"1rem", cursor:"pointer" }}
+                >
+                Cancelar
+                </button>
+                <button onClick={() => setAlerta(true)}
+                    style={{ padding: "10px 20px", background: "red", color: "white", border: "none", borderRadius: "0.5rem", marginLeft:"auto", cursor:"pointer" }}
+                >
+                    Eliminar Inmueble
+                </button>
+            </div>
             </div>
         </div>
     );
