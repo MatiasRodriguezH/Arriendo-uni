@@ -1,6 +1,8 @@
 "use client";
 
+import "@/styles/nuevo_arriendo.css";
 import { useState } from "react";
+
 
 export default function UpdateForm({ user }) {
 

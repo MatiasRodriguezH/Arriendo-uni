@@ -1,9 +1,12 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
+import "@/styles/nuevo_arriendo.css";
+
 
 export default function ProfileView() {
-  const { user } = useAuth();
+  const { user } = useContext(AuthContext);
 
   if (!user) return <p>Cargando datos...</p>;
 
@@ -12,7 +15,7 @@ export default function ProfileView() {
       <h1>Mi Perfil</h1>
 
       <p><strong>Nombre:</strong> {user.NOMBRE}</p>
-      <p><strong>Email:</strong> {user.EMAIL}</p>
+      <p><strong>Email:</strong> {user.CORREO}</p>
       <p><strong>RUT:</strong> {user.RUT}</p>
 
       <br />
