@@ -338,7 +338,7 @@ export default function NuevoArriendo() {
 
             {/* Lista de habitaciones */}
             {habitaciones.map((hab, index) => (
-              <RoomForm hab={hab} index={index} actualizarHabitacion={actualizarHabitacion} eliminarHabitacion={eliminarHabitacion}/>
+              <RoomForm hab={hab} index={index} key={index} actualizarHabitacion={actualizarHabitacion} eliminarHabitacion={eliminarHabitacion}/>
             ))}
           </div>
         )}
