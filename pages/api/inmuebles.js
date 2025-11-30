@@ -13,9 +13,9 @@ export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Método no permitido" });
   }
-  let conn = await getConnection();
-
+  let conn;
   try {
+    conn = await getConnection();
     const results = await conn.execute(`
       SELECT i.id_inmueble,i.tipo_arriendo,i.nombre,m.nombre_imagen, d.calle||' '||d.numero 
       FROM TCDB_INMUEBLE i

@@ -33,5 +33,13 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error("Error al conectar a Oracle:", error);
     return res.json({ error: error.message }, { status: 500 });
+  } finally {
+    if (conn) {
+      try {
+        await conn.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
   }
 }

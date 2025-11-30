@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
+import Header from "./Header";
 import "@/styles/nuevo_arriendo.css";
+import Head from "next/head";
 
 
 export default function ProfileView() {
@@ -12,6 +14,7 @@ export default function ProfileView() {
 
   return (
     <div style={{ padding: "20px" }}>
+      <Header/>
       <h1>Mi Perfil</h1>
 
       <p><strong>Nombre:</strong> {user.NOMBRE}</p>

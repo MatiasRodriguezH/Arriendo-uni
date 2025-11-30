@@ -10,19 +10,31 @@ export default async function handler(req, res) {
     }
 
     const {id} = req.query;
-    let conn = await getConnection();
-    
-    const results = await conn.execute(`SELECT nombre_imagen FROM TCDB_IMAGEN_INMUEBLE WHERE id_inmueble = :p_id_inmueble`,{p_id_inmueble: id});
-    for (let i= 0; i < results.rows.length; i++){
-        const img = results.rows[i];
-        if (img[0]){
-            const filePath = path.join(process.cwd(), "public", "images", img[0]);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath); // elimina el archivo imagen asociado
+    let conn;
+    try {
+        conn = await getConnection();
+
+        const results = await conn.execute(`SELECT nombre_imagen FROM TCDB_IMAGEN_INMUEBLE WHERE id_inmueble = :p_id_inmueble`,{p_id_inmueble: id});
+        for (let i= 0; i < results.rows.length; i++){
+            const img = results.rows[i];
+            if (img[0]){
+                const filePath = path.join(process.cwd(), "public", "images", img[0]);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath); // elimina el archivo imagen asociado
+                }
+            }
+        }
+        await conn.execute(`BEGIN CRUD_INMUEBLE('D', :p_id_inmueble); END;`,{p_id_inmueble: id});  
+        return res.json({mensaje: "arriendo eliminado"});
+    } catch (error) {
+        console.error("Error en apiProperty");
+    } finally {
+        if (conn) {
+            try {
+                await conn.close();
+            } catch (closeError) {
+                console.error("Error cerrando la conexion en apiProperty: ", closeError);
             }
         }
     }
-    await conn.execute(`BEGIN CRUD_INMUEBLE('D', :p_id_inmueble); END;`,{p_id_inmueble: id});
-    if (conn) await conn.close();   
-    return res.json({mensaje: "arriendo eliminado"});
 }
