@@ -106,7 +106,8 @@ body {
   padding-left: 4px;
 }
 
-.content {
+.contents {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }

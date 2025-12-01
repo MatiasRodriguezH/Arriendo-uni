@@ -23,6 +23,10 @@ export default function Header() {
     router.push('/my-rentals/new');
   }
 
+  function goToMyRentals(){
+    router.push('/my-rentals')
+  }
+
   return (
     <div className={styles.header}>
       <div className={styles.logo}>
@@ -44,10 +48,13 @@ export default function Header() {
       ) : (
         <>
         {user.ROL_USUARIO == "arrendador" && (
-          <div style={{ width:'10%', marginLeft:'auto'}}>
-            <button className={styles["action-btn"]} onClick={()=> goToNewRental()}>
-              + Nuevo Arriendo
-            </button>
+          <div className={styles["botones"]}>
+          <button className={styles["action-btn"]} onClick={()=> goToMyRentals()}>
+            Mis Arriendos
+          </button>
+          <button className={styles["action-btn"]} onClick={()=> goToNewRental()}>
+            + Nuevo Arriendo
+          </button>
           </div> 
         )}
         <UserMenu user={user} onLogout={() => {

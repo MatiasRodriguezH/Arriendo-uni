@@ -93,7 +93,7 @@ export default function Home() {
   return (
     <div className="page">
       <Header/>
-      <div className="content">
+      <div className="contents">
         <div className="uni-search">
           <h1 className="search-titulo">Busca según tu universidad</h1>
           <div className="uni-inputs">
