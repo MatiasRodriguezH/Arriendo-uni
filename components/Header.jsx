@@ -43,11 +43,13 @@ export default function Header() {
         </>
       ) : (
         <>
-        <div style={{ width:'10%', marginLeft:'auto'}}>
+        {user.ROL_USUARIO == "arrendador" && (
+          <div style={{ width:'10%', marginLeft:'auto'}}>
             <button className={styles["action-btn"]} onClick={()=> goToNewRental()}>
               + Nuevo Arriendo
             </button>
-        </div>
+          </div> 
+        )}
         <UserMenu user={user} onLogout={() => {
           localStorage.removeItem("token");
           window.location.reload();

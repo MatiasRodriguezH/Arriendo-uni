@@ -879,6 +879,144 @@ BEGIN
 
 END;
 
+CREATE OR REPLACE PROCEDURE CRUD_SOLICITUD (
+    p_operacion     IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_usuario    IN  NUMBER,
+    p_id_arriendo   IN  NUMBER,
+    p_estado_solicitud   IN  VARCHAR2 DEFAULT NULL,
+    p_fecha_hora         IN  DATE DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_SOLICITUD IN EXCLUSIVE MODE;
+
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        INSERT INTO TCDB_SOLICITUD (id_usuario, id_arriendo, estado_solicitud, fecha_hora)
+        VALUES (p_id_usuario, p_id_arriendo, p_estado_solicitud, p_fecha_hora);
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+        UPDATE TCDB_SOLICITUD
+        SET estado_solicitud = p_estado_solicitud,
+            fecha_hora       = p_fecha_hora
+        WHERE id_usuario  = p_id_usuario
+          AND id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20020, 'No existe solicitud con ese usuario y arriendo.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+        DELETE FROM TCDB_SOLICITUD
+        WHERE id_usuario  = p_id_usuario
+          AND id_arriendo = p_id_arriendo;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20021, 'No existe solicitud para eliminar.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+
+END;
+
+CREATE OR REPLACE PROCEDURE CRUD_NOTIFICACION (
+    p_operacion        IN  VARCHAR2,     -- 'I', 'U', 'D'
+    p_id_notificacion  IN OUT NUMBER,    -- Para insertar se retorna
+    p_id_usuario       IN  NUMBER,
+    p_tipo_notificacion             IN  VARCHAR2 DEFAULT NULL,
+    p_titulo           IN  VARCHAR2 DEFAULT NULL,
+    p_mensaje          IN  VARCHAR2 DEFAULT NULL,
+    p_estado           IN  VARCHAR2 DEFAULT NULL,
+    p_enlace           IN  VARCHAR2 DEFAULT NULL,
+    p_fecha_hora       IN  DATE DEFAULT NULL
+) IS
+BEGIN
+    LOCK TABLE TCDB_NOTIFICACION IN EXCLUSIVE MODE;
+
+    --------------------------------------------------------------------
+    -- INSERT
+    --------------------------------------------------------------------
+    IF p_operacion = 'I' THEN
+        INSERT INTO TCDB_NOTIFICACION (
+            id_usuario,
+            tipo_notificacion,
+            titulo,
+            mensaje,
+            estado,
+            enlace,
+            fecha_hora
+        ) VALUES (
+            p_id_usuario,
+            p_tipo_notificacion,
+            p_titulo,
+            p_mensaje,
+            p_estado,
+            p_enlace,
+            p_fecha_hora
+        )
+        RETURNING id_notificacion INTO p_id_notificacion;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- UPDATE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'U' THEN
+        UPDATE TCDB_NOTIFICACION
+        SET tipo_notificacion = p_tipo_notificacion,
+            titulo            = p_titulo,
+            mensaje           = p_mensaje,
+            estado            = p_estado,
+            enlace            = p_enlace,
+            fecha_hora        = p_fecha_hora,
+            id_usuario        = p_id_usuario
+        WHERE id_notificacion = p_id_notificacion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20030, 'No existe notificación con ese ID.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    -- DELETE
+    --------------------------------------------------------------------
+    ELSIF p_operacion = 'D' THEN
+        DELETE FROM TCDB_NOTIFICACION
+        WHERE id_notificacion = p_id_notificacion;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20031, 'No existe notificación para eliminar.');
+        END IF;
+
+        COMMIT;
+
+    --------------------------------------------------------------------
+    ELSE
+        RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
+    END IF;
+END;
+
 CREATE OR REPLACE PROCEDURE SP_MOSTRAR_ARRIENDOS (
     p_cursor OUT SYS_REFCURSOR
 )
@@ -925,3 +1063,55 @@ BEGIN
     SET estado = 'en arriendo'
     WHERE id_inmueble = :NEW.id_inmueble;
 END;
+
+CREATE OR REPLACE PROCEDURE NOTIFICAR_SOLICITUD_CONTACTO (
+    p_id_arriendo        IN NUMBER,
+    p_id_solicitante     IN NUMBER,
+    p_id_notificacion    OUT NUMBER
+) IS
+    v_id_arrendador   NUMBER;
+    v_titulo_arriendo VARCHAR2(100);
+    v_nombre_solic    VARCHAR2(100);
+    v_enlace VARCHAR2(100);
+BEGIN
+    --------------------------------------------------------------------
+    -- 1. Obtener id_arrendador del arriendo
+    --------------------------------------------------------------------
+    SELECT i.id_arrendador
+    INTO v_id_arrendador
+    FROM TCDB_ARRIENDO a JOIN TCDB_INMUEBLE i ON (i.id_inmueble = a.id_inmueble)
+    WHERE a.id_arriendo = p_id_arriendo;
+
+    --------------------------------------------------------------------
+    -- 2. Obtener titulo del arriendo
+    --------------------------------------------------------------------
+    SELECT titulo
+    INTO v_titulo_arriendo
+    FROM TCDB_ARRIENDO
+    WHERE id_arriendo = p_id_arriendo;
+
+    --------------------------------------------------------------------
+    -- 3. Obtener nombre completo del solicitante
+    --------------------------------------------------------------------
+    SELECT nombre || ' ' || apellido1
+    INTO v_nombre_solic
+    FROM TCDB_USUARIO
+    WHERE id_usuario = p_id_solicitante;
+
+    v_enlace := '/request?u=' || p_id_solicitante || CHR(38)|| 'r=' || p_id_arriendo;
+    --------------------------------------------------------------------
+    -- 3. Llamar al CRUD_NOTIFICACION
+    --------------------------------------------------------------------
+    CRUD_NOTIFICACION(
+        'I',                 
+        p_id_notificacion,   -- OUT: retorna id_notificacion
+        v_id_arrendador,     
+        'solicitud',         
+        v_nombre_solic || 'ha solicitado contacto',   
+        'El usuario ' || v_nombre_solic ||' ha solicitado contacto para tu arriendo '|| v_titulo_arriendo,
+        'enviado',           
+        v_enlace,             
+        SYSDATE             
+    );
+END;
+

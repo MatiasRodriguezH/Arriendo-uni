@@ -19,8 +19,11 @@ export default async function handler(req, res) {
 
         let conn = await getConnection();
 
-        await conn.execute(`CRUD_SOLICITUD('I', :p_id_usuario, SYSDATE); END;`,
-            {p_id_usuario: idUsuario, p_id_arriendo: idArriendo});
+        await conn.execute(`BEGIN CRUD_SOLICITUD('I', :p_id_usuario, :p_id_arriendo, :p_estado_solicitud, SYSDATE); END;`,
+            {p_id_usuario: idUsuario, p_id_arriendo: idArriendo, p_estado_solicitud: 'en espera'});
+        await conn.execute(`BEGIN SP_NOTIFICAR_SOLICITUD_CONTACTO(:p_id_notificacion, :p_id_usuario, :p_id_arriendo); END;`,
+            {p_id_notificacion: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+             p_id_usuario: idUsuario, p_id_arriendo: idArriendo});
         
         if (conn) await conn.close();
         return res.json({mensaje: "solicitud ingresada"});

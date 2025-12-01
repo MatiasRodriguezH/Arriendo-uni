@@ -1,17 +1,25 @@
 "use client";
 
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { AuthContext } from "@/contexts/AuthContext";
-import UpdateForm from "@/components/UpdateForm";
+import UpdateForm from "@/components/UpdateProfileForm";
+import Header from "@/components/Header";
 
 export default function EditProfile() {
   const { user, loading } = useContext(AuthContext);
+  const router = useRouter();
 
-  if (loading) return <p>Cargando...</p>;
+  useEffect(()=>{
+    if (!loading && !user){
+      router.push('/login');
+    }
+  },[loading]);
 
-  if (!user) return <p>No estás autenticado.</p>;
-
-  return (
+  if (!loading) return (
+    <>
+    <Header/>
     <UpdateForm user={user} />
+    </>
   );
 }

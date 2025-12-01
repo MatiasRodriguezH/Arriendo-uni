@@ -82,7 +82,6 @@ export default async function handler(req, res){
       return res.status(410).json({error:"correo o rut ya fueron usados"});
     }
     const hash = bcrypt.hashSync(dataUser.contrasenia ,10); 
-    console.log(hash);
     
     let id_ciudad = null;
     if (dataUser.rol == "arrendador"){
