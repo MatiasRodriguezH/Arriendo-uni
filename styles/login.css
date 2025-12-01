@@ -1,11 +1,3 @@
-body {
-  background-color: white;
-  color: black;
-  align-items: center;
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 
 input{
     border: 1px solid #8b8b8b;

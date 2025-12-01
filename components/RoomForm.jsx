@@ -1,6 +1,5 @@
 "use client";
 
-import '@/styles/nuevo_arriendo.css'
 import ImageUploader from './ImageUploader'
 
 export default function RoomForm({hab,index, actualizarHabitacion, eliminarHabitacion}){

@@ -53,6 +53,7 @@
   flex-direction: row;
   justify-self: flex-end;
   margin: 0;
+  gap: 1rem;
 }
 
 .action-btn{

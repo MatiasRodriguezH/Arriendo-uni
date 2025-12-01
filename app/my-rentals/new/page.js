@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import RoomForm from "@/components/RoomForm";
 import ImageUploader from "@/components/ImageUploader";
 import Direccion from "@/components/rental/Direccion";
 import Contacto from "@/components/rental/Contacto";
-import "@/styles/nuevo_arriendo.css"
+import "@/styles/form.css"
 
 export default function NuevoArriendo() {
   const [inmuebles, setInmuebles] = useState([]);
   const [usarExistente, setUsarExistente] = useState(true);
 
   const [error, SetError] = useState("");
+  const router = useRouter();
 
   // Inmueble nuevo o seleccionado
   const [selectedInmueble, setSelectedInmueble] = useState("");
@@ -348,12 +350,14 @@ export default function NuevoArriendo() {
           <span style={{color:'red', fontSize:'1vw'}}>{error}</span>
         </div>
 
-        <button 
-          onClick={handleSubmit}
-          style={{ padding: "10px 20px", background: "#00638e", color: "white", border: "none", borderRadius: "0.5rem" }}
-        >
-          Crear arriendo
-        </button>
+        <div style={{display:'flex', gap:'1rem'}}>
+          <button onClick={handleSubmit}>
+            Crear arriendo
+          </button>
+          <button onClick={() => router.back()}>
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>
   );

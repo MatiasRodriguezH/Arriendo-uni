@@ -15,7 +15,7 @@ export default function Home() {
 
   // Effect para obtener los arriendos al cargar por primera vez la pagina
   useEffect(()=>{
-    async function get_data() {
+    async function getArriendos() {
       try {
         const response = await fetch('http://localhost:3000/api/rentals',{cache: "no-store",});
         const data = await response.json();
@@ -25,7 +25,7 @@ export default function Home() {
         console.error("Error al obtener arriendos:", err);
       }
     }
-    get_data();
+    getArriendos();
   },[]);
 
   // Effect para el menu de regiones

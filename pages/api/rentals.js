@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const referer = req.headers.referer;
 
   if (!referer || !referer.startsWith(allowedReferer)) {
-    return res.status(403).json({ message: 'Acceso prohibido.' });
+    //return res.status(403).json({ message: 'Acceso prohibido.' });
   }
 
   if (req.method !== "GET") {

@@ -1,6 +1,5 @@
 "use client";
 
-import '@/styles/nuevo_arriendo.css'
 import ImagePreview from '@/components/ImagePreview';
 import ImageUploader from '@/components/ImageUploader';
 import { useState } from 'react';

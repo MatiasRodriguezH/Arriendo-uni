@@ -29,7 +29,7 @@ export default function Rentalview({ data }) {
               {data?.TIPO_ARRIENDO}
             </div>
           </div>
-          <img src='./images/example.jpg' alt={data?.TITULO || "arriendo"} />
+          <img src={`/images/${data?.IMAGEN_PORTADA || 'example.jpg'}`} alt={data?.TITULO || "arriendo"} />
           <div className="info">
             <span style={{ textAlign: 'start' }}>{data?.TITULO}</span>
             <span style={{ textAlign: 'start', fontWeight: 'bolder', fontSize: '20px', marginBottom: '1%' }}>{data?.PRECIO}</span>

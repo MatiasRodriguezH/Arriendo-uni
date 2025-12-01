@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useContext } from "react";
-import "@/styles/register.css";
+import "@/styles/form.css";
 import { useRut } from 'react-rut-formatter';
 import { AuthContext } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm(){
     const {cargarUsuario} = useContext(AuthContext);
     const[loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const[rol,setRol] = useState("estudiante");
     const[email, setEmail] = useState("")
@@ -162,7 +164,7 @@ export default function RegisterForm(){
     };
 
     return(
-        <div className="register-container">
+        <div className="content">
             <h2>
                 Crear cuenta
             </h2>
@@ -334,10 +336,15 @@ export default function RegisterForm(){
                 <div style={{margin:'3% 0% 0% 0%'}}>
                     <span style={{color:'red'}}>{error}</span>
                 </div>
-                <button style={{opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer"}} 
-                    type="submit" className="boton">
-                    {!loading ? "Registrarse":"Registrando..."}
-                </button>
+                <div style={{display:'flex', gap:'1rem', marginTop:'1rem'}}>
+                    <button style={{opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer"}} 
+                        type="submit">
+                        {!loading ? "Registrarse":"Registrando..."}
+                    </button>
+                    <button type="button" onClick={()=> router.back()}>
+                        Cancelar
+                    </button>
+                </div>
             </form>
         </div>
     );
