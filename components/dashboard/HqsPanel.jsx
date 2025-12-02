@@ -93,8 +93,6 @@ export default function SedesPanel() {
 
   return (
     <div className="sede-wrapper">
-      <h2>Gestión de Sedes</h2>
-
       {/* Filtro */}
       <div className="sede-header">
         <label>Filtrar por institución:</label>
@@ -112,7 +110,7 @@ export default function SedesPanel() {
       </div>
 
       {/* Botón Nueva Sede */}
-      <button className="btn-nueva" onClick={abrirNueva}>
+      <button style={{marginLeft:'auto', width:'30%'}} className="btn-nueva" onClick={abrirNueva}>
         + Nueva Sede
       </button>
 

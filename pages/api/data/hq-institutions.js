@@ -11,19 +11,21 @@ export default async function handler(req, res) {
     let conn = await getConnection();
     try{
       if (id == 'all'){
-        const data = await conn.execute(`SELECT s.id_sede, s.id_institucion, INITCAP(s.nombre) as "NOMBRE", s.id_direccion, INITCAP(i.nombre) as "NOMBRE_INSTITUCION", d.calle, d.numero, c.nombre as "CIUDAD", r.id_region, r.nombre as "REGION"
+        const data = await conn.execute(`SELECT s.id_sede, s.id_institucion, INITCAP(s.nombre) as "NOMBRE",
+          s.id_direccion, INITCAP(i.nombre) as "NOMBRE_INSTITUCION", d.calle, d.numero, d.latitud, d.longitud,
+          c.nombre as "CIUDAD", r.id_region, r.nombre as "REGION"
           FROM TCDB_SEDE_INSTITUCION s 
           JOIN TCDB_INSTITUCION i ON (i.id_institucion = s.id_institucion)
           LEFT JOIN TCDB_DIRECCION d ON (d.id_direccion = s.id_direccion)
           LEFT JOIN TCDB_CIUDAD c ON (c.id_ciudad = d.id_ciudad)
-          LEFT JOIN TCDB_REGION r ON (r.id_region = c.id_region)`,
+          LEFT JOIN TCDB_REGION r ON (r.id_region = c.id_region) ORDER BY s.id_sede ASC`,
         [],{outFormat:OUT_FORMAT_OBJECT});
         if (conn) await conn.close();
         return res.json(data.rows);
       }
       else{
         const data = await conn.execute(`SELECT id_sede, INITCAP(nombre) as "NOMBRE", id_direccion 
-            FROM TCDB_SEDE_INSTITUCION WHERE id_institucion = :p_id_institucion`,
+            FROM TCDB_SEDE_INSTITUCION WHERE id_institucion = :p_id_institucion ORDER BY id_sede ASC`,
             {p_id_institucion: id},{outFormat:OUT_FORMAT_OBJECT});
         if (conn) await conn.close();
         return res.json(data.rows);
@@ -195,7 +197,7 @@ export default async function handler(req, res) {
         p_id_region : idRegion
       });
 
-      const coordenadas = await getCoords(calle + " " + numero + "," + ciudad + " Chile");
+      const coordenadas = await getCoords(calle + " " + numero + ", " + ciudad + " Chile");
 
       const id_direccion = await insertDireccion({
         p_calle: calle,

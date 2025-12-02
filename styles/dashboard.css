@@ -22,6 +22,7 @@ input{
 .dashboard-container {
   display: flex;
   height: 100vh;
+  width: 100vw;
   background: #f4f4f4;
   font-family: Arial, sans-serif;
 }

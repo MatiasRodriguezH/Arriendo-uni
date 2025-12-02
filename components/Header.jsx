@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import styles from '@/styles/header.module.css'
 import UserMenu from './UserMenu';
+import NotificationMenu from './NotificationMenu';
 
 export default function Header() {
   const { user, isLogin } =  useContext(AuthContext);
@@ -49,14 +50,16 @@ export default function Header() {
         <>
         {user.ROL_USUARIO == "arrendador" && (
           <div className={styles["botones"]}>
-          <button className={styles["action-btn"]} onClick={()=> goToMyRentals()}>
-            Mis Arriendos
-          </button>
-          <button className={styles["action-btn"]} onClick={()=> goToNewRental()}>
-            + Nuevo Arriendo
-          </button>
+            <button className={styles["action-btn"]} onClick={()=> goToMyRentals()}>
+              Mis Arriendos
+            </button>
+            <button className={styles["action-btn"]} onClick={()=> goToNewRental()}>
+              + Nuevo Arriendo
+            </button>
           </div> 
         )}
+        <NotificationMenu idUser={user.ID_USUARIO}/>
+
         <UserMenu user={user} onLogout={() => {
           localStorage.removeItem("token");
           window.location.reload();

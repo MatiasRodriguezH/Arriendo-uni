@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import "@/styles/dashboard.css";
 import InstitutionsPanel from "@/components/dashboard/InstitutionsPanel";
 import HqsPanel from "@/components/dashboard/HqsPanel";
+import CitiesPanel from "@/components/dashboard/CitiesPanel";
 
 export default function Dashboard() {
   const [section, setSection] = useState("inicio");
@@ -49,7 +50,12 @@ export default function Dashboard() {
           <HqsPanel/>
           </>
         )}
-        {section === "ciudades" && <h1>Gestión de Ciudades</h1>}
+        {section === "ciudades" && (
+          <>
+          <h1>Gestión de Ciudades</h1>
+          <CitiesPanel/>
+          </>
+        )}
         {section === "regiones" && <h1>Gestión de Regiones</h1>}
 
         {section === "usuarios" && <h1>Gestión de Usuarios</h1>}

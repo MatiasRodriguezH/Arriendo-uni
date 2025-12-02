@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     //configurar conexion a BD
     let conn = await getConnection();
     try{
-      const data = await conn.execute("SELECT * FROM TCDB_INSTITUCION",[],{outFormat:OUT_FORMAT_OBJECT});
+      const data = await conn.execute("SELECT * FROM TCDB_INSTITUCION ORDER BY id_institucion ASC",[],{outFormat:OUT_FORMAT_OBJECT});
       if (conn) await conn.close();
       return res.json(data.rows);
     }
