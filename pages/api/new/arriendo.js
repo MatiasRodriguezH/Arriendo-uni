@@ -38,11 +38,12 @@ export default async function handler(req, res) {
   if (!user || isNaN(user)) {
     return res.status(500).json({ error: "error en credenciales"})
   }
+  console.log("User id:", user);
 
   //configurar conexion a BD
   let conn;
   try {
-    conn = await getConnection();
+    conn = await getConnection();    
     async function insert_ciudad(data) {
       const result = await conn.execute(
         'SELECT FN_EXIST_CIUDAD(:p_nombre, :p_id_region) AS "id" FROM DUAL',data,{ outFormat: OUT_FORMAT_OBJECT });
@@ -102,7 +103,7 @@ export default async function handler(req, res) {
   
       return insertResult.outBinds.p_id_arriendo;
     }
-  
+    //form.parse
     async function insert_habitacion(data) {
       await conn.execute(`BEGIN CRUD_HABITACION('I', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,
          :p_precio, :p_imagen_portada); END;`,data);
@@ -137,118 +138,125 @@ export default async function handler(req, res) {
       // Retorna URL pública
       return dir + "/" + newName;
     }
-  
-    form.parse(req, async (err, fields, files) => {
-      if (err) return res.status(500).json({ error: "Error procesando archivos" });
-      
-      // JSON recibidos dentro del formData
-      const inmuebleExistente = fields.usarExistente[0];
-      const direccion = JSON.parse(fields.direccion || "{}");
-      const contacto = JSON.parse(fields.contacto|| "{}");
-      const inmueble = JSON.parse(fields.nuevoInmueble || "{}");
-      const arriendo = JSON.parse(fields.arriendo || "{}");
-      const habitaciones = JSON.parse(fields.habitaciones || "[]");
-  
-      var id_inmueble = null;
-      console.log(inmuebleExistente);
-      
-      if(inmuebleExistente == "true"){
-        id_inmueble = fields.id_inmueble[0];
-        console.log(id_inmueble);
-      }
-      else{
-        const id_ciudad = await insert_ciudad({
-          p_nombre :direccion.ciudad,
-          p_id_region: direccion.region
-        });
-  
-        const coordenadas = await getCoords(direccion.calle + " " + direccion.numero + "," + direccion.ciudad + " Chile");
-  
-        const id_direccion = await insert_direccion({
-          p_calle:direccion.calle,
-          p_numero:direccion.numero,
-          p_id_ciudad:id_ciudad,
-          p_latitud: coordenadas.latitud,
-          p_longitud: coordenadas.longitud
-        });
-  
-        if (contacto.origen_contacto == 'arrendador'){
-          contacto.telefono = null;
-          contacto.correo = null;
-        } 
-  
-        id_inmueble = await insert_inmueble({
-          p_id_inmueble: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-          p_tipo_inmueble: inmueble.tipo_inmueble,
-          p_modalidad: inmueble.modalidad,
-          p_nombre: inmueble.nombre,
-          p_propietario: inmueble.propietario, 
-          p_id_arrendador: 2, 
-          p_descripcion: inmueble.descripcion,
-          p_num_habitaciones: inmueble.num_habitaciones, 
-          p_num_banios: inmueble.num_banios,
-          p_id_direccion: id_direccion, 
-          p_direccion_adicional: direccion.adicional,
-          p_estado:'en arriendo', 
-          p_origen_contacto:contacto.origen_contacto,
-          p_telefono_contacto:contacto.telefono, 
-          p_correo_contacto:contacto.correo
-        });
-        //guardar imagenes del inmueble
-        const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'property','properties');
-        insertImagen({
-          p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-          p_id_inmueble: id_inmueble,
-          p_orden_imagen: 0,
-          p_nombre_imagen: img_portada
-        });
-        if(files.imgInmueble){
-          files.imgInmueble.map((img,i) => {
-            const img_inmueble = guardarImagen(img,'property','properties');
-            insertImagen({
-              p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-              p_id_inmueble: id_inmueble,
-              p_orden_imagen: i+1,
-              p_nombre_imagen: img_inmueble
-            });
-          });
-        }
-      }
-  
-      const id_arriendo = await insert_arriendo({
-          p_id_arriendo: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-          p_tipo_arriendo: arriendo.tipo_arriendo,
-          p_titulo: arriendo.titulo,
-          p_id_inmueble: id_inmueble,
-          p_precio: arriendo.precio,
-          p_descripcion: arriendo.descripcion,
-          p_estado: 'disponible'
+
+    // El form.parse tenia problemas de concurrencia, asi que lo hice promesa
+    const { fields, files } = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve({ fields, files });
       });
-  
-      if (arriendo.tipo_arriendo == "por habitaciones"){
-        habitaciones.map((hab, i) => {
-          const file = files[`imgHabitacion_${i}`];
-          const imageUrl = guardarImagen(file?.[0] || file,'room','rooms');
-  
-          insert_habitacion({
-            p_id_habitacion: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-            p_id_arriendo: id_arriendo,
-            p_nombre: hab.nombre,
-            p_superficie: hab.superficie,
-            p_descripcion: hab.descripcion,
-            p_precio: hab.precio,
-            p_imagen_portada: imageUrl
-          })
+    });
+    
+    // JSON recibidos dentro del formData
+    const inmuebleExistente = fields.usarExistente[0];
+    const direccion = JSON.parse(fields.direccion || "{}");
+    const contacto = JSON.parse(fields.contacto|| "{}");
+    const inmueble = JSON.parse(fields.nuevoInmueble || "{}");
+    const arriendo = JSON.parse(fields.arriendo || "{}");
+    const habitaciones = JSON.parse(fields.habitaciones || "[]");
+
+    var id_inmueble = null;
+    console.log(inmuebleExistente);
+    
+    if(inmuebleExistente == "true"){
+      id_inmueble = fields.id_inmueble[0];
+      console.log(id_inmueble);
+    }
+    else{
+      const id_ciudad = await insert_ciudad({
+        p_nombre :direccion.ciudad,
+        p_id_region: direccion.region
+      });
+
+      const coordenadas = await getCoords(direccion.calle + " " + direccion.numero + "," + direccion.ciudad + " Chile");
+
+      const id_direccion = await insert_direccion({
+        p_calle:direccion.calle,
+        p_numero:direccion.numero,
+        p_id_ciudad:id_ciudad,
+        p_latitud: coordenadas.latitud,
+        p_longitud: coordenadas.longitud
+      });
+
+      if (contacto.origen_contacto == 'arrendador'){
+        contacto.telefono = null;
+        contacto.correo = null;
+      } 
+
+      id_inmueble = await insert_inmueble({
+        p_id_inmueble: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+        p_tipo_inmueble: inmueble.tipo_inmueble,
+        p_modalidad: inmueble.modalidad,
+        p_nombre: inmueble.nombre,
+        p_propietario: inmueble.propietario, 
+        p_id_arrendador: Number(user), 
+        p_descripcion: inmueble.descripcion,
+        p_num_habitaciones: inmueble.num_habitaciones, 
+        p_num_banios: inmueble.num_banios,
+        p_id_direccion: id_direccion, 
+        p_direccion_adicional: direccion.adicional,
+        p_estado:'en arriendo', 
+        p_origen_contacto:contacto.origen_contacto,
+        p_telefono_contacto:contacto.telefono, 
+        p_correo_contacto:contacto.correo
+      });
+      //guardar imagenes del inmueble
+      const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'property','properties');
+      insertImagen({
+        p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+        p_id_inmueble: id_inmueble,
+        p_orden_imagen: 0,
+        p_nombre_imagen: img_portada
+      });
+      if(files.imgInmueble){
+        files.imgInmueble.map((img,i) => {
+          const img_inmueble = guardarImagen(img,'property','properties');
+          insertImagen({
+            p_id_imagen: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+            p_id_inmueble: id_inmueble,
+            p_orden_imagen: i+1,
+            p_nombre_imagen: img_inmueble
+          });
         });
-      };
+      }
+    }
+
+    const id_arriendo = await insert_arriendo({
+        p_id_arriendo: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+        p_tipo_arriendo: arriendo.tipo_arriendo,
+        p_titulo: arriendo.titulo,
+        p_id_inmueble: id_inmueble,
+        p_precio: arriendo.precio,
+        p_descripcion: arriendo.descripcion,
+        p_estado: 'disponible'
+    });
+
+    if (arriendo.tipo_arriendo == "por habitaciones"){
+      habitaciones.map((hab, i) => {
+        const file = files[`imgHabitacion_${i}`];
+        const imageUrl = guardarImagen(file?.[0] || file,'room','rooms');
+
+        insert_habitacion({
+          p_id_habitacion: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
+          p_id_arriendo: id_arriendo,
+          p_nombre: hab.nombre,
+          p_superficie: hab.superficie,
+          p_descripcion: hab.descripcion,
+          p_precio: hab.precio,
+          p_imagen_portada: imageUrl
+        })
+      });
+    };
+
+    console.log(inmuebleExistente);
+    console.log(direccion);
+    console.log(contacto);
+    console.log(inmueble);
+    console.log(arriendo);
+    console.log(habitaciones);
+
+    
   
-      console.log(inmuebleExistente);
-      console.log(direccion);
-      console.log(contacto);
-      console.log(inmueble);
-      console.log(arriendo);
-      console.log(habitaciones);
-  })
   
     return res.status(200).json({
       mensaje: "Datos recibidos correctamente",

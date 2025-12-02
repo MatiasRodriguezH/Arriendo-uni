@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import RoomForm from "@/components/RoomForm";
@@ -10,6 +11,7 @@ import Contacto from "@/components/rental/Contacto";
 import "@/styles/form.css"
 
 export default function NuevoArriendo() {
+  const { user, isLogin } =  useContext(AuthContext);
   const [inmuebles, setInmuebles] = useState([]);
   const [usarExistente, setUsarExistente] = useState(true);
 
@@ -189,7 +191,7 @@ export default function NuevoArriendo() {
     }
   
 
-    const res = await fetch(`/api/new/arriendo?user=${2}`, {
+    const res = await fetch(`/api/new/arriendo?user=${user.ID_USUARIO}`, {
       method: "POST",
       body: formData
     });
