@@ -13,12 +13,14 @@ export default function UpdateForm({ user }) {
     apellido1: user.APELLIDO1 || "",
     apellido2: user.APELLIDO2 || "",
     telefono: user.TELEFONO || "",
-    institucion: user.INSTITUCION || "",
-    sede: user.SEDE || "",
-    ciudad: user.ID_CIUDAD || ""
+    institucion: user.ID_INSTITUCION || "",
+    sede: user.ID_SEDE || "",
+    ciudad: user.CIUDAD || "",
+    region: user.ID_REGION || ""
   });
   const [instituciones, setInstituciones] = useState([]);
   const [sedes, setSedes] = useState([]);
+  const [regiones, setRegiones] = useState([]);
   const[rutValue, setRutValue] = useState("");
   const {rut, isValid, updateRut} = useRut(rutValue);
   const [contrasenia, setContrasenia] = useState();
@@ -38,10 +40,17 @@ export default function UpdateForm({ user }) {
       const data = await result.json();
       setSedes(data);
     }
+
+    async function fetchRegiones() {
+      const result = await fetch(`/api/data/regions`);
+      const data = await result.json();
+      setRegiones(data);
+    }
     
     updateRut(user.RUT);
     fetchInstituciones();
     fetchSedes();
+    fetchRegiones();
     console.log(instituciones);
   },[]);
 
@@ -61,7 +70,7 @@ export default function UpdateForm({ user }) {
       return null;
     }
     if (contrasenia != confirmarContrasenia){
-      setError("contraseñas no coinciden");
+      setError("Contraseñas no coinciden");
       return null;
     }
     setForm(prev => ({
@@ -81,7 +90,7 @@ export default function UpdateForm({ user }) {
     }
 
   return (
-    <div className="content">
+    <div style={{width:'40vw'}} className="content">
       <h2>Editar Usuario</h2>
       <form onSubmit={handleSubmit}>
         <h3 style={{marginTop:'1rem'}}>Información</h3>
@@ -132,7 +141,20 @@ export default function UpdateForm({ user }) {
         </>
         )}
         {(user.ROL_USUARIO == "arrendador") && (
-          <input name="ciudad" value={form.ciudad} onChange={handleChange} />
+          <div style={{display:'flex', flexDirection:'row', gap:'2%', marginTop:'1rem'}}>
+            <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
+              <h4>Ciudad</h4>
+              <input name="ciudad" value={form.ciudad} onChange={handleChange} />
+            </div>
+            <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
+              <h4>Region</h4>
+              <select name="region" value={form.region} onChange={handleChange}>
+                {regiones.map(r => 
+                  <option key={r.ID_REGION} value={r.ID_REGION}>{r.NOMBRE}</option>
+                )}
+              </select>
+            </div>
+          </div>
         )}
 
         <h3 style={{marginTop:'1rem'}}>Seguridad</h3>
@@ -140,22 +162,25 @@ export default function UpdateForm({ user }) {
         <div style={{display:'flex', flexDirection:'row', gap:'2%'}}>
           <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
             <h4>Nueva contraseña</h4>
-            <input value={contrasenia} onChange={(e) => setContrasenia(e.target.value)}/>
+            <input type="password" value={contrasenia || ""} onChange={(e) => setContrasenia(e.target.value)}/>
           </div>
           <div style={{display:'flex', flexDirection:'column', width:'49%'}}>
             <h4>Confirmar nueva contraseña</h4>
-            <input value={confirmarContrasenia} onChange={(e) => setConfirmarContrasenia(e.target.value)}/>
+            <input type="password" value={confirmarContrasenia || ""} onChange={(e) => setConfirmarContrasenia(e.target.value)}/>
           </div>
         </div>
 
         < br />
+        <div style={{color:'red', marginBottom:'1rem'}}>
+          <span>{error}</span>
+        </div>
 
         <div style={{display: 'flex', gap:'1rem'}}>
           <button type="submit" style={{ padding: "10px 20px", background: "#00638e", color: "white", border: "none", borderRadius: "0.5rem", cursor:'pointer' }}>
           Guardar cambios
           </button>
           <button type="button" style={{ padding: "10px 20px", background: "red", color: "white", border: "none", borderRadius: "0.5rem", cursor:'pointer' }} 
-          onClick={() => router.push('/profile')}>
+          onClick={() => router.back()}>
           Cancelar
           </button>
         </div>

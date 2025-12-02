@@ -49,14 +49,9 @@ export default function Header() {
       ) : (
         <>
         {user.ROL_USUARIO == "arrendador" && (
-          <div className={styles["botones"]}>
-            <button className={styles["action-btn"]} onClick={()=> goToMyRentals()}>
-              Mis Arriendos
-            </button>
-            <button className={styles["action-btn"]} onClick={()=> goToNewRental()}>
-              + Nuevo Arriendo
-            </button>
-          </div> 
+          <button className={styles["action-btn"]} onClick={()=> goToNewRental()}>
+            + Nuevo Arriendo
+          </button>
         )}
         <NotificationMenu idUser={user.ID_USUARIO}/>
 

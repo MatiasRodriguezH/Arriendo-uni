@@ -49,9 +49,9 @@
 }
 
 .botones {
+  background-color: antiquewhite;
   display: flex;
   flex-direction: row;
-  justify-self: flex-end;
   margin-left: auto;
   gap: 1rem;
 }
@@ -61,7 +61,7 @@
   align-self: center;
   font-size: 0.8rem;
   padding: 0.25rem 0.75rem;
-  margin: 0;
+  margin-left: 62%;
   font-weight: bold;
   text-align: center;
   color: white;

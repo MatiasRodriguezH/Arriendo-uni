@@ -1,8 +1,9 @@
 
 .container{
     margin-top: 70px;
-    padding: 1rem;
+    padding: 2rem;
     width: 30vw;
+    border-radius: 1rem;
     background-color: #e7e3dd;
     display: flex;
     flex-direction: column;
@@ -47,4 +48,21 @@
   align-self: center;
   border-radius: 50%;
   overflow: hidden; 
+}
+
+.edit-button {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    background-color: #00638e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+.edit-button img{
+    width: 5%;
+}
+.edit-button:hover {
+    opacity: 0.8;;
 }

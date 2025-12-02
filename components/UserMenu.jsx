@@ -15,7 +15,7 @@ export default function UserMenu({ user, onLogout }) {
     router.push('/my-properties');
   }
   function goToProfile(){
-    router.push('/profile');
+    router.push('/my-profile');
   }
   function goToMySolicitudes(){
     router.push('/my-solicitudes');
