@@ -1,0 +1,51 @@
+.uni-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.uni-label {
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.uni-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #c7c7c7;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+  background-color: white;
+}
+
+.uni-input:focus {
+  border-color: #4a90e2;
+}
+
+.uni-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 50;
+  margin-top: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.uni-item {
+  padding: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.uni-item:hover {
+  background: #f1f1f1;
+}

@@ -197,6 +197,49 @@ INSERT INTO TCDB_USUARIO VALUES(2,'arrendador','99999999-9','Arrendador','Numero
 INSERT INTO TCDB_INMUEBLE VALUES(1,'casa','por completo','Casa de Prueba','Arrendador Numero Uno',2,'Esta es una descripcion de la Casa de Prueba',3,1,1,'a un lado de la universidad','disponible','arrendador',null,null);
 INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE);
 
+CREATE OR REPLACE PROCEDURE SP_MOSTRAR_ARRIENDOS_POR_INSTITUCION (
+    p_id_institucion IN NUMBER,
+    p_cursor         OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN p_cursor FOR
+        SELECT 
+            a.id_arriendo,
+            i.tipo_inmueble,
+            a.tipo_arriendo,
+            a.titulo,
+            CASE 
+                WHEN a.tipo_arriendo = 'por habitaciones' THEN
+                    TO_CHAR(MIN(h.precio), '$999,999') || ' - ' || TO_CHAR(MAX(h.precio), '$999,999')
+                ELSE
+                    TO_CHAR(a.precio, '$999,999')
+            END AS precio,
+            i.num_habitaciones,
+            i.num_banios,
+            m.nombre_imagen AS imagen_portada,
+            d.calle || ' ' || d.numero AS direccion
+        FROM TCDB_ARRIENDO a
+        JOIN TCDB_INMUEBLE i 
+            ON i.id_inmueble = a.id_inmueble
+        LEFT JOIN TCDB_DIRECCION d 
+            ON d.id_direccion = i.id_direccion
+        LEFT JOIN TCDB_IMAGEN_INMUEBLE m 
+            ON m.id_inmueble = i.id_inmueble AND m.orden_imagen = 0
+        LEFT JOIN TCDB_HABITACION h
+            ON h.id_arriendo = a.id_arriendo
+        JOIN TCDB_SEDE_INSTITUCION si 
+            ON si.id_direccion = d.id_direccion
+        JOIN TCDB_INSTITUCION inst
+            ON inst.id_institucion = si.id_institucion
+        WHERE inst.id_institucion = p_id_institucion
+        GROUP BY 
+            a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo, a.precio,
+            i.num_habitaciones, i.num_banios, m.nombre_imagen, d.calle, d.numero;
+END;
+
+
+
 --UNIVERSIDADES--
 INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Pontificia Universidad Católica de Chile', 'universidad');
 INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Pontificia Universidad Católica de Valparaíso', 'universidad');

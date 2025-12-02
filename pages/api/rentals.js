@@ -1,5 +1,5 @@
 import { getConnection } from "@/database/oracle";
-import { OUT_FORMAT_OBJECT } from "oracledb";
+import { OUT_FORMAT_OBJECT, outFormat } from "oracledb";
 import oracledb from "oracledb";
 
 export default async function handler(req, res) {
@@ -15,20 +15,32 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
-  const universidad = req.query.universidad?.trim() || null;
-
-  let conn = await getConnection();
+  const universidad = req.query.universidad || null;
+  console.log("Universidad: ",universidad);
+  let conn;
 
   try {
     // Ejecutar el SP existente
-    const results = await conn.execute(
-      `BEGIN SP_MOSTRAR_ARRIENDOS(:cursor); END;`,
-      { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
-      { outFormat: OUT_FORMAT_OBJECT }
-    );
+    conn = await getConnection();
+    if(universidad){
+      const results = await conn.execute(`
+        BEGIN SP_MOSTRAR_ARRIENDOS_POR_INSTITUCION(:id_institucion, :cursor); END;`,
+        { id_institucion : universidad },
+        { cursor: {type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        { outFormat: OUT_FORMAT_OBJECT }
+      );
+      const data = await results.outBinds.cursor.getRows(); 
+      return res.json(data);
 
-    const data = await results.outBinds.cursor.getRows(); 
-    return res.json(data);
+    } else {
+      const results = await conn.execute(
+        `BEGIN SP_MOSTRAR_ARRIENDOS(:cursor); END;`,
+        { cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        { outFormat: OUT_FORMAT_OBJECT }
+      );
+      const data = await results.outBinds.cursor.getRows(); 
+      return res.json(data);
+    }
 
   } catch (error) {
     console.error("Error al conectar a Oracle:", error);

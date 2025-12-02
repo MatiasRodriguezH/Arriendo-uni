@@ -3,13 +3,13 @@
 import { useEffect, useState, useRef} from "react";
 import Header from "../components/Header";
 import Rentalview from "../components/Rentalview";
+import InputUniversidad from "@/components/InputUniversidad";
 import '../styles/home.css'
 
 export default function Home() {
   const [arriendos,setArriendos] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [region, setRegion] = useState("Metropolitana");
-  const [universidadInput, setUniversidadInput] = useState("");
   const [universidad, setUniversidad] = useState("");
   const dropdownRef = useRef(null);
 
@@ -41,28 +41,25 @@ export default function Home() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  
   // Effect para buscar por universidad especifica
   useEffect(() => {
-  if (universidad.trim() === "") return;
-
-  async function fetchByUniversity() {
-    try {
-      const response = await fetch(`http://localhost:3000/api/rentals?universidad=${encodeURIComponent(universidad)}`, {
-        cache: "no-store"
-      });
-      const data = await response.json();
-      setArriendos(data);
-    } catch (error) {
-      console.error("Error filtrando por universidad:", error);
+    async function fetchByUniversity() {
+      try {
+        const response = await fetch(`http://localhost:3000/api/rentals?universidad=${encodeURIComponent(universidad)}`, {
+          cache: "no-store"
+        });
+        const data = await response.json();
+        setArriendos(data);
+      } catch (error) {
+        console.error("Error filtrando por universidad:", error);
+      }
     }
-  }
 
-  fetchByUniversity();
-}, [universidad]);
+    fetchByUniversity();
+  }, [universidad]);
 
   const handleRegionSelect = (regionNombre) => {
-    console.log(`Región seleccionada: ${regionNombre}`);
     setRegion(regionNombre);
     setIsDropdownOpen(false); // Cierra el dropdown después de la selección
   }
@@ -117,21 +114,12 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <div className="universidad-div">
-              <span style={{fontWeight:'700', fontSize:'20px'}}>Ingresa tu universidad:</span>
-              <input
-                className="universidad"
-                type="text"
-                placeholder="Ej: Universidad Católica del Maule"
-                value={universidadInput}
-                onChange={(e) => setUniversidadInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setUniversidad(universidadInput); // dispara la búsqueda
-                  }
-                }}
-              />
-            </div>
+            <InputUniversidad
+              region={region}
+              onSelect={(nombreUni) => {
+                setUniversidad(nombreUni);
+              }}
+            />
           </div>
         </div>
         <div className="search-page">
