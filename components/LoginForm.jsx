@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useContext, useEffect } from "react";
-import "@/styles/login.css";
+import "@/styles/form.css";
 import Link from "next/link";
 import { AuthContext } from "@/contexts/AuthContext";
 
@@ -60,7 +60,7 @@ export default function LoginForm(){
     }
 
     return(
-        <div className="login-container">
+        <div style={{width:'25vw'}} className="content">
             <h2 style={{justifySelf:'center'}}>
                 Ingresar
             </h2>
@@ -78,10 +78,12 @@ export default function LoginForm(){
                 <div style={{justifySelf:'center', margin: '10% 0% -2% 0%'}}>
                     <a href="registration">¿Estas registrado?</a>
                 </div>
-                <button style={{opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer"}}
-                type="submit" className="boton">
+                <div style={{display: 'flex', width:'100%', marginTop:'1rem'}}>
+                <button style={{width:'100%', opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer"}}
+                type="submit">
                     {!loading ? "Ingresar":"Ingresando..."}
                 </button>
+                </div>
             </form>
         </div>
     );

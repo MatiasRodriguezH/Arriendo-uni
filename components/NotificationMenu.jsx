@@ -36,7 +36,7 @@ export default function NotificationMenu({idUser}) {
                 className= {styles["notif-button"]}
                 onClick={() => setOpen(!open)}
             >
-                <img src="images/icons/bell-solid.svg"/>
+                <img src="/images/icons/bell-regular.svg"/>
 
                 {unread > 0 && (
                     <span className="notif-badge">{unread}</span>

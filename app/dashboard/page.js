@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import "@/styles/dashboard.css";
 import InstitutionsPanel from "@/components/dashboard/InstitutionsPanel";
 import HqsPanel from "@/components/dashboard/HqsPanel";
@@ -8,6 +9,7 @@ import CitiesPanel from "@/components/dashboard/CitiesPanel";
 
 export default function Dashboard() {
   const [section, setSection] = useState("inicio");
+  const router = useRouter();
 
   return (
     <div className="dashboard-container">
@@ -31,6 +33,7 @@ export default function Dashboard() {
           <button onClick={() => setSection("reporte1")}>Demanda de Arriendos</button>
           <button onClick={() => setSection("reporte2")}>Usuarios Activos</button>
           <button onClick={() => setSection("reporte3")}>Ingresos</button>
+          <button onClick={() => router.push('/')}>Salir</button>
         </nav>
       </aside>
 
@@ -61,9 +64,9 @@ export default function Dashboard() {
         {section === "usuarios" && <h1>Gestión de Usuarios</h1>}
         {section === "crear-admin" && <h1>Crear Nuevo Administrador</h1>}
 
-        {section === "reporte1" && <h1>Reporte: Demanda de Arriendos</h1>}
-        {section === "reporte2" && <h1>Reporte: Usuarios Activos</h1>}
-        {section === "reporte3" && <h1>Reporte: Ingresos del Sistema</h1>}
+        {section === "reporte1" && <h1>Reporte: Mercado de Arriendos</h1>}
+        {section === "reporte2" && <h1>Reporte: Usuario e Instituciones</h1>}
+        {section === "reporte3" && <h1>Reporte: Ingresos al Sistema</h1>}
       </main>
 
     </div>

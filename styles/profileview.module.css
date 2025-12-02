@@ -1,0 +1,50 @@
+
+.container{
+    margin-top: 70px;
+    padding: 1rem;
+    width: 30vw;
+    background-color: #e7e3dd;
+    display: flex;
+    flex-direction: column;
+    color: black;
+}
+
+.container h1{
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #00638e;
+}
+.container h2{
+    font-size: 1rem;
+    font-weight: bold;
+    color: #00638e;
+}
+.container p{
+    font-size: 0.9rem;
+    color: black;
+}
+
+.profile-info{
+    margin-top: 2rem;
+    font-size: 1rem;
+    align-items: flex-end;
+}
+
+.profile-info label{
+    font-weight: bold;
+    color: #00638e;
+    font-size: 0.9rem;
+}
+
+.profile-picture{
+    width: 5rem;
+    margin: 1rem;
+}
+
+.profile-picture img{
+  object-fit: cover;
+  width: 100%;
+  align-self: center;
+  border-radius: 50%;
+  overflow: hidden; 
+}

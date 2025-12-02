@@ -8,7 +8,7 @@ import Direccion from "@/components/rental/Direccion";
 import Contacto from "@/components/rental/Contacto";
 import ImagePreview from "@/components/ImagePreview";
 import Alert from "@/components/Alert";
-import "@/styles/nuevo_arriendo.css";
+import "@/styles/form.css";
 
 export default function EditarInmueble() {
     const searchParams = useSearchParams();
@@ -28,6 +28,7 @@ export default function EditarInmueble() {
         descripcion: "",
         num_habitaciones: 0,
         num_banios: 0,
+        estado: "disponible"
     });
     const [numHabArriendo, setNumHabArriendo] = useState(0);
 
@@ -76,6 +77,7 @@ export default function EditarInmueble() {
                 descripcion: data.DESCRIPCION,
                 num_habitaciones: data.NUM_HABITACIONES,
                 num_banios: data.NUM_BANIOS,
+                estado: data.ESTADO
             });
 
             setNumHabArriendo(data.NUM_HABITACIONES_ARRIENDO);
@@ -169,10 +171,16 @@ export default function EditarInmueble() {
     return (
         <div>
             <Header/>
-            <div className="content">
-            <h2>Editar Inmueble</h2>
+            <div style={{width:'50vw'}} className="content">
+            <h2 style={{justifySelf:'center'}}>Editar Inmueble</h2>
+
+            <div style={{width:'100%', background:'lightgrey', borderRadius:'0.5rem', padding:'0.75rem 1rem', margin:'1rem 0rem'}}>
+                {inmueble.estado === "disponible" ? "El inmueble no cuenta con un arriendo activo" :
+                "El inmueble posee un arriendo activo"}
+            </div>
 
             {/* Datos del inmueble*/}
+
 
             <h3>Datos del inmueble</h3>
             <hr/>

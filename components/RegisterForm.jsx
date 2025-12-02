@@ -164,8 +164,8 @@ export default function RegisterForm(){
     };
 
     return(
-        <div className="content">
-            <h2>
+        <div style={{width:'40vw'}} className="content">
+            <h2 style={{justifySelf:'center'}}>
                 Crear cuenta
             </h2>
             <br />
@@ -336,8 +336,8 @@ export default function RegisterForm(){
                 <div style={{margin:'3% 0% 0% 0%'}}>
                     <span style={{color:'red'}}>{error}</span>
                 </div>
-                <div style={{display:'flex', gap:'1rem', marginTop:'1rem'}}>
-                    <button style={{opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer"}} 
+                <div style={{display:'flex', gap:'1rem', marginTop:'2rem'}}>
+                    <button style={{width:'10rem',opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer"}} 
                         type="submit">
                         {!loading ? "Registrarse":"Registrando..."}
                     </button>

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import RoomFormEdit from "@/components/RoomFormEdit";
 import InmuebleCard from "@/components/rental/InmuebleCard";
-import "@/styles/nuevo_arriendo.css"
+import "@/styles/form.css"
 import Alert from "@/components/Alert";
 
 export default function NuevoArriendo() {
@@ -149,8 +149,8 @@ export default function NuevoArriendo() {
   return (
     <div>
       <Header/>
-      <div className="content">
-        <h2>Editar arriendo</h2>
+      <div style={{width:'50vw'}} className="content">
+        <h2 style={{justifySelf:'center'}}>Editar arriendo</h2>
 
         <InmuebleCard inmueble={inmueble}/>
 

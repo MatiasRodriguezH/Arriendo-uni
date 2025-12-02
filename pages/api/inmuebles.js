@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       FROM TCDB_INMUEBLE i
       JOIN TCDB_IMAGES m ON (m.id_inmueble = i.id_inmueble)
       JOIN TCDB_DIRECCION d ON (d.id_direccion = i.id_direccion)
-      WHERE m.orden_imagen = 0`);
+      WHERE m.orden_imagen = 0 ORDER BY i.id_inmueble DESC`);
       
     return res.json({results});
 

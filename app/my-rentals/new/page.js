@@ -202,8 +202,8 @@ export default function NuevoArriendo() {
   return (
     <div>
       <Header/>
-      <div className="content">
-        <h2>Crear nuevo arriendo</h2>
+      <div style={{width:'50vw'}} className="content">
+        <h2 style={{justifySelf:'center'}}>Crear nuevo arriendo</h2>
 
         {/* Selección entre inmueble nuevo o existente */}
         <div style={{ marginTop: "20px", marginBottom: "20px", background: "#fff" }}>

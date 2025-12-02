@@ -54,6 +54,8 @@ return (
                 </div>
             </div>
         ))}
+        {inmuebles.length == 0 && <span style={{marginLeft:'auto', fontSize:'1.5rem',color:'gray', margin:'1rem'}}>
+            No existen inmuebles</span>}
         </div>
     </div>
     </>

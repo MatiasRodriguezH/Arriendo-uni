@@ -78,8 +78,15 @@
 
 /* Botón cerrar sesión */
 .logout {
+  display: flex;
+  gap: 0.5rem;
   color: #cc0000;
   font-weight: bold;
+}
+
+.icon{
+  width: 10%;
+  margin:0;
 }
 
 /* Animación */

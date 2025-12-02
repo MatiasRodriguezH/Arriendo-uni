@@ -35,7 +35,10 @@ return (
     <>
     <Header/>
     <div className="items-wrapper">
+        <div style={{display: 'flex', flexDirection: 'row'}}>
         <span className="title">Mis Arriendos</span>
+        <button className="add-button" onClick={() => router.push('/my-rentals/new')}>+</button>
+        </div>
 
         <div className="items-grid">
         {arriendos.map((item) => (
@@ -59,6 +62,8 @@ return (
                 </div>
             </div>
         ))}
+        {arriendos.length == 0 && <span style={{marginLeft:'auto', fontSize:'1.5rem',color:'gray', margin:'1rem'}}>
+            No existen arriendos</span>}
         </div>
     </div>
     </>

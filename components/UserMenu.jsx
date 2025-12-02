@@ -58,6 +58,7 @@ export default function UserMenu({ user, onLogout }) {
           )}
           <button className={styles["menu-item"]}>Configuración</button>
           <button className={`${styles["menu-item"]} ${styles.logout}`} onClick={onLogout}>
+            <img className={styles["icon"]} src="/images/icons/logout.svg"/>
             Cerrar sesión
           </button>
         </div>
