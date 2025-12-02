@@ -25,8 +25,7 @@ export default async function handler(req, res) {
     if(universidad){
       const results = await conn.execute(`
         BEGIN SP_MOSTRAR_ARRIENDOS_POR_INSTITUCION(:id_institucion, :cursor); END;`,
-        { id_institucion : universidad },
-        { cursor: {type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        { id_institucion : universidad , cursor: {type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: OUT_FORMAT_OBJECT }
       );
       const data = await results.outBinds.cursor.getRows(); 
