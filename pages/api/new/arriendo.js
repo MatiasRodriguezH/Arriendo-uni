@@ -9,26 +9,6 @@ export const config = {
   api: { bodyParser: false }
 };
 
-async function getCoords(direccion) {
-  try{
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`;
-    const response = await fetch(url);
-    const coords = await response.json();
-
-    if (coords.length === 0) {
-      return {latitud: null, longitud: null}
-    }
-    return {
-      latitud: parseFloat(coords[0].lat),
-      longitud: parseFloat(coords[0].lon)
-    }
-  }
-  catch (error){
-    return {latitud: null, longitud: null};
-  }
-}
-
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido" });
@@ -154,6 +134,7 @@ export default async function handler(req, res) {
     const inmueble = JSON.parse(fields.nuevoInmueble || "{}");
     const arriendo = JSON.parse(fields.arriendo || "{}");
     const habitaciones = JSON.parse(fields.habitaciones || "[]");
+    const ubicacion = JSON.parse(fields.ubicacion || "{}");
 
     var id_inmueble = null;
     console.log(inmuebleExistente);
@@ -168,14 +149,12 @@ export default async function handler(req, res) {
         p_id_region: direccion.region
       });
 
-      const coordenadas = await getCoords(direccion.calle + " " + direccion.numero + "," + direccion.ciudad + " Chile");
-
       const id_direccion = await insert_direccion({
         p_calle:direccion.calle,
         p_numero:direccion.numero,
         p_id_ciudad:id_ciudad,
-        p_latitud: coordenadas.latitud,
-        p_longitud: coordenadas.longitud
+        p_latitud: ubicacion.lat,
+        p_longitud: ubicacion.lng
       });
 
       if (contacto.origen_contacto == 'arrendador'){

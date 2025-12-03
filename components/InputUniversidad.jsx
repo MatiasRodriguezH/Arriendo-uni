@@ -41,7 +41,6 @@ export default function InputUniversidad({ region, onSelect }) {
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && filtradas.length > 0) {
       const first = filtradas[0];
-      console.log("first: ",first);  // LOGGG
       setTexto(first.NOMBRE);
       onSelect(first.NOMBRE);
       setOpen(false);

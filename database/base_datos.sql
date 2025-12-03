@@ -238,6 +238,88 @@ BEGIN
             i.num_habitaciones, i.num_banios, m.nombre_imagen, d.calle, d.numero;
 END;
 
+CREATE OR REPLACE FUNCTION DISTANCIA_KM (
+  lat1 NUMBER, lon1 NUMBER,
+  lat2 NUMBER, lon2 NUMBER
+) RETURN NUMBER IS
+  R CONSTANT NUMBER := 6371; -- radio de la Tierra en km
+  PI CONSTANT NUMBER := ACOS(-1);
+BEGIN
+  RETURN R * 2 * ASIN(
+    SQRT(
+      POWER(SIN((lat2 - lat1) * PI / 180 / 2), 2) +
+      COS(lat1 * PI / 180) * COS(lat2 * PI / 180) *
+      POWER(SIN((lon2 - lon1) * PI / 180 / 2), 2)
+    )
+  );
+END;
+/
+
+create or replace PROCEDURE SP_INSTITUCION_MAS_CERCANA (
+  p_lat IN NUMBER,
+  p_lng IN NUMBER,
+  p_cursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+  OPEN p_cursor FOR
+    SELECT 
+      inst.id_institucion,
+      inst.nombre,
+      dist.latitud,
+      dist.longitud,
+      DISTANCIA_KM(p_lat, p_lng, dist.latitud, dist.longitud) AS distancia_km
+    FROM TCDB_INSTITUCION inst
+    JOIN TCDB_SEDE_INSTITUCION sede ON sede.id_institucion = inst.id_institucion
+    JOIN TCDB_DIRECCION dist ON dist.id_direccion = sede.id_direccion
+    ORDER BY distancia_km ASC
+    FETCH FIRST 1 ROWS ONLY;
+END;
+/
+
+ALTER TABLE TCDB_INMUEBLE
+ADD SEDE_CERCANA varchar2(10); 
+
+CREATE OR REPLACE TRIGGER TRG_SET_SEDE_MAS_CERCANA
+BEFORE INSERT ON TCDB_INMUEBLE
+FOR EACH ROW
+DECLARE
+  v_sede_id        NUMBER;
+BEGIN
+  -- Obtener la sede más cercana según las coordenadas de la dirección del inmueble
+  SELECT id_sede
+  INTO v_sede_id
+  FROM (
+        SELECT 
+          si.id_sede AS id_sede,
+          DISTANCIA_KM(
+            (SELECT latitud  FROM TCDB_DIRECCION WHERE id_direccion = :NEW.id_direccion),
+            (SELECT longitud FROM TCDB_DIRECCION WHERE id_direccion = :NEW.id_direccion),
+            d.latitud,
+            d.longitud
+          ) AS distancia
+        FROM TCDB_SEDE_INSTITUCION si
+        JOIN TCDB_DIRECCION d
+          ON si.id_direccion = d.id_direccion
+        ORDER BY distancia ASC
+       )
+  WHERE ROWNUM = 1;
+
+  -- Guardar en el inmueble antes de insertarlo
+  :NEW.sede_cercana := v_sede_id;
+
+END;
+/
+
+INSERT INTO TCDB_DIRECCION (id_direccion, calle, numero, id_ciudad, latitud, longitud) VALUES (
+  3, 'San Miguel', 3846, 1, -35.43852218589199, -71.61795043362335
+);
+
+INSERT INTO TCDB_SEDE_INSTITUCION (id_sede, nombre, id_institucion, id_direccion) VALUES (4,'Campus Lircay', 31, 22);
+
+INSERT INTO TCDB_SEDE_INSTITUCION (id_sede, nombre, id_institucion, id_direccion) VALUES (5,'Campus Pehuenche', 31, 3);
+
+COMMIT;
 
 
 --UNIVERSIDADES--
@@ -285,3 +367,5 @@ INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad San
 INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Técnica Federico Santa María', 'universidad');
 INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Tecnológica Metropolitana', 'universidad');
 INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Adolfo Ibañez (UAI)', 'universidad');
+
+ALTER TABLE TCDB_INMUEBLE ADD Institucion VARCHAR2(20);

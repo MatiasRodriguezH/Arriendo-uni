@@ -18,6 +18,9 @@ function slugify(str) {
 export default function Rentalview({ data }) {
   const href = `/arriendo/${slugify(data?.TITULO)}`;
 
+  if(data.TITULO == "La casa de las pajas") {
+    console.log(data);
+  }
   return (
     <Link href={href}>
         <div className="rentview-container">
@@ -35,7 +38,7 @@ export default function Rentalview({ data }) {
             <span style={{ textAlign: 'start', fontWeight: 'bolder', fontSize: '20px', marginBottom: '1%' }}>{data?.PRECIO}</span>
             <span style={{ textAlign: 'start' }}>{data?.NUM_HABITACIONES} Habitaciones | {data?.NUM_BANIOS} baños</span>
             <span style={{ textAlign: 'start', color: 'grey' }}>{data?.DIRECCION}</span>
-            <span style={{ textAlign: 'start', color: '#00638e' }}>Cercano a X ubicación</span>
+            <span style={{ textAlign: 'start', color: '#00638e' }}>Cercano a {data?.SEDE_CERCANA}</span>
           </div>
         </div>
     </Link>

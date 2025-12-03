@@ -9,11 +9,16 @@ import ImageUploader from "@/components/ImageUploader";
 import Direccion from "@/components/rental/Direccion";
 import Contacto from "@/components/rental/Contacto";
 import "@/styles/form.css"
+import MapaUbicacion from "@/components/rental/MapaUbicacion";
 
 export default function NuevoArriendo() {
   const { user, isLogin } =  useContext(AuthContext);
   const [inmuebles, setInmuebles] = useState([]);
   const [usarExistente, setUsarExistente] = useState(true);
+  const [ubicacion, setUbicacion] = useState({
+    lat: null,
+    lng: null
+  });
 
   const [error, SetError] = useState("");
   const router = useRouter();
@@ -190,6 +195,7 @@ export default function NuevoArriendo() {
       formData.append("imgInmueble", null);
     }
   
+    formData.append("ubicacion", JSON.stringify(ubicacion));
 
     const res = await fetch(`/api/new/arriendo?user=${user.ID_USUARIO}`, {
       method: "POST",
@@ -274,6 +280,14 @@ export default function NuevoArriendo() {
             
             <h3>Dirección </h3>
             <Direccion direccion={direccion} setDireccion={setDireccion} regiones={regiones}/>
+
+            <h3>Ubicación en el mapa</h3>
+            <p>Haz clic en el mapa para asignar coordenadas</p>
+
+            <MapaUbicacion onChange={(coord) => setUbicacion(coord)} />
+
+            <p>Latitud: {ubicacion.lat}</p>
+            <p>Longitud: {ubicacion.lng}</p>
 
             <h3>Contacto</h3>
             <Contacto contacto={contacto} setContacto={setContacto}/>
