@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     return data;
   }
   async function getImagenes(id){
-    const result = await conn.execute(`SELECT orden_imagen, nombre_imagen FROM TCDB_IMAGEN_INMUEBLE WHERE id_inmueble = :p_id_inmueble`,{p_id_inmueble: id},{outFormat: OUT_FORMAT_OBJECT});
+    const result = await conn.execute(`SELECT id_imagen, orden_imagen, nombre_imagen FROM TCDB_IMAGEN_INMUEBLE WHERE id_inmueble = :p_id_inmueble`,{p_id_inmueble: id},{outFormat: OUT_FORMAT_OBJECT});
     const data = result.rows;
     return data;
   }

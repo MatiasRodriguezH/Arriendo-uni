@@ -4,7 +4,7 @@
   background-color: #00638e; /* Color de fondo */
   color: white;            /* Color del texto */
   display: flex;           /* Para alinear elementos internamente */
-  justify-content: flex-end; /* Espaciado entre elementos */
+  justify-content: space-between; /* Espaciado entre elementos */
   align-items: center;     /* Centrar verticalmente el contenido */
   padding: 0 20px;         /* Espaciado interno a los lados */
   box-sizing: border-box;  /* Incluye el padding dentro del ancho total */

@@ -89,12 +89,12 @@ export default async function handler(req, res) {
       //guardar imagenes del inmueble
 
       const imagenes = [];
-      const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'property','properties');
+      const img_portada = guardarImagen(files.imgPortadaInmueble?.[0] || files.imgPortadaInmueble,'property_0','properties');
       imagenes.push({orden:0, ruta: img_portada});
 
       if(files.imgInmueble){
         files.imgInmueble.map((img,i) => {
-          const img_inmueble = guardarImagen(img,'property','properties');
+          const img_inmueble = guardarImagen(img,`property_${i+1}`,'properties');
           imagenes.push({orden:i+1, ruta: img_inmueble});
         });
       }
@@ -138,7 +138,7 @@ export default async function handler(req, res) {
     if (arriendo.tipo_arriendo == "por habitaciones"){
       habitaciones.map((hab, i) => {
         const file = files[`imgHabitacion_${i}`];
-        const imageUrl = guardarImagen(file?.[0] || file,'room','rooms');
+        const imageUrl = guardarImagen(file?.[0] || file,`room_${i+1}`,'rooms');
 
         habs.push({
           nombre: hab.nombre,

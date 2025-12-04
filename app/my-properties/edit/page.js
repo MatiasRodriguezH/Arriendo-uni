@@ -68,6 +68,7 @@ export default function EditarInmueble() {
         async function fetchInmueble(id){
             const result = await fetch(`http://localhost:3000/api/edit/property-get?id=${id}`);
             const data = await result.json();
+
             setInmueble({
                 id_inmueble: data.ID_INMUEBLE,
                 tipo_inmueble: data.TIPO_INMUEBLE,
@@ -97,8 +98,9 @@ export default function EditarInmueble() {
                 correo: data.CORREO_CONTACTO
             })
 
-            setImgPortadaOg(data.IMAGENES.find(img => img.ORDEN_IMAGEN == 0)?.NOMBRE_IMAGEN);
-            setImgGaleria(data.IMAGENES.filter(img => img.ORDEN_IMAGEN !== 0).map(img => img.NOMBRE_IMAGEN));
+            setImgPortadaOg(data.IMAGENES.find(img => img.ORDEN_IMAGEN == 0));
+            console.log(data.IMAGES);
+            setImgGaleria(data.IMAGENES.filter(img => img.ORDEN_IMAGEN !== 0));
         }
         fetchRegiones();
         fetchInmueble(idInmueble);
@@ -148,6 +150,9 @@ export default function EditarInmueble() {
         if (!imgPortadaOg) {
             formData.append("imgPortada", imgPortada);
         }
+        else{
+            formData.append("imgPortadaOg", JSON.stringify(imgPortadaOg));
+        }
         if (imgGaleria) {
             formData.append("imgGaleria", JSON.stringify(imgGaleria));
         }
@@ -184,16 +189,6 @@ export default function EditarInmueble() {
 
             <h3>Datos del inmueble</h3>
             <hr/>
-            <h4>Tipo de Inmueble <span style={{ color: "red" }}>*</span> </h4>
-            <select
-            style={{width:'50%'}}
-            value={inmueble.tipo_inmueble}
-            onChange={(e) => setInmueble({ ...inmueble, tipo_inmueble: e.target.value })}
-            >
-            <option value="" disabled>Selecciona Tipo</option>
-            <option value="casa">Casa</option>
-            <option value="departamento">Departamento</option>
-            </select>
             <h4>Nombre del inmueble <span style={{ color: "red" }}>*</span> </h4>
             <input value={inmueble.nombre} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, nombre: e.target.value})}/>
             <h4>Propietario</h4>
@@ -214,20 +209,24 @@ export default function EditarInmueble() {
             </div>
             
             <h3>Dirección </h3>
-            <Direccion direccion={direccion} setDireccion={setDireccion} regiones={regiones}/>
+            <h4>{direccion.calle +" "+ direccion.numero}</h4> 
+            <h4>{direccion.ciudad + ", " + regiones.find(r => r.ID_REGION == direccion.region)?.NOMBRE}</h4>
+            <br/>
+            <h4>Direccion adicional</h4>
+            <input style={{width:'100%', marginBottom:'1rem'}} value={direccion.adicional || ""} onChange={(e) => setDireccion({...direccion, adicional: e.target.value})}/>
 
             <h3>Contacto</h3>
             <Contacto contacto={contacto} setContacto={setContacto}/>
 
             <h3>Imagenes</h3>
             <h4>Imagen portada del inmueble</h4>
-            { imgPortadaOg ? (
-                <ImagePreview imagenes={imgPortadaOg} setImagenes={setImgPortadaOg} multiple={false}/>
+            { imgPortadaOg?.NOMBRE_IMAGEN ? (
+                <ImagePreview imagenes={imgPortadaOg?.NOMBRE_IMAGEN} setImagenes={setImgPortadaOg} multiple={false}/>
             ):(
                 <ImageUploader imageOnChanges={(files) => setImgPortada(files[0])}/>
             )}
             <h4>Galeria de imagenes</h4>
-            { imgGaleria ? ( <ImagePreview imagenes={imgGaleria} setImagenes={setImgGaleria} multiple={true}/> ):
+            { imgGaleria?.length > 0 ? ( <ImagePreview imagenes={imgGaleria.map(i => i.NOMBRE_IMAGEN)} setImagenes={setImgGaleria} multiple={true}/> ):
             (
                 <div style={{justifySelf:'center', width:'60%', textAlign:'center', borderRadius:'1vw', background:'#dadadaff', margin:'2%'}}>
                  <span style={{margin:'1%', fontSize:'1vw'}}> No hay imagenes de galeria</span>

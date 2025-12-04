@@ -198,3 +198,209 @@ EXCEPTION
         RAISE;
 END;
 
+CREATE OR REPLACE PROCEDURE GESTOR_CREAR_USUARIO (
+    p_json_usuario IN CLOB,
+    p_id_usuario   OUT NUMBER
+)
+IS
+    -- JSON
+    j_user JSON_OBJECT_T;
+
+    -- campos
+    v_rol_usuario      VARCHAR2(50);
+    v_rut              VARCHAR2(20);
+    v_nombre           VARCHAR2(100);
+    v_apellido1        VARCHAR2(100);
+    v_apellido2        VARCHAR2(100);
+    v_correo           VARCHAR2(200);
+    v_contrasenia      VARCHAR2(200);
+    v_telefono         VARCHAR2(50);
+    v_fecha_nacimiento DATE;
+    v_genero           VARCHAR2(20);
+    v_id_sede_inst     NUMBER;
+    v_ciudad           VARCHAR2(100);
+    v_id_region        NUMBER;
+    v_id_ciudad        NUMBER;
+    v_imagen_perfil    VARCHAR2(300);
+
+    v_count NUMBER;
+
+BEGIN
+    ----------------------------------------------------------------------
+    -- 1. PARSEAR JSON
+    ----------------------------------------------------------------------
+    j_user := JSON_OBJECT_T.parse(p_json_usuario);
+
+    v_rol_usuario      := j_user.get_String('rol');
+    v_rut              := j_user.get_String('rut');
+    v_nombre           := j_user.get_String('nombre');
+    v_apellido1        := j_user.get_String('apellido1');
+    v_apellido2        := j_user.get_String('apellido2');
+    v_correo           := j_user.get_String('correo');
+    v_contrasenia      := j_user.get_String('contrasenia');
+    v_telefono         := j_user.get_String('telefono');
+    v_fecha_nacimiento := TO_DATE(j_user.get_String('fecha_nacimiento'), 'YYYY-MM-DD');
+    v_genero           := j_user.get_String('genero');
+    v_id_sede_inst     := j_user.get_Number('id_sede_inst');
+    v_ciudad           := j_user.get_String('ciudad');
+    v_id_region        := j_user.get_Number('id_region');
+    v_imagen_perfil    := j_user.get_String('imagen_perfil');
+
+    ----------------------------------------------------------------------
+    -- 2. VALIDAR DUPLICADOS (correo o rut)
+    ----------------------------------------------------------------------
+    SELECT COUNT(*) INTO v_count 
+    FROM TCDB_USUARIO 
+    WHERE correo = v_correo OR rut = v_rut;
+
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20030, 'El correo o rut ya se encuentra registrado.');
+    END IF;
+
+    ----------------------------------------------------------------------
+    -- 3. INSERTAR CIUDAD SI ES ARRENDADOR
+    ----------------------------------------------------------------------
+    IF v_rol_usuario = 'arrendador' THEN
+        SELECT FN_EXIST_CIUDAD(v_ciudad, v_id_region)
+        INTO v_id_ciudad
+        FROM DUAL;
+
+        IF v_id_ciudad IS NULL THEN
+            CRUD_CIUDAD('I', v_id_ciudad, INITCAP(v_ciudad), v_id_region);
+        END IF;
+    ELSE
+        v_id_ciudad := NULL;
+    END IF;
+
+    ----------------------------------------------------------------------
+    -- 4. INSERTAR USUARIO
+    ----------------------------------------------------------------------
+    CRUD_USUARIO('I', p_id_usuario, v_rol_usuario, v_rut, v_nombre, v_apellido1, v_apellido2, v_correo, v_contrasenia,
+        v_telefono, v_fecha_nacimiento, v_genero, v_id_sede_inst, v_id_ciudad, v_imagen_perfil);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+
+CREATE OR REPLACE PROCEDURE GESTOR_EDITAR_INMUEBLE (
+    p_json_inmueble IN CLOB
+)
+IS
+    j_inmueble       JSON_OBJECT_T;
+    j_imgs      JSON_ARRAY_T;
+
+    -- dirección
+    v_id_direccion NUMBER;
+    v_adicional  VARCHAR2(300);
+
+    -- inmueble
+    v_id_inmueble       NUMBER;
+    v_tipo_inmueble     VARCHAR2(50);
+    v_modalidad         VARCHAR2(50);
+    v_nombre            VARCHAR2(200);
+    v_propietario       VARCHAR2(200);
+    v_id_arrendador     NUMBER;
+    v_descripcion       VARCHAR2(500);
+    v_num_habitaciones  NUMBER;
+    v_num_banios        NUMBER;
+    v_estado            VARCHAR2(50);
+
+    -- imágenes
+    j_img JSON_OBJECT_T;
+    v_orden NUMBER;
+    v_ruta   VARCHAR2(300);
+    v_id_img NUMBER;
+
+BEGIN
+    ------------------------------------------------------------------
+    -- PARSEAR JSON
+    ------------------------------------------------------------------
+    j_inmueble := JSON_OBJECT_T.parse(p_json_inmueble);
+    v_id_inmueble := j_inmueble.get_Number('id_inmueble');
+    j_imgs := j_inmueble.get_Array('imagenes');
+
+    ------------------------------------------------------------------
+    -- 2. ACTUALIZAR INMUEBLE
+    ------------------------------------------------------------------
+    v_tipo_inmueble    := j_inmueble.get_String('tipo_inmueble');
+    v_modalidad        := j_inmueble.get_String('modalidad');
+    v_nombre           := j_inmueble.get_String('nombre');
+    v_propietario      := j_inmueble.get_String('propietario');
+    v_id_arrendador    := j_inmueble.get_Number('id_arrendador');
+    v_descripcion      := j_inmueble.get_String('descripcion');
+    v_num_habitaciones := j_inmueble.get_Number('num_habitaciones');
+    v_num_banios       := j_inmueble.get_Number('num_banios');
+    v_id_direccion     := j_inmueble.get_Number('id_direccion');
+    v_adicional        := j_inmueble.get_String('adicional');
+    v_estado           := j_inmueble.get_String('estado');
+
+    CRUD_INMUEBLE(
+        'U',
+        v_id_inmueble,
+        v_tipo_inmueble,
+        v_modalidad,
+        v_nombre,
+        v_propietario,
+        v_id_arrendador,
+        v_descripcion,
+        v_num_habitaciones,
+        v_num_banios,
+        v_id_direccion,
+        v_adicional,
+        v_estado,
+        j_inmueble.get_String('origen_contacto'),
+        j_inmueble.get_String('telefono_contacto'),
+        j_inmueble.get_String('correo_contacto')
+    );
+
+    ------------------------------------------------------------------
+    -- 5. LIMPIAR TODAS LAS IMÁGENES EXISTENTES EN DB
+    ------------------------------------------------------------------
+    DELETE FROM TCDB_IMAGEN_INMUEBLE
+    WHERE id_inmueble = v_id_inmueble;
+
+    ------------------------------------------------------------------
+    -- 6. REINSERTAR TODAS LAS IMÁGENES DESDE JSON
+    ------------------------------------------------------------------
+    FOR i IN 0 .. j_imgs.get_size - 1 LOOP
+        j_img := TREAT(j_imgs.get(i) AS JSON_OBJECT_T);
+
+        v_orden := j_img.get_Number('orden');
+        v_ruta := j_img.get_String('ruta');
+
+        v_id_img := NULL;
+        IF j_img.has('id') THEN
+            v_id_img := j_img.get_Number('id');
+        END IF;
+
+        CRUD_IMAGEN_INMUEBLE('I', v_id_img, v_id_inmueble, v_orden, v_ruta);
+    END LOOP;
+
+END;
+
+CREATE OR REPLACE PROCEDURE GESTOR_CREAR_SOLICITUD (
+    p_id_usuario      IN  NUMBER,
+    p_id_arriendo     IN  NUMBE
+)
+IS
+    v_estado VARCHAR2(30) := 'en espera';
+BEGIN
+    ------------------------------------------------------------------
+    -- 1. CREAR SOLICITUD
+    ------------------------------------------------------------------
+    CRUD_SOLICITUD('I', p_id_usuario, p_id_arriendo, v_estado, SYSDATE);
+
+    ------------------------------------------------------------------
+    -- 2. CREAR NOTIFICACIÓN DE CONTACTO POR SOLICITUD
+    ------------------------------------------------------------------
+    SP_NOTIFICAR_SOLICITUD_CONTACTO(p_id_arriendo, p_id_usuario);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+
+

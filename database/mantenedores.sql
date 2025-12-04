@@ -1053,10 +1053,9 @@ BEGIN
     WHERE id_inmueble = :NEW.id_inmueble;
 END;
 
-CREATE OR REPLACE PROCEDURE NOTIFICAR_SOLICITUD_CONTACTO (
+CREATE OR REPLACE PROCEDURE SP_NOTIFICAR_SOLICITUD_CONTACTO (
     p_id_arriendo        IN NUMBER,
-    p_id_solicitante     IN NUMBER,
-    p_id_notificacion    OUT NUMBER
+    p_id_solicitante     IN NUMBER
 ) IS
     v_id_arrendador   NUMBER;
     v_titulo_arriendo VARCHAR2(100);
@@ -1093,7 +1092,7 @@ BEGIN
     --------------------------------------------------------------------
     CRUD_NOTIFICACION(
         'I',                 
-        p_id_notificacion,   -- OUT: retorna id_notificacion
+        NULL, 
         v_id_arrendador,     
         'solicitud',         
         v_nombre_solic || 'ha solicitado contacto',   
