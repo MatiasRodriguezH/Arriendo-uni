@@ -1086,7 +1086,7 @@ BEGIN
     FROM TCDB_USUARIO
     WHERE id_usuario = p_id_solicitante;
 
-    v_enlace := '/request?u=' || p_id_solicitante || CHR(38)|| 'r=' || p_id_arriendo;
+    v_enlace := '/request/' || p_id_arriendo;
     --------------------------------------------------------------------
     -- 3. Llamar al CRUD_NOTIFICACION
     --------------------------------------------------------------------
@@ -1097,9 +1097,111 @@ BEGIN
         'solicitud',         
         v_nombre_solic || 'ha solicitado contacto',   
         'El usuario ' || v_nombre_solic ||' ha solicitado contacto para tu arriendo '|| v_titulo_arriendo,
-        'enviado',           
+        'nuevo',           
         v_enlace,             
         SYSDATE             
     );
+END;
+
+CREATE OR REPLACE PROCEDURE SP_NOTIFICAR_CAMBIO_PRECIO (
+    p_id_arriendo        IN NUMBER,
+    p_id_usuario     IN NUMBER,
+    p_tipo IN VARCHAR2,
+    p_precio_anterior IN NUMBER,
+    p_precio_nuevo IN NUMBER
+) IS
+    v_titulo_arriendo VARCHAR2(100);
+    v_enlace VARCHAR2(100);
+
+BEGIN
+    --------------------------------------------------------------------
+    -- 1. Obtener titulo del arriendo
+    --------------------------------------------------------------------
+    SELECT titulo
+    INTO v_titulo_arriendo
+    FROM TCDB_ARRIENDO
+    WHERE id_arriendo = p_id_arriendo;
+
+    v_enlace := '/rental/' || p_id_arriendo;
+    --------------------------------------------------------------------
+    -- 3. Llamar al CRUD_NOTIFICACION
+    --------------------------------------------------------------------
+    IF p_tipo = 'arriendo' THEN
+        CRUD_NOTIFICACION(
+            'I',                 
+            NULL, 
+            p_id_usuario,     
+            'interaccion',         
+            'Un arriendo de tu interés a cambiado de precio',   
+            'El precio del arriendo' || v_titulo_arriendo ||' ha cambiado de '|| TO_CHAR(p_precio_anterior, '$99,999,999') || ' a ' || TO_CHAR(p_precio_nuevo, '$99,999,999'),
+            'nuevo',           
+            v_enlace,             
+            SYSDATE             
+        );
+    ELSIF p_tipo = 'habitacion' THEN
+        CRUD_NOTIFICACION(
+            'I',                 
+            NULL, 
+            p_id_usuario,     
+            'interaccion',         
+            'Un arriendo de tu interés a cambiado de precio',   
+            'El precio de una habitacion del arriendo' || v_titulo_arriendo ||' ha cambiado de '|| TO_CHAR(p_precio_anterior, '$99,999,999') || ' a ' || TO_CHAR(p_precio_nuevo, '$99,999,999'),
+            'nuevo',           
+            v_enlace,             
+            SYSDATE             
+        );
+    END IF;
+END;
+
+CREATE OR REPLACE TRIGGER TRG_CAMBIO_PRECIO_ARRIENDO
+AFTER UPDATE OF precio ON TCDB_ARRIENDO
+FOR EACH ROW
+WHEN (NEW.precio <> OLD.precio)
+DECLARE
+    v_id_usuario   NUMBER;
+    v_id_notif     NUMBER;
+BEGIN
+    -- Buscar todos los usuarios que guardaron el arriendo
+    FOR u IN (
+        SELECT id_usuario
+        FROM TCDB_INTERACCION
+        WHERE tipo_interaccion = 'guardado'
+          AND id_arriendo = :NEW.id_arriendo
+    ) LOOP
+        -- Crear notificación
+        SP_NOTIFICAR_CAMBIO_PRECIO(
+            :NEW.id_arriendo,
+            u.id_usuario,
+            'arriendo',
+            :OLD.precio,
+            :NEW.precio
+        );
+    END LOOP;
+END;
+
+CREATE OR REPLACE TRIGGER TRG_CAMBIO_PRECIO_HABITACION
+AFTER UPDATE OF precio ON TCDB_HABITACION
+FOR EACH ROW
+WHEN (NEW.precio <> OLD.precio)
+DECLARE
+    v_id_usuario   NUMBER;
+    v_id_notif     NUMBER;
+BEGIN
+    -- Buscar todos los usuarios que guardaron el arriendo asociado
+    FOR u IN (
+        SELECT id_usuario
+        FROM TCDB_INTERACCION
+        WHERE tipo_interaccion = 'guardado'
+          AND id_arriendo = :NEW.id_arriendo
+    ) LOOP
+        -- Crear notificación
+        SP_NOTIFICAR_CAMBIO_PRECIO(
+            :NEW.id_arriendo,
+            u.id_usuario,
+            'habitacion',
+            :OLD.precio,
+            :NEW.precio
+        );
+    END LOOP;
 END;
 

@@ -16,27 +16,6 @@ export default async function handler(req, res) {
 
   let conn = await getConnection();
 
-  async function updateArriendo(data) {
-    const updateResult = await conn.execute(
-      `BEGIN 
-        CRUD_ARRIENDO('U', :p_id_arriendo, :p_tipo_arriendo, :p_titulo, :p_id_inmueble,:p_precio, :p_descripcion, :p_estado, SYSDATE);
-        CRUD_INMUEBLE( p_operacion => 'U', p_id_inmueble => :p_id_inmueble, p_modalidad => :p_modalidad); 
-      END;`,data);
-  }
-
-  async function insertHabitacion(data) {
-    await conn.execute(`BEGIN CRUD_HABITACION('I', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,
-       :p_precio, :p_imagen_portada); END;`, data);
-  }
-
-  async function updateHabitacion(data) {
-    await conn.execute(
-      `BEGIN 
-        CRUD_HABITACION('U', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,:p_precio, :p_imagen_portada); 
-      END;`, data);
-  }
-
-
   const uploadDir = path.join(process.cwd(), "public", "images");
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -70,54 +49,49 @@ export default async function handler(req, res) {
     console.log(arriendo);
     console.log(habitaciones);
 
-
-    await updateArriendo({
-      p_id_arriendo: arriendo.id_arriendo,
-      p_tipo_arriendo: arriendo.tipo_arriendo,
-      p_titulo: arriendo.titulo,
-      p_id_inmueble: arriendo.id_inmueble,
-      p_precio: arriendo.precio,
-      p_descripcion: arriendo.descripcion,
-      p_estado: "disponible",
-      p_modalidad: arriendo.tipo_arriendo
-    });
+    const habs = [];
 
     if (arriendo.tipo_arriendo == "por habitaciones") {
       for (let i = 0; i < habitaciones.length; i++){
         const hab = habitaciones[i];
         const file = files[`imgHabitacion_${i}`];
         let imageUrl = hab.imagen_portada;  
- 
-        // Si hay un archivo enviado → guardar la nueva imagen
         if (file) {
-          imageUrl = guardarImagen(file[0] || file, "room", "rooms");
+          if (imageUrl){
+            const filePath = path.join(process.cwd(), "public", "images", imageUrl);
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath); // elimina el archivo
+            }
+          }
+          imageUrl = guardarImagen(file[0] || file, `room_${i+1}`, "rooms");
         }
 
-        if(hab.id){
-          await updateHabitacion({
-            p_id_habitacion: hab.id,
-            p_id_arriendo: arriendo.id_arriendo,
-            p_nombre: hab.nombre,
-            p_superficie: hab.superficie,
-            p_descripcion: hab.descripcion,
-            p_precio: hab.precio,
-            p_imagen_portada: imageUrl
-          });
-        }
-        else{
-          await insertHabitacion({
-            p_id_habitacion: { dir: oracledb.BIND_INOUT, type: oracledb.NUMBER, val: null },
-            p_id_arriendo: arriendo.id_arriendo,
-            p_nombre: hab.nombre,
-            p_superficie: hab.superficie,
-            p_descripcion: hab.descripcion,
-            p_precio: hab.precio,
-            p_imagen_portada: imageUrl
-          })
-        }
+        habs.push({
+          id: hab.id,
+          nombre: hab.nombre,
+          superficie: hab.superficie,
+          descripcion: hab.descripcion,
+          precio: hab.precio,
+          imagen_portada: imageUrl
+        });
       }
     }
 
+    const json_arriendo = JSON.stringify({
+      id_arriendo: arriendo.id_arriendo,
+      tipo_arriendo: arriendo.tipo_arriendo,
+      titulo: arriendo.titulo,
+      id_inmueble: arriendo.id_inmueble,
+      precio: arriendo.precio,
+      descripcion: arriendo.descripcion,
+      estado: "disponible",
+      habitaciones: habs
+    });
+
+    await conn.execute(`BEGIN GESTOR_EDITAR_ARRIENDO(:p_json_arriendo); END;`,
+      {p_json_arriendo: json_arriendo});
+
+    if (conn) await conn.close();
     return res.json({mensaje:"datos actualizados"});
   });
 }

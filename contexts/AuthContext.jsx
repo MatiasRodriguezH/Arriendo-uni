@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       
       const response = await fetch("http://localhost:3000/api/profile", {
-        method: "GET",
+        method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

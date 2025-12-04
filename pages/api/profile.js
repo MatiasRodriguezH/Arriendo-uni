@@ -5,7 +5,7 @@ import { getConnection } from "@/database/oracle";
 
 const SECRET = "tctoken";
 
-async function getUserData(id, email) {
+async function getAuthUserData(id, email) {
     let conn = await getConnection();
 
     const result = await conn.execute(`SELECT u.id_usuario, u.rol_usuario, u.rut, u.correo, u.nombre, u.apellido1, u.apellido2,
@@ -21,8 +21,35 @@ async function getUserData(id, email) {
     return result.rows;
 }
 
+async function getUserData(id) {
+    let conn = await getConnection();
+
+    const result = await conn.execute(`SELECT u.rol_usuario, u.rut, u.correo, u.nombre, u.apellido1, u.apellido2,
+        TO_CHAR(u.fecha_nacimiento, 'DD-MM-YYYY') AS "FECHA_NACIMIENTO", TRUNC(MONTHS_BETWEEN(SYSDATE, u.fecha_nacimiento)/12) AS "EDAD",
+        INITCAP(u.genero) as "GENERO", i.nombre as "INSTITUCION", c.nombre AS "CIUDAD", r.nombre as "REGION"
+        FROM TCDB_USUARIO u 
+        LEFT JOIN TCDB_SEDE_INSTITUCION si ON (si.id_sede = u.id_sede_institucion)
+        LEFT JOIN TCDB_INSTITUCION i ON (i.id_institucion = si.id_institucion)
+        LEFT JOIN TCDB_CIUDAD c ON (c.id_ciudad = u.id_ciudad)
+        LEFT JOIN TCDB_REGION r ON (r.id_region = c.id_region)
+        WHERE u.id_usuario = :p_id`,
+        {p_id: id}, {outFormat: OUT_FORMAT_OBJECT});
+    if (conn) await conn.close();
+    return result.rows[0];
+}
+
 export default async function handler(req, res) {
-    if (req.method == "GET") {
+    if (req.method == "GET"){
+        const {id} = req.query;
+        try {
+            const userData = await getUserData(id);
+            return res.json(userData);
+        } catch (error) {
+           return res.status(401).json({ message: error });
+        }
+    }
+
+    if (req.method == "POST") {
         const header = req.headers["authorization"];
         if (!header) return res.status(401).json({ error: "No token" });
         const token = header.split(" ")[1];
@@ -30,7 +57,7 @@ export default async function handler(req, res) {
         try {
             const decoded = jwt.verify(token, SECRET);
 
-            const userData = await getUserData(decoded.id, decoded.email);
+            const userData = await getAuthUserData(decoded.id, decoded.email);
             return res.status(200).json(userData);
 
         } catch (error) {

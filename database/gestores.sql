@@ -378,7 +378,90 @@ BEGIN
         CRUD_IMAGEN_INMUEBLE('I', v_id_img, v_id_inmueble, v_orden, v_ruta);
     END LOOP;
 
+    EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
 END;
+
+CREATE OR REPLACE PROCEDURE GESTOR_EDITAR_ARRIENDO (
+    p_json_arriendo IN CLOB
+)
+IS
+    j_arriendo JSON_OBJECT_T;
+    j_habitaciones JSON_ARRAY_T;
+    j_hab JSON_OBJECT_T;
+
+    -- Datos del arriendo
+    v_id_arriendo      NUMBER;
+    v_tipo_arriendo    VARCHAR2(50);
+    v_titulo      VARCHAR2(200);
+    v_id_inmueble      NUMBER;
+    v_precio      NUMBER;
+    v_descripcion VARCHAR2(1000);
+    v_estado      VARCHAR2(50);
+
+    -- Habitaciones
+    v_id_hab      NUMBER;
+    v_nombre      VARCHAR2(200);
+    v_superficie  NUMBER;
+    v_des_hab     VARCHAR2(500);
+    v_precio_hab  NUMBER;
+    v_img         VARCHAR2(400);
+
+BEGIN
+    ----------------------------------------------------------------------
+    -- Parseo del JSON
+    ----------------------------------------------------------------------
+    j_arriendo  := JSON_OBJECT_T.parse(p_json_arriendo);
+    j_habitaciones := j_arriendo.get_Array('habitaciones');
+
+    ----------------------------------------------------------------------
+    -- Leer datos del arriendo
+    ----------------------------------------------------------------------
+    v_id_arriendo      := j_arriendo.get_Number('id_arriendo');
+    v_tipo_arriendo    := j_arriendo.get_String('tipo_arriendo');
+    v_titulo      := j_arriendo.get_String('titulo');
+    v_id_inmueble      := j_arriendo.get_Number('id_inmueble');
+    v_precio      := j_arriendo.get_Number('precio');
+    v_descripcion := j_arriendo.get_String('descripcion');
+    v_estado      := 'disponible';
+
+    ----------------------------------------------------------------------
+    -- 1. Actualizar arriendo
+    ----------------------------------------------------------------------
+    CRUD_ARRIENDO('U',v_id_arriendo, v_tipo_arriendo, v_titulo, v_id_inmueble, v_precio, v_descripcion, v_estado, SYSDATE);
+    CRUD_INMUEBLE( p_operacion => 'U', p_id_inmueble => v_id_inmueble, p_modalidad => v_tipo_arriendo);
+
+    ----------------------------------------------------------------------
+    -- 3. Actualizar o insertar habitaciones
+    ----------------------------------------------------------------------
+    FOR i IN 0 .. j_habitaciones.get_size - 1 LOOP
+        j_hab := TREAT(j_habitaciones.get(i) AS JSON_OBJECT_T);
+
+        v_id_hab     := CASE WHEN j_hab.has('id') THEN j_hab.get_Number('id') ELSE NULL END;
+        v_nombre     := j_hab.get_String('nombre');
+        v_superficie := j_hab.get_Number('superficie');
+        v_des_hab    := j_hab.get_String('descripcion');
+        v_precio_hab := j_hab.get_Number('precio');
+        v_img        := j_hab.get_String('imagen_portada');
+
+        IF v_id_hab IS NULL THEN
+            -- Insertar nueva habitación
+            CRUD_HABITACION('I', v_id_hab, v_id_arriendo, v_nombre, v_superficie, v_des_hab, v_precio_hab, v_img);
+        ELSE
+            -- Actualizar habitación existente
+            CRUD_HABITACION('U',v_id_hab, v_id_arriendo, v_nombre, v_superficie, v_des_hab, v_precio_hab,v_img);
+        END IF;
+
+    END LOOP;
+    
+    EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+
 
 CREATE OR REPLACE PROCEDURE GESTOR_CREAR_SOLICITUD (
     p_id_usuario      IN  NUMBER,
@@ -402,5 +485,4 @@ EXCEPTION
         ROLLBACK;
         RAISE;
 END;
-
 
