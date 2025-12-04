@@ -185,18 +185,6 @@ CREATE TABLE TCDB_Imagen_Inmueble (
     REFERENCES TCDB_Inmueble(id_inmueble)
 );
 
-INSERT INTO TCDB_REGION VALUES(1,'Maule');
-INSERT INTO TCDB_CIUDAD VALUES(1,'Talca',1);
-INSERT INTO TCDB_DIRECCION VALUES(1,'Avenida San Miguel',3605,1);
-INSERT INTO TCDB_INSTITUCION VALUES(1,'Universidad Católica del Maule','universidad');
-INSERT INTO TCDB_SEDE_INSTITUCION VALUES(1,'SEDE SAN MIGUEL',1,1);
-
-INSERT INTO TCDB_USUARIO VALUES(1,'estudiante','27142629-1','Angel','Silva','Arias','angeleduardosilvaarias@gmail.com','12345678',null,'20/02/2005','masculino',1,null,null);
-INSERT INTO TCDB_USUARIO VALUES(2,'arrendador','99999999-9','Arrendador','Numero','Uno','angeleduardosilvaarias@gmail.com','12345678',null,'31/12/1999','masculino',null,null,1);
-
-INSERT INTO TCDB_INMUEBLE VALUES(1,'casa','por completo','Casa de Prueba','Arrendador Numero Uno',2,'Esta es una descripcion de la Casa de Prueba',3,1,1,'a un lado de la universidad','disponible','arrendador',null,null);
-INSERT INTO TCDB_ARRIENDO VALUES(1,'por completo','Arriendo Casa de Prueba',1,300000,'Esta es una descripcion del arriendo','disponible',SYSDATE);
-
 CREATE OR REPLACE PROCEDURE SP_MOSTRAR_ARRIENDOS_POR_INSTITUCION (
     p_id_institucion IN NUMBER,
     p_cursor         OUT SYS_REFCURSOR
@@ -320,52 +308,3 @@ INSERT INTO TCDB_SEDE_INSTITUCION (id_sede, nombre, id_institucion, id_direccion
 INSERT INTO TCDB_SEDE_INSTITUCION (id_sede, nombre, id_institucion, id_direccion) VALUES (5,'Campus Pehuenche', 31, 3);
 
 COMMIT;
-
-
---UNIVERSIDADES--
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Pontificia Universidad Católica de Chile', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Pontificia Universidad Católica de Valparaíso', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Academia de Humanismo Cristiano', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Adolfo Ibáñez', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Adventista de Chile', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Alberto Hurtado', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Andrés Bello', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Arturo Prat', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Austral de Chile', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Autónoma de Chile', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Bernardo O’Higgins', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Católica Cardenal Raúl Silva Henríquez', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Católica de la Santísima Concepción', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Católica de Temuco', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Católica del Norte', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Central de Chile', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Antofagasta', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Atacama', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Aysén', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Chile', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Concepción', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de La Frontera', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de La Serena', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Los Andes', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Los Lagos', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Magallanes', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de O’Higgins', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Playa Ancha de Ciencias de la Educación', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Santiago de Chile', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Talca', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Tarapacá', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad de Valparaíso', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad del Bío-Bío', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad del Desarrollo', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Diego Portales', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Finis Terrae', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Gabriela Mistral', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Mayor', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Metropolitana de Ciencias de la Educación', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad San Sebastián', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Santo Tomás', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Técnica Federico Santa María', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Tecnológica Metropolitana', 'universidad');
-INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion) VALUES ('Universidad Adolfo Ibañez (UAI)', 'universidad');
-
-ALTER TABLE TCDB_INMUEBLE ADD Institucion VARCHAR2(20);

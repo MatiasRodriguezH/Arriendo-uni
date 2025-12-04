@@ -161,7 +161,7 @@ export default function NuevoArriendo() {
         return null;
       }
     }
-    if(!imgPortadaInmueble){
+    if(!usarExistente && !imgPortadaInmueble){
       SetError("Inmueble debe tener una imagen de portada");
       return null;
     }
@@ -174,6 +174,7 @@ export default function NuevoArriendo() {
     } else {
       formData.append("nuevoInmueble", JSON.stringify(nuevoInmueble));
       formData.append("direccion", JSON.stringify(direccion));
+      formData.append("ubicacion", JSON.stringify(ubicacion));
       formData.append("contacto", JSON.stringify(contacto));
     }
     formData.append("arriendo", JSON.stringify(arriendo));
@@ -194,8 +195,6 @@ export default function NuevoArriendo() {
     } else {
       formData.append("imgInmueble", null);
     }
-  
-    formData.append("ubicacion", JSON.stringify(ubicacion));
 
     const res = await fetch(`/api/new/arriendo?user=${user.ID_USUARIO}`, {
       method: "POST",
@@ -282,18 +281,23 @@ export default function NuevoArriendo() {
             <Direccion direccion={direccion} setDireccion={setDireccion} regiones={regiones}/>
 
             <h3>Ubicación en el mapa</h3>
-            <p>Haz clic en el mapa para asignar coordenadas</p>
+            <p>Haz clic en el mapa para asignar punto preciso</p>
 
-            <MapaUbicacion onChange={(coord) => setUbicacion(coord)} />
+            <MapaUbicacion direccion={{
+              calle: direccion.calle,
+              numero: direccion.numero,
+              ciudad: direccion.ciudad,
+              region: regiones.find(r => r.ID_REGION == direccion.region)?.NOMBRE
+            }} 
+            onChange={(coord) => setUbicacion(coord)} />
 
-            <p>Latitud: {ubicacion.lat}</p>
-            <p>Longitud: {ubicacion.lng}</p>
+            <br />
 
             <h3>Contacto</h3>
             <Contacto contacto={contacto} setContacto={setContacto}/>
 
             <h3>Imagenes</h3>
-            <h4>Imagen portada del inmueble</h4>
+            <h4>Imagen portada del inmueble <span style={{ color: "red" }}>*</span> </h4>
             <ImageUploader imageOnChanges={(files) => setImgPortadaInmueble(files[0])}/>
             <h4>Otras imagenes</h4>
             <ImageUploader imageOnChanges={handleImgInmueble} multiple={true}/>

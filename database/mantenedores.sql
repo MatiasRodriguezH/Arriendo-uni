@@ -467,7 +467,7 @@ END;
 
 create or replace PROCEDURE CRUD_HABITACION (
     p_operacion        IN  VARCHAR2,     -- 'I', 'U', 'D'
-    p_id_habitacion    IN OUT NUMBER,    -- Retorna en insert, se envía en update/delete
+    p_id_habitacion    IN NUMBER,    -- Retorna en insert, se envía en update/delete
     p_id_arriendo      IN NUMBER   DEFAULT NULL,
     p_nombre           IN VARCHAR2 DEFAULT NULL,
     p_superficie       IN NUMBER   DEFAULT NULL,
@@ -482,14 +482,8 @@ BEGIN
     -- INSERT
     --------------------------------------------------------------------
     IF p_operacion = 'I' THEN
-        INSERT INTO TCDB_HABITACION (
-            nombre, id_arriendo, superficie, descripcion, precio, imagen_portada
-        )
-        VALUES (
-            p_nombre, p_id_arriendo, p_superficie, p_descripcion, p_precio, p_imagen_portada
-        )
-        RETURNING id_habitacion INTO p_id_habitacion;
-
+        INSERT INTO TCDB_HABITACION (id_habitacion, nombre, id_arriendo, superficie, descripcion, precio, imagen_portada)
+        VALUES (p_id_habitacion, p_nombre, p_id_arriendo, p_superficie, p_descripcion, p_precio, p_imagen_portada);
         COMMIT;
 
     --------------------------------------------------------------------
@@ -547,7 +541,7 @@ END;
 
 create or replace PROCEDURE CRUD_IMAGEN_INMUEBLE(
     p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
-    p_id_imagen   IN  OUT NUMBER,   -- Para insertar se retorna, para U/D se envía
+    p_id_imagen   IN  NUMBER,   -- Para insertar se retorna, para U/D se envía
     p_id_inmueble     IN  NUMBER DEFAULT NULL,
     p_orden_imagen    IN  NUMBER DEFAULT NULL,
     p_nombre_imagen   IN  VARCHAR2   DEFAULT NULL
@@ -612,16 +606,13 @@ BEGIN
 END;
 
 CREATE OR REPLACE PROCEDURE CRUD_INSTITUCION (
-    p_operacion       IN  VARCHAR2,        -- 'I', 'U', 'D'
-    p_id_institucion  IN OUT NUMBER,       -- Se retorna en inserción
+    p_operacion       IN  VARCHAR2,
+    p_id_institucion  IN NUMBER,
     p_nombre          IN VARCHAR2 DEFAULT NULL,
     p_tipo_institucion IN VARCHAR2 DEFAULT NULL
 ) IS
     v_tipo_normalizado VARCHAR2(50);
 BEGIN
-    --------------------------------------------------------------------
-    -- Normalizar tipo de institución
-    --------------------------------------------------------------------
     v_tipo_normalizado := LOWER(p_tipo_institucion);
 
     IF p_operacion = 'I' OR p_operacion = 'U' THEN
@@ -640,9 +631,7 @@ BEGIN
     --------------------------------------------------------------------
     IF p_operacion = 'I' THEN
         INSERT INTO TCDB_INSTITUCION (nombre, tipo_institucion)
-        VALUES (p_nombre, v_tipo_normalizado)
-        RETURNING id_institucion INTO p_id_institucion;
-
+        VALUES (p_nombre, v_tipo_normalizado);
         COMMIT;
 
     --------------------------------------------------------------------
