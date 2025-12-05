@@ -926,11 +926,23 @@ BEGIN
 
 END;
 
+CREATE OR REPLACE TRIGGER TRG_NOTIFICACION_ID
+BEFORE INSERT ON TCDB_NOTIFICACION
+FOR EACH ROW
+DECLARE
+BEGIN
+    IF :NEW.ID_NOTIFICACION IS NULL THEN
+        SELECT NVL(MAX(ID_NOTIFICACION),0)+1
+        INTO :NEW.ID_NOTIFICACION
+        FROM TCDB_NOTIFICACION;
+    END IF;
+END;
+
 CREATE OR REPLACE PROCEDURE CRUD_NOTIFICACION (
     p_operacion        IN  VARCHAR2,     -- 'I', 'U', 'D'
-    p_id_notificacion  IN OUT NUMBER,    -- Para insertar se retorna
-    p_id_usuario       IN  NUMBER,
-    p_tipo_notificacion             IN  VARCHAR2 DEFAULT NULL,
+    p_id_notificacion  IN  NUMBER, 
+    p_id_usuario       IN  NUMBER DEFAULT NULL,
+    p_tipo_notificacion IN  VARCHAR2 DEFAULT NULL,
     p_titulo           IN  VARCHAR2 DEFAULT NULL,
     p_mensaje          IN  VARCHAR2 DEFAULT NULL,
     p_estado           IN  VARCHAR2 DEFAULT NULL,
@@ -970,13 +982,13 @@ BEGIN
     --------------------------------------------------------------------
     ELSIF p_operacion = 'U' THEN
         UPDATE TCDB_NOTIFICACION
-        SET tipo_notificacion = p_tipo_notificacion,
-            titulo            = p_titulo,
-            mensaje           = p_mensaje,
-            estado            = p_estado,
-            enlace            = p_enlace,
-            fecha_hora        = p_fecha_hora,
-            id_usuario        = p_id_usuario
+        SET tipo_notificacion = NVL(p_tipo_notificacion, tipo_notificacion),
+            id_usuario        = NVL(p_id_usuario, id_usuario),
+            titulo            = NVL(p_titulo, titulo),
+            mensaje           = NVL(p_mensaje, mensaje),
+            estado            = NVL(p_estado, estado),
+            enlace            = NVL(p_enlace, enlace),
+            fecha_hora        = NVL(p_fecha_hora, fecha_hora)
         WHERE id_notificacion = p_id_notificacion;
 
         IF SQL%ROWCOUNT = 0 THEN
@@ -1154,54 +1166,84 @@ BEGIN
 END;
 
 CREATE OR REPLACE TRIGGER TRG_CAMBIO_PRECIO_ARRIENDO
-AFTER UPDATE OF precio ON TCDB_ARRIENDO
-FOR EACH ROW
-WHEN (NEW.precio <> OLD.precio)
-DECLARE
-    v_id_usuario   NUMBER;
-    v_id_notif     NUMBER;
+FOR UPDATE OF precio ON TCDB_ARRIENDO
+COMPOUND TRIGGER
+
+    TYPE t_precio_info IS RECORD (
+        id_arriendo     NUMBER,
+        precio_old      NUMBER,
+        precio_new      NUMBER
+    );
+
+    TYPE t_precio_tab IS TABLE OF t_precio_info;
+    v_cambios t_precio_tab := t_precio_tab();
+
+BEFORE EACH ROW IS
 BEGIN
-    -- Buscar todos los usuarios que guardaron el arriendo
-    FOR u IN (
-        SELECT id_usuario
-        FROM TCDB_INTERACCION
-        WHERE tipo_interaccion = 'guardado'
-          AND id_arriendo = :NEW.id_arriendo
-    ) LOOP
-        -- Crear notificación
-        SP_NOTIFICAR_CAMBIO_PRECIO(
-            :NEW.id_arriendo,
-            u.id_usuario,
-            'arriendo',
-            :OLD.precio,
-            :NEW.precio
-        );
+    IF :NEW.precio <> :OLD.precio THEN
+        v_cambios.EXTEND;
+        v_cambios(v_cambios.COUNT).id_arriendo := :NEW.id_arriendo;
+        v_cambios(v_cambios.COUNT).precio_old  := :OLD.precio;
+        v_cambios(v_cambios.COUNT).precio_new  := :NEW.precio;
+    END IF;
+END BEFORE EACH ROW;
+
+AFTER STATEMENT IS
+BEGIN
+    FOR i IN 1 .. v_cambios.COUNT LOOP
+
+        -- Buscar usuarios que tienen guardado este arriendo
+        FOR u IN (
+            SELECT id_usuario
+            FROM TCDB_INTERACCION
+            WHERE tipo_interaccion = 'guardado'
+              AND id_arriendo = v_cambios(i).id_arriendo
+        ) LOOP
+            -- Crear notificación
+            SP_NOTIFICAR_CAMBIO_PRECIO(v_cambios(i).id_arriendo, u.id_usuario,'arriendo', v_cambios(i).precio_old, v_cambios(i).precio_new);
+
+        END LOOP;
     END LOOP;
-END;
+END AFTER STATEMENT;
+END TRG_CAMBIO_PRECIO_ARRIENDO;
 
 CREATE OR REPLACE TRIGGER TRG_CAMBIO_PRECIO_HABITACION
-AFTER UPDATE OF precio ON TCDB_HABITACION
-FOR EACH ROW
-WHEN (NEW.precio <> OLD.precio)
-DECLARE
-    v_id_usuario   NUMBER;
-    v_id_notif     NUMBER;
-BEGIN
-    -- Buscar todos los usuarios que guardaron el arriendo asociado
-    FOR u IN (
-        SELECT id_usuario
-        FROM TCDB_INTERACCION
-        WHERE tipo_interaccion = 'guardado'
-          AND id_arriendo = :NEW.id_arriendo
-    ) LOOP
-        -- Crear notificación
-        SP_NOTIFICAR_CAMBIO_PRECIO(
-            :NEW.id_arriendo,
-            u.id_usuario,
-            'habitacion',
-            :OLD.precio,
-            :NEW.precio
-        );
-    END LOOP;
-END;
+FOR UPDATE OF precio ON TCDB_HABITACION
+COMPOUND TRIGGER
 
+    TYPE t_precio_info IS RECORD (
+        id_arriendo  NUMBER,
+        precio_old   NUMBER,
+        precio_new   NUMBER
+    );
+
+    TYPE t_precio_tab IS TABLE OF t_precio_info;
+    v_cambios t_precio_tab := t_precio_tab();
+
+BEFORE EACH ROW IS
+BEGIN
+    IF :NEW.precio <> :OLD.precio THEN
+        v_cambios.EXTEND;
+        v_cambios(v_cambios.COUNT).id_arriendo := :NEW.id_arriendo;
+        v_cambios(v_cambios.COUNT).precio_old  := :OLD.precio;
+        v_cambios(v_cambios.COUNT).precio_new  := :NEW.precio;
+    END IF;
+END BEFORE EACH ROW;
+
+AFTER STATEMENT IS
+BEGIN
+    FOR i IN 1 .. v_cambios.COUNT LOOP
+        -- Buscar todos los usuarios que guardaron el arriendo asociado
+        FOR u IN (
+            SELECT id_usuario
+            FROM TCDB_INTERACCION
+            WHERE tipo_interaccion = 'guardado'
+            AND id_arriendo = v_cambios(i).id_arriendo
+        ) LOOP
+            -- Crear notificación
+            SP_NOTIFICAR_CAMBIO_PRECIO(v_cambios(i).id_arriendo, u.id_usuario,'habitacion', v_cambios(i).precio_old, v_cambios(i).precio_new);
+
+        END LOOP;
+    END LOOP;
+    END AFTER STATEMENT;
+END TRG_CAMBIO_PRECIO_HABITACION;

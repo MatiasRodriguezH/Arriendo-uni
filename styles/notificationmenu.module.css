@@ -27,7 +27,7 @@
     position: absolute;
     top: 38px;
     right: 0;
-    width: 280px;
+    width: 300px;
     background: white;
     border: 1px solid #ddd;
     border-radius: 12px;
@@ -47,6 +47,7 @@
 
 /* LISTA */
 .notif-list {
+    color: black;
     max-height: 200px;
     overflow-y: auto;
     display: flex;
@@ -56,10 +57,10 @@
 
 /* ITEM */
 .notif-item {
+    color: black;
     background: #f5f5f5;
     padding: 8px;
     border-radius: 8px;
-    cursor: pointer;
 }
 
 .notif-item:hover {
@@ -76,6 +77,20 @@
     font-size: 12px;
     margin: 2px 0 0 0;
     color: #555;
+}
+
+.notif-item-go {
+    background-color: #00638e;
+    font-size: 12px;
+    color: white;
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    margin-top: 0.25rem;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+.notif-item-go:hover {
+    opacity: 0.8;
 }
 
 /* EMPTY */

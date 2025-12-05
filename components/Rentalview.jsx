@@ -16,7 +16,7 @@ function slugify(str) {
 }
 
 export default function Rentalview({ data }) {
-  const href = `/arriendo/${slugify(data?.TITULO)}`;
+  const href = `/rental/${slugify(data?.TITULO)}`;
 
   if(data.TITULO == "La casa de las pajas") {
     console.log(data);

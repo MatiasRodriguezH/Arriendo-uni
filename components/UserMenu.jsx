@@ -17,8 +17,11 @@ export default function UserMenu({ user, onLogout }) {
   function goToProfile(){
     router.push('/my-profile');
   }
-  function goToMySolicitudes(){
-    router.push('/my-solicitudes');
+  function goToMyRequests(){
+    router.push('/my-requests');
+  }
+  function goToNotifications(){
+    router.push('/notifications');
   }
 
   return (
@@ -40,12 +43,12 @@ export default function UserMenu({ user, onLogout }) {
             <>
             <button className={styles["menu-item"]} onClick={() => goToMyProperties()}>Mis Inmuebles</button>
             <button className={styles["menu-item"]} onClick={() => goToMyRentals()}>Mis Arriendos</button>
-            <button className={styles["menu-item"]} onClick={() => goToProfile}>Solicitudes</button>
+            <button className={styles["menu-item"]} onClick={() => goToMyRequests}>Solicitudes</button>
             </>
           )}
           { (user.ROL_USUARIO == "estudiante") &&(
             <>
-            <button className={styles["menu-item"]}>Mis Solicitudes</button>
+            <button className={styles["menu-item"]} onClick={() => goToMyRequests()}>Mis Solicitudes</button>
             <button className={styles["menu-item"]}>Guardados</button>
             </>
           )}
@@ -56,7 +59,7 @@ export default function UserMenu({ user, onLogout }) {
             <button className={styles["menu-item"]}>Panel de administración</button>
             </>
           )}
-          <button className={styles["menu-item"]}>Configuración</button>
+          <button className={styles["menu-item"]} onClick={()=> goToNotifications()}>Notificaciones</button>
           <button className={`${styles["menu-item"]} ${styles.logout}`} onClick={onLogout}>
             <img className={styles["icon"]} src="/images/icons/logout.svg"/>
             Cerrar sesión

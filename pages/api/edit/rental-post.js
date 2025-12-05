@@ -88,6 +88,7 @@ export default async function handler(req, res) {
       habitaciones: habs
     });
 
+    console.log(json_arriendo);
     await conn.execute(`BEGIN GESTOR_EDITAR_ARRIENDO(:p_json_arriendo); END;`,
       {p_json_arriendo: json_arriendo});
 
