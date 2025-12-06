@@ -38,6 +38,7 @@ export default function InstitutionsPanel() {
           {instituciones.map((inst) => (
             <div className="card" key={inst.ID_INSTITUCION}>
               <h3>{inst.NOMBRE}</h3>
+              <p style={{color: '#787878ff'}} className="tipo">{inst.SIGLAS}</p>
               <p style={{color: '#00638e'}} className="tipo">{inst.TIPO_INSTITUCION}</p>
             </div>
           ))}

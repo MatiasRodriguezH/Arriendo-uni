@@ -6,6 +6,9 @@ import "@/styles/dashboard.css";
 import InstitutionsPanel from "@/components/dashboard/InstitutionsPanel";
 import HqsPanel from "@/components/dashboard/HqsPanel";
 import CitiesPanel from "@/components/dashboard/CitiesPanel";
+import Report1Panel from "@/components/dashboard/Report1Panel";
+import Report2Panel from "@/components/dashboard/Report2Panel";
+import Report3Panel from "@/components/dashboard/Report3Panel";
 
 export default function Dashboard() {
   const [section, setSection] = useState("inicio");
@@ -23,16 +26,15 @@ export default function Dashboard() {
           <button onClick={() => setSection("instituciones")}>Instituciones</button>
           <button onClick={() => setSection("sedes")}>Sedes</button>
           <button onClick={() => setSection("ciudades")}>Ciudades</button>
-          <button onClick={() => setSection("regiones")}>Regiones</button>
 
           <h4>Gestión de Usuarios</h4>
           <button onClick={() => setSection("usuarios")}>Usuarios</button>
           <button onClick={() => setSection("crear-admin")}>Crear Administrador</button>
 
           <h4>Reportes</h4>
-          <button onClick={() => setSection("reporte1")}>Demanda de Arriendos</button>
-          <button onClick={() => setSection("reporte2")}>Usuarios Activos</button>
-          <button onClick={() => setSection("reporte3")}>Ingresos</button>
+          <button onClick={() => setSection("reporte1")}>Mercado de Arriendos</button>
+          <button onClick={() => setSection("reporte2")}>Usuarios Estudiantes</button>
+          <button onClick={() => setSection("reporte3")}>Precios de Arriendos</button>
           <button onClick={() => router.push('/')}>Salir</button>
         </nav>
       </aside>
@@ -59,14 +61,20 @@ export default function Dashboard() {
           <CitiesPanel/>
           </>
         )}
-        {section === "regiones" && <h1>Gestión de Regiones</h1>}
 
         {section === "usuarios" && <h1>Gestión de Usuarios</h1>}
         {section === "crear-admin" && <h1>Crear Nuevo Administrador</h1>}
 
-        {section === "reporte1" && <h1>Reporte: Mercado de Arriendos</h1>}
-        {section === "reporte2" && <h1>Reporte: Usuario e Instituciones</h1>}
-        {section === "reporte3" && <h1>Reporte: Ingresos al Sistema</h1>}
+        {section === "reporte1" && (
+          <Report1Panel/>
+        )}
+        {section === "reporte2" && (
+          <Report2Panel/>
+        )}
+
+        {section === "reporte3" && (
+          <Report3Panel/>
+        )}
       </main>
 
     </div>
