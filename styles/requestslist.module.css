@@ -1,0 +1,111 @@
+.req-container {
+  background-color: white;
+  padding: 2rem;
+  margin-top: 80px;
+  width: 60%;
+  min-width: 400px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.req-title {
+  color: black;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.req-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.req-btn {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.req-btn.aceptar {
+  background-color: #00638e;
+}
+.req-btn.aceptar:hover {
+  opacity: 0.8;;
+}
+
+.req-btn.rechazar {
+  background-color: #c62b2b;
+}
+.req-btn.rechazar:hover {
+  opacity: 0.8;
+}
+
+.req-item {
+  padding: 15px;
+  margin-bottom: 12px;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+
+.req-item:hover {
+  background: #f0f0f0;
+}
+
+.req-title-item {
+  margin: 0 0 5px 0;
+  font-weight: normal;
+}
+
+.req-tag-item {
+  background: #00638e;
+  width: fit-content;
+  padding: 0.1rem 1rem;
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  border-radius: 1rem;
+  color: white;
+}
+
+.req-arriendo {
+  margin: 0 0 5px 0;
+}
+
+.req-fecha {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.req-estado {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.estado-pendiente {
+  color: orange;
+}
+
+.estado-aceptado {
+  color: green;
+}
+
+.estado-rechazado {
+  color: red;
+}
+
+.req-loading,
+.req-empty {
+  text-align: center;
+  margin-top: 15px;
+  color: #555;
+}

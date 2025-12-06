@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
-import Header from "./Header";
 import styles from "@/styles/profileview.module.css";
 
 export default function ProfileView( {user, type} ) {
   if (user) return (
     <div className={styles.container}>
       <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-        <h1>Mi Perfil</h1>
+        {type == "me" ? (<h1>Mi Perfil</h1>) : (<h1>Perfil Usuario</h1>)}
         <div className={styles["profile-picture"]}>
           <img src="/images/profile_pictures/example.jpg"/>
         </div>

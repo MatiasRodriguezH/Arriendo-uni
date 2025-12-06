@@ -1,0 +1,122 @@
+.reqd-container {
+  background: white;
+  border-radius: 1rem;
+  width: 60%;
+  max-width: 750px;
+  margin: 80px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reqd-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.reqd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  margin-top: 1rem;
+}
+
+.reqd-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.reqd-link {
+  font-size: 1rem;
+  color: #0066c0;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.reqd-link:hover {
+  text-decoration: underline;
+}
+
+/* Card arriendo */
+.reqd-card {
+  display: flex;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.reqd-card-img {
+  width: 170px;
+  height: 140px;
+  object-fit: cover;
+}
+
+.reqd-card-body {
+  padding: 10px 15px;
+}
+
+.reqd-card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #0054a6;
+  text-decoration: none;
+}
+
+.reqd-card-title:hover {
+  text-decoration: underline;
+}
+
+.reqd-card-tag{
+    font-size: 0.8rem;
+    background-color: #00638e;
+    width: fit-content;
+    padding: 0.1rem 1rem;
+    border-radius: 1rem;
+    color: white;
+}
+
+.reqd-card-text {
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+
+.reqd-contacts {
+  border: 1pt solid grey;
+  border-radius: 1rem; 
+  padding: 1rem; 
+  margin-top: 1rem; 
+  font-size: 1rem;
+}
+.reqd-contacts p {
+  font-weight: bold;
+}
+
+/* Botones */
+.reqd-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.reqd-btn {
+  padding: 10px 18px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+}
+
+.reqd-btn.aceptar {
+  background: #1e8c1e;
+}
+
+.reqd-btn.rechazar {
+  background: #c62828;
+}

@@ -465,7 +465,7 @@ END;
 
 CREATE OR REPLACE PROCEDURE GESTOR_CREAR_SOLICITUD (
     p_id_usuario      IN  NUMBER,
-    p_id_arriendo     IN  NUMBE
+    p_id_arriendo     IN  NUMBER
 )
 IS
     v_estado VARCHAR2(30) := 'en espera';
@@ -479,6 +479,48 @@ BEGIN
     -- 2. CREAR NOTIFICACIÓN DE CONTACTO POR SOLICITUD
     ------------------------------------------------------------------
     SP_NOTIFICAR_SOLICITUD_CONTACTO(p_id_arriendo, p_id_usuario);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+
+CREATE OR REPLACE PROCEDURE GESTOR_EDITAR_SOLICITUD (
+    p_id_usuario      IN  NUMBER,
+    p_id_arrendador   IN  NUMBER,
+    p_id_arriendo     IN  NUMBER,
+    modo              IN  VARCHAR2
+)
+IS
+BEGIN
+    ------------------------------------------------------------------
+    -- 1. CONSULTAR Y ACTUALIZAR ESTADO DE SOLICITUD
+    ------------------------------------------------------------------
+
+    IF p_id_usuario IS NULL AND p_id_arriendo IS NULL THEN
+
+       FOR a IN (SELECT id_arriendo FROM TCDB_ARRIENDO a
+        JOIN TCDB_INMUEBLE i ON a.id_inmueble = i.id_inmueble
+        WHERE i.id_arrendador = p_id_arrendador
+        )
+        LOOP
+            FOR s IN (SELECT id_usuario FROM TCDB_SOLICITUD
+                WHERE id_arriendo = a.id_arriendo AND estado_solicitud = 'pendiente'
+            )
+            LOOP
+                CRUD_SOLICITUD('U', s.id_usuario, a.id_arriendo, modo);
+            END LOOP;
+        END LOOP;
+
+    ELSE 
+        CRUD_SOLICITUD('U', p_id_usuario, p_id_arriendo, modo);
+    END IF;
+
+    ------------------------------------------------------------------
+    -- 2. CREAR NOTIFICACIÓN DE CONTACTO POR SOLICITUD
+    ------------------------------------------------------------------
+    SP_NOTIFICAR_RESPUESTA_SOLICITUD(p_id_arriendo, p_id_usuario, modo);
 
 EXCEPTION
     WHEN OTHERS THEN

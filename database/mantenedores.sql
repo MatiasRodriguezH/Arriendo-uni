@@ -892,8 +892,8 @@ BEGIN
     --------------------------------------------------------------------
     ELSIF p_operacion = 'U' THEN
         UPDATE TCDB_SOLICITUD
-        SET estado_solicitud = p_estado_solicitud,
-            fecha_hora       = p_fecha_hora
+        SET estado_solicitud = NVL(p_estado_solicitud,estado_solicitud),
+            fecha_hora       = NVL(p_fecha_hora,fecha_hora)
         WHERE id_usuario  = p_id_usuario
           AND id_arriendo = p_id_arriendo;
 
@@ -1098,7 +1098,7 @@ BEGIN
     FROM TCDB_USUARIO
     WHERE id_usuario = p_id_solicitante;
 
-    v_enlace := '/request/' || p_id_arriendo;
+    v_enlace := '/request?u='|| p_id_solicitante ||CHR(38)||'r='|| p_id_arriendo;
     --------------------------------------------------------------------
     -- 3. Llamar al CRUD_NOTIFICACION
     --------------------------------------------------------------------
@@ -1114,6 +1114,50 @@ BEGIN
         SYSDATE             
     );
 END;
+
+CREATE OR REPLACE PROCEDURE SP_NOTIFICAR_RESPUESTA_SOLICITUD (
+    p_id_arriendo        IN NUMBER,
+    p_id_solicitante     IN NUMBER,
+    p_respuesta         IN VARCHAR2
+) IS
+    v_titulo_arriendo VARCHAR2(100);
+    v_nombre_solic    VARCHAR2(100);
+    v_enlace VARCHAR2(100);
+BEGIN
+
+    --------------------------------------------------------------------
+    -- 1. Obtener titulo del arriendo
+    --------------------------------------------------------------------
+    SELECT titulo
+    INTO v_titulo_arriendo
+    FROM TCDB_ARRIENDO
+    WHERE id_arriendo = p_id_arriendo;
+
+    --------------------------------------------------------------------
+    -- 2. Obtener nombre completo del solicitante
+    --------------------------------------------------------------------
+    SELECT nombre || ' ' || apellido1
+    INTO v_nombre_solic
+    FROM TCDB_USUARIO
+    WHERE id_usuario = p_id_solicitante;
+
+    v_enlace := '/request?u='|| p_id_solicitante ||CHR(38)||'r='|| p_id_arriendo;
+    --------------------------------------------------------------------
+    -- 3. Llamar al CRUD_NOTIFICACION
+    --------------------------------------------------------------------
+    CRUD_NOTIFICACION(
+        'I',                 
+        NULL, 
+        p_id_solicitante,     
+        'solicitud',         
+        'Solicitud de contacto ha recibido una respuesta',   
+        'Tu solicitud contacto para el arriendo '|| v_titulo_arriendo ||' ha sido '|| p_respuesta,
+        'nuevo',           
+        v_enlace,             
+        SYSDATE             
+    );
+END;
+
 
 CREATE OR REPLACE PROCEDURE SP_NOTIFICAR_CAMBIO_PRECIO (
     p_id_arriendo        IN NUMBER,
