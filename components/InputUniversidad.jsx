@@ -21,7 +21,6 @@ export default function InputUniversidad({ region, onSelect }) {
         console.error("Error obteniendo universidades:", err);
       }
     }
-    console.log("Universidades: ", universidades);
     fetchUniversidades();
     setTexto("");
     setFiltradas([]);
@@ -34,7 +33,11 @@ export default function InputUniversidad({ region, onSelect }) {
     const f = universidades.filter((u) =>
       u.NOMBRE.toLowerCase().includes(value.toLowerCase())
     );
-    setFiltradas(f);
+    if (value === "") {
+      setFiltradas([{ID_UNIVERSIDAD: 0, NOMBRE: ""}, ...f]);
+    } else {
+      setFiltradas([...f, {ID_UNIVERSIDAD: 0, NOMBRE: ""}, ]);
+    }
     setOpen(true);
   };
 

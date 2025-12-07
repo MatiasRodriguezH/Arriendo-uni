@@ -9,7 +9,7 @@ import '../styles/home.css'
 export default function Home() {
   const [arriendos,setArriendos] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [region, setRegion] = useState("Metropolitana");
+  const [region, setRegion] = useState("Region");
   const [universidad, setUniversidad] = useState("");
   const dropdownRef = useRef(null);
 
@@ -84,7 +84,8 @@ export default function Home() {
     "Los Rios": 13,
     "Los Lagos": 14,
     "Aysén": 15,
-    "Magallanes": 16
+    "Magallanes": 16,
+    "Region": 0
   }
 
   return (

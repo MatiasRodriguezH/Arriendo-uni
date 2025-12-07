@@ -13,9 +13,9 @@ export default async function handler(req, res) {
     let conn = await getConnection();
     try {
       const data = await conn.execute(`
-        SELECT DISTINCT
-          i.id_institucion AS ID_UNIVERSIDAD,
-          i.nombre AS NOMBRE
+        SELECT
+          s.id_sede AS ID_UNIVERSIDAD,
+          i.siglas || ' - ' || s.nombre AS NOMBRE
         FROM TCDB_INSTITUCION i 
         JOIN TCDB_SEDE_INSTITUCION s ON (i.id_institucion = s.id_institucion)
         JOIN TCDB_DIRECCION d ON (s.id_direccion = d.id_direccion)
@@ -27,7 +27,6 @@ export default async function handler(req, res) {
         { p_region: region },
         { outFormat: OUT_FORMAT_OBJECT }
       );
-
       if (conn) await conn.close();
 
       if (data.rows.length === 0) {

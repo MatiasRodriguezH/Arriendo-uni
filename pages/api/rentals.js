@@ -16,16 +16,15 @@ export default async function handler(req, res) {
   }
 
   const universidad = req.query.universidad || null;
-  console.log("Universidad: ",universidad);
   let conn;
-
+  
   try {
     // Ejecutar el SP existente
     conn = await getConnection();
-    if(universidad){
+    if(universidad !== null){
       const results = await conn.execute(`
-        BEGIN SP_MOSTRAR_ARRIENDOS_POR_INSTITUCION(:id_institucion, :cursor); END;`,
-        { id_institucion : universidad , cursor: {type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
+        BEGIN SP_MOSTRAR_ARRIENDOS_POR_INSTITUCION(:id_sede, :cursor); END;`,
+        { id_sede : Number(universidad), cursor: {type: oracledb.CURSOR, dir: oracledb.BIND_OUT } },
         { outFormat: OUT_FORMAT_OBJECT }
       );
       const data = await results.outBinds.cursor.getRows(); 
