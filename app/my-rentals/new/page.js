@@ -118,7 +118,7 @@ export default function NuevoArriendo() {
         SetError("Habitaciones del inmueble no pueden ser menor a las habitaciones en arriendo");
         return null;
       }
-      if (direccion.calle == "" || direccion.numero == "" || direccion.region == ""){
+      if (direccion.calle == "" || direccion.region == ""){
         SetError("Campos de direccion obligatorios no pueden estar vacíos");
         return null;
       }
@@ -204,6 +204,7 @@ export default function NuevoArriendo() {
     const resultado = await res.json();
     console.log("Guardado:", resultado);
     alert("Arriendo creado con éxito");
+    router.back();
   }
 
   return (

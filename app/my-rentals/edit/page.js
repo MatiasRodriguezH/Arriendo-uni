@@ -91,9 +91,7 @@ export default function NuevoArriendo() {
 
   async function eliminarArriendo(){
     const response = await fetch(`/api/delete/rental?id=${idArriendo}`, {method: "DELETE"});
-    if (response.ok){
-      window.location.replace('/my-rentals');
-    }
+    router.push('/my-rentals');
     setAlerta(false);
   }
 

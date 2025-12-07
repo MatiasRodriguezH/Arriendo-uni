@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { OUT_FORMAT_OBJECT, outFormat } from "oracledb";
+import oracledb from "oracledb"
 import { getConnection } from "@/database/oracle";
 
 const SECRET = "tctoken";
