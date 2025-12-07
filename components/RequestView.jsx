@@ -86,7 +86,7 @@ export default function RequestView({ usuarioId, arriendoId, rol }) {
 
       {/* Card arriendo */}
       <div className={styles["reqd-card"]}>
-        <img src={'/imagen/properties/' + solicitud.IMAGEN_PORTADA} className={styles["reqd-card-img"]} />
+        <img src={"/images/" + solicitud.IMAGEN_PORTADA} className={styles["reqd-card-img"]} />
 
         <div className={styles["reqd-card-body"]}>
           <a

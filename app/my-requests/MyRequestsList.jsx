@@ -39,7 +39,7 @@ export default function MyRequestsList({ idUser }) {
         <div
           key={s.ID_USUARIO+s.ID_ARRIENDO}
           className={styles["req-item"]}
-          onClick={() => router.push(`/solicitud/${s.ID_SOLICITUD}`)}
+          onClick={() => router.push(`/request?u=${s.ID_USUARIO}&r=${s.ID_ARRIENDO}`)}
         >
           <p className={styles["req-title-item"]}>
             Solicitaste contacto para el arriendo <strong>{s.NOMBRE_ARRIENDO}</strong>

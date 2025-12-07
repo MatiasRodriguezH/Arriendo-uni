@@ -23,6 +23,9 @@ export default function UserMenu({ user, onLogout }) {
   function goToRequests(){
     router.push('/requests');
   }
+  function goToSavedRentals(){
+    router.push('/saved-rentals')
+  }
   function goToNotifications(){
     router.push('/notifications');
   }
@@ -55,7 +58,7 @@ export default function UserMenu({ user, onLogout }) {
           { (user.ROL_USUARIO == "estudiante") &&(
             <>
             <button className={styles["menu-item"]} onClick={() => goToMyRequests()}>Mis Solicitudes</button>
-            <button className={styles["menu-item"]}>Guardados</button>
+            <button className={styles["menu-item"]} onClick={() => goToSavedRentals()}>Guardados</button>
             </>
           )}
   

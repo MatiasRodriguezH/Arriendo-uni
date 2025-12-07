@@ -13,7 +13,7 @@ export default function ProfileView( {user, type} ) {
         <div className={styles["profile-picture"]}>
           <img src="/images/profile_pictures/example.jpg"/>
         </div>
-        <h2>{user.NOMBRE +" "+ user.APELLIDO1 +" "+ user.APELLIDO2}</h2>
+        <h2>{user.NOMBRE +" "+ user.APELLIDO1 +" "+ (user.APELLIDO2 || "")}</h2>
         <p style={{fontWeight:'bold'}}>{user.ROL_USUARIO.charAt(0).toUpperCase() + user.ROL_USUARIO.slice(1)}</p>
         <p>{user.RUT}</p>
       </div>

@@ -1,0 +1,165 @@
+
+.rental-container{
+    margin-top: 80px;
+    margin-bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+}
+
+.main-info{
+    background: lightgray;
+    padding: 1rem;
+    border-radius: 1rem;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+.icon{
+    width: 1rem;
+    height: 1rem;
+}
+
+.tag{
+    background: #00638e;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.1rem 1rem;
+    border-radius: 1rem;
+    width: fit-content;
+}
+
+.main-info-direction{
+    display: flex;
+    font-size: 1rem;
+    align-items: center;
+    justify-items: center;
+    font-size: 1rem;
+    gap:5px;
+}
+
+.main-info-price{
+    font-size: 3rem;
+}
+
+.main-info h1{
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.main-info-arrendador{
+    margin-top: auto;
+    border: 1pt solid darkgray;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 5px;
+    font-size: 1rem;
+}
+.main-info-arrendador span{
+    font-weight: bold;
+    color: #00638e;
+}
+.main-info-arrendador p{
+    text-decoration: none;
+    cursor: pointer;
+}
+.main-info-arrendador p:hover{
+    text-decoration: underline;
+    color: #00638e;
+}
+
+.btn-guardar{
+    display: flex;
+    max-height: 90%; 
+    width: fit-content;
+    justify-content: center;
+    cursor: pointer;
+}
+.btn-guardar img{
+    height: auto;
+}
+
+.btn-contactar{
+    background-color: #00638e;
+    border-radius: 0.5rem;
+    width: 70%;
+    color:white;
+    cursor: pointer;
+}
+.btn-contactar:hover{
+    opacity: 0.8;
+}
+.btn-salir{
+    background-color: #00638e;
+    border-radius: 0.5rem;
+    width: fit-content;
+    padding: 0rem 2rem;
+    color:white;
+    cursor: pointer;
+}
+.btn-salir:hover{
+    opacity: 0.8;
+}
+
+.info-habitaciones{
+    display: flex;
+    flex-direction: column;
+    margin: 2rem 0rem;
+    width: 100%;
+}
+.info-habitaciones h1{
+    color: #00638e;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+.item-habitacion{
+    background-color: white;
+    border: 1pt solid darkgray;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.descripcion-arriendo{
+    width: 100%;
+    margin: 2rem 0rem;
+}
+.descripcion-arriendo h1{
+    font-size: 1.25rem;
+    color: #00638e;
+    font-weight: bold;
+}
+.descripcion-arriendo p{
+    background-color: lightgray;
+    padding: 1rem;
+    border-radius: 1rem;
+    width: 100%;
+}
+
+.info-inmueble{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+}
+.datos{
+    border: 1pt solid darkgray;
+    border-radius: 1rem;
+    width: 400px;
+    padding: 1rem;
+}
+.datos h4{
+    color:#00638e;
+    font-weight: bold;
+}
+.descripcion{
+    background-color: lightgray;
+    border-radius: 1rem;
+    width: 100%;
+    padding: 1rem;
+}
+.descripcion h4{
+    color: #00638e;
+    font-weight: bold;
+}

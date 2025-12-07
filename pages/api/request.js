@@ -11,7 +11,8 @@ export default async function handler(req, res) {
             sol.nombre ||' '|| sol.apellido1 AS "SOLICITANTE", sol.imagen_perfil "SOLICITANTE_IMAGEN",
             arr.nombre ||' '|| arr.apellido1 AS "ARRENDADOR", arr.imagen_perfil AS "ARRENDADOR_IMAGEN",
             a.titulo AS "NOMBRE_ARRIENDO", a.tipo_arriendo AS "TIPO_ARRIENDO", i.num_banios, i.num_habitaciones,
-            i.tipo_inmueble AS "TIPO_INMUEBLE", img.nombre_imagen AS "IMAGEN PORTADA",
+            i.tipo_inmueble AS "TIPO_INMUEBLE",
+            CASE WHEN img.nombre_imagen IS NULL THEN 'properties/example.jpg' ELSE img.nombre_imagen END AS "IMAGEN_PORTADA",
             TO_CHAR(s.fecha_hora, 'DD-MM-YY hh:mm') AS "FECHA"
             FROM TCDB_SOLICITUD s
             JOIN TCDB_USUARIO sol ON (sol.id_usuario = s.id_usuario)
@@ -24,7 +25,7 @@ export default async function handler(req, res) {
         
         const data = result.rows[0];
         
-        if (data.ESTADO_SOLICITUD == "aceptado" ){
+        if (data && data.ESTADO_SOLICITUD == "aceptado" ){
             const contacto = await conn.execute(`SELECT 
                 CASE WHEN i.origen_contacto = 'arrendador' THEN arr.telefono ELSE i.telefono_contacto END AS "TELEFONO_CONTACTO",
                 CASE WHEN i.origen_contacto = 'arrendador' THEN arr.correo ELSE i.correo_contacto END AS "CORREO_CONTACTO",
@@ -40,7 +41,13 @@ export default async function handler(req, res) {
             data['TELEFONO_SOLICITANTE'] = contacto.rows[0].TELEFONO_SOLICITANTE;
         }
         if (conn) await conn.close();
-        return res.json(data);
+        if (data){
+            return res.json(data);
+        }
+        else{
+            return res.json(null);
+        }
+        
     }
     if (req.method == "PUT") {
         const {id_usuario, id_arriendo, respuesta } = req.body;
