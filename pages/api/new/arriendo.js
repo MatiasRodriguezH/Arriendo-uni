@@ -24,18 +24,6 @@ export default async function handler(req, res) {
   try {
     conn = await getConnection();    
   
-    async function insert_arriendo(data) {
-      const insertResult = await conn.execute(`BEGIN CRUD_ARRIENDO('I', :p_id_arriendo, :p_tipo_arriendo, :p_titulo, :p_id_inmueble,
-         :p_precio, :p_descripcion, :p_estado, SYSDATE); END;`,data);
-  
-      return insertResult.outBinds.p_id_arriendo;
-    }
-    //form.parse
-    async function insert_habitacion(data) {
-      await conn.execute(`BEGIN CRUD_HABITACION('I', :p_id_habitacion, :p_id_arriendo, :p_nombre, :p_superficie, :p_descripcion,
-         :p_precio, :p_imagen_portada); END;`,data);
-    }
-  
     // Carpeta donde se guardarán las imágenes
     const uploadDir = path.join(process.cwd(), "public", "images");
     if (!fs.existsSync(uploadDir)) {
@@ -77,6 +65,9 @@ export default async function handler(req, res) {
     const arriendo = JSON.parse(fields.arriendo || "{}");
     const habitaciones = JSON.parse(fields.habitaciones || "[]");
     const ubicacion = JSON.parse(fields.ubicacion || "{}");
+
+    console.log(direccion);
+    console.log(inmueble);
 
     let id_inmueble;
 

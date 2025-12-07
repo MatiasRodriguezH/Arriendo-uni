@@ -26,13 +26,13 @@ export default async function handler(req, res) {
         }
         const inmuebleRes = await conn.execute(
         `SELECT id_inmueble FROM TCDB_ARRIENDO WHERE id_arriendo = :p_id_arriendo`,
-        { p_id_arriendo: id});
+        { p_id_arriendo: id},{outFormat: oracledb.OUT_FORMAT_OBJECT});
 
         const id_inmueble = inmuebleRes.rows[0]?.ID_INMUEBLE;
         
-        await conn.execute(`BEGIN CRUD_ARRIENDO('D', :p_id_arriendo); END;`,{p_id_arriendo: id});  
-        await conn.execute(`BEGIN CRUD_INMUEBLE(p_operacion => 'U', p_id_arriendo => :p_id_arriendo, p_estado => 'disponible'); END;`,
+        await conn.execute(`BEGIN CRUD_INMUEBLE(p_operacion => 'U', p_id_inmueble => :p_id_inmueble, p_estado => 'disponible'); END;`,
             {p_id_inmueble: id_inmueble});
+        await conn.execute(`BEGIN CRUD_ARRIENDO('D', :p_id_arriendo); END;`,{p_id_arriendo: id});  
             
         return res.json({mensaje: "arriendo eliminado"});
     } catch (error) {
