@@ -190,11 +190,11 @@ export default function EditarInmueble() {
             <h3>Datos del inmueble</h3>
             <hr/>
             <h4>Nombre del inmueble <span style={{ color: "red" }}>*</span> </h4>
-            <input value={inmueble.nombre} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, nombre: e.target.value})}/>
+            <input maxLength={50} value={inmueble.nombre} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, nombre: e.target.value})}/>
             <h4>Propietario</h4>
-            <input value={inmueble.propietario || ""} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, propietario: e.target.value})}/>
+            <input maxLength={40} value={inmueble.propietario || ""} style={{width:'100%'}} onChange={(e) => setInmueble({...inmueble, propietario: e.target.value})}/>
             <h4>Descripción</h4>
-            <textarea value={inmueble.descripcion || ""} className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setInmueble({...inmueble, descripcion: e.target.value})}/>
+            <textarea maxLength={500} type="text" value={inmueble.descripcion || ""} className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setInmueble({...inmueble, descripcion: e.target.value})}/>
             <div style={{display:'flex', flexDirection:'row', gap:'2%', marginBottom:'1%'}}>
             <div style={{display:'flex', flexDirection:'column'}}>
                 <h4>Numero de habitaciones <span style={{ color: "red" }}>*</span> </h4>

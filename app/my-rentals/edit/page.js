@@ -174,15 +174,15 @@ export default function NuevoArriendo() {
           <option value="por habitaciones">Por habitaciones</option>
         </select>
         <h4>Título <span style={{ color: "red" }}>*</span></h4>
-        <input style={{width:'100%'}} value={arriendo.titulo} onChange={(e) => {setArriendo({...arriendo, titulo: e.target.value});}}/>
+        <input maxLength={100} style={{width:'100%'}} value={arriendo.titulo} onChange={(e) => {setArriendo({...arriendo, titulo: e.target.value});}}/>
         {arriendo.tipo_arriendo != "por habitaciones" && (
           <>
             <h4>Precio <span style={{ color: "red" }}>*</span></h4>
-            <input type="number" value={arriendo.precio} onChange={(e) => {setArriendo({...arriendo, precio: e.target.value});}}/>
+            <input type="number" max="9999999" min="0" style={{width:'30%'}} value={arriendo.precio} onChange={(e) => {setArriendo({...arriendo, precio: e.target.value});}}/>
           </>
         )}
         <h4>Descripción</h4>
-        <textarea className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo o los arriendos..." 
+        <textarea maxLength={500} className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo o los arriendos..." 
         value={arriendo.descripcion || ""} onChange={(e) => {setArriendo({...arriendo, descripcion: e.target.value});}}/>
         
         {arriendo.tipo_arriendo === "por habitaciones" && (

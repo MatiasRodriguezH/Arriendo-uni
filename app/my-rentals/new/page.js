@@ -259,11 +259,11 @@ export default function NuevoArriendo() {
               <option value="departamento">Departamento</option>
             </select>
             <h4>Nombre del inmueble <span style={{ color: "red" }}>*</span> </h4>
-            <input style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, nombre: e.target.value})}/>
+            <input maxLength={100} style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, nombre: e.target.value})}/>
             <h4>Propietario</h4>
-            <input  style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, propietario: e.target.value})}/>
+            <input maxLength={40} style={{width:'100%'}} onChange={(e) => setNuevoInmueble({...nuevoInmueble, propietario: e.target.value})}/>
             <h4>Descripción</h4>
-            <textarea className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setNuevoInmueble({...nuevoInmueble, descripcion: e.target.value})}/>
+            <textarea maxLength={500} className="descripcion" placeholder="Escribe una descripción del inmueble..." onChange={(e) => setNuevoInmueble({...nuevoInmueble, descripcion: e.target.value})}/>
             <div style={{display:'flex', flexDirection:'row', gap:'2%', marginBottom:'1%'}}>
               <div style={{display:'flex', flexDirection:'column'}}>
                 <h4>Numero de habitaciones <span style={{ color: "red" }}>*</span> </h4>
@@ -325,15 +325,15 @@ export default function NuevoArriendo() {
           <option value="por habitaciones">Por habitaciones</option>
         </select>
         <h4>Título <span style={{ color: "red" }}>*</span></h4>
-        <input style={{width:'100%'}} onChange={(e) => setArriendo({...arriendo, titulo: e.target.value})}/>
+        <input maxLength={100} style={{width:'100%'}} onChange={(e) => setArriendo({...arriendo, titulo: e.target.value})}/>
         {arriendo.tipo_arriendo != "por habitaciones" && (
           <>
             <h4>Precio <span style={{ color: "red" }}>*</span></h4>
-            <input type="number" onChange={(e) => setArriendo({...arriendo, precio: e.target.value})}/>
+            <input max="9999999" min="0" type="number" style={{width:'30%'}} onChange={(e) => setArriendo({...arriendo, precio: e.target.value})}/>
           </>
         )}
         <h4>Descripción</h4>
-        <textarea className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo o los arriendos..." onChange={(e) => setArriendo({...arriendo, descripcion: e.target.value})}/>
+        <textarea maxLength={500} className="descripcion" placeholder="Escribe una descripción de las condiciones del arriendo o los arriendos..." onChange={(e) => setArriendo({...arriendo, descripcion: e.target.value})}/>
         
         {arriendo.tipo_arriendo === "por habitaciones" && (
           <div style={{ marginTop: "30px" }}>

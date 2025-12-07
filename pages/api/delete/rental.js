@@ -24,7 +24,16 @@ export default async function handler(req, res) {
                 }
             }
         }
+        const inmuebleRes = await conn.execute(
+        `SELECT id_inmueble FROM TCDB_ARRIENDO WHERE id_arriendo = :p_id_arriendo`,
+        { p_id_arriendo: id});
+
+        const id_inmueble = inmuebleRes.rows[0]?.ID_INMUEBLE;
+        
         await conn.execute(`BEGIN CRUD_ARRIENDO('D', :p_id_arriendo); END;`,{p_id_arriendo: id});  
+        await conn.execute(`BEGIN CRUD_INMUEBLE(p_operacion => 'U', p_id_arriendo => :p_id_arriendo, p_estado => 'disponible'); END;`,
+            {p_id_inmueble: id_inmueble});
+            
         return res.json({mensaje: "arriendo eliminado"});
     } catch (error) {
         console.error("Error en apiRental: ",error)

@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         await conn.execute(`BEGIN CRUD_INMUEBLE('D', :p_id_inmueble); END;`,{p_id_inmueble: id});  
         return res.json({mensaje: "arriendo eliminado"});
     } catch (error) {
-        console.error("Error en apiProperty");
+        console.error(error);
     } finally {
         if (conn) {
             try {
