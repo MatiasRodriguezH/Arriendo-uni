@@ -26,6 +26,9 @@ export default function UserMenu({ user, onLogout }) {
   function goToNotifications(){
     router.push('/notifications');
   }
+  function goToDashboard(){
+    router.push('/dashboard');
+  }
 
   return (
     <div className={styles["user-container"]}>
@@ -57,9 +60,9 @@ export default function UserMenu({ user, onLogout }) {
           )}
   
           <hr style={{width:'90%', justifySelf:'center', color:'#00638e', margin:'1%'}}></hr>
-          { (user.ROL_USUARIO == "administrador") &&(
+          { (user.ROL_USUARIO == "admin") &&(
             <>
-            <button className={styles["menu-item"]}>Panel de administración</button>
+            <button className={styles["menu-item"]} onClick={()=> goToDashboard()}>Panel de administración</button>
             </>
           )}
           <button className={styles["menu-item"]} onClick={()=> goToNotifications()}>Notificaciones</button>

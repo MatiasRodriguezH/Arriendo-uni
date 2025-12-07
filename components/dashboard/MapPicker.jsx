@@ -1,4 +1,5 @@
-// MapPicker.jsx
+"use client";
+
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup, useMap } from "react-leaflet";
 import { useEffect, useState } from "react";
 import L from "leaflet";

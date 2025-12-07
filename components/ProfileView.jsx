@@ -1,8 +1,11 @@
 "use client";
 
 import styles from "@/styles/profileview.module.css";
+import { useRouter } from "next/navigation";
 
 export default function ProfileView( {user, type} ) {
+  const router = useRouter();
+
   if (user) return (
     <div className={styles.container}>
       <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
@@ -24,12 +27,13 @@ export default function ProfileView( {user, type} ) {
         <p>{user.FECHA_NACIMIENTO + " ( " + user.EDAD + " Años )"}</p>
         <label>Genero</label>
         <p>{user.GENERO || "-"}</p>
-        {(user.ROL_USUARIO == "estudiante") ? (
+        {(user.ROL_USUARIO == "estudiante") && (
           <>
           <label>Institucion</label>
           <p>{user.INSTITUCION || "-"}</p>
           </>
-        ):(
+        )}
+        {user.ROL_USUARIO == "arrendador" && (
           <>
           <label>Ciudad</label>
           <p>{user.CIUDAD + ", " + user.REGION || "-"}</p>

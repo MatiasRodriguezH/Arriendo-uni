@@ -29,7 +29,7 @@ export default function Report2Panel() {
                     <h2 style={{marginBottom:'1rem'}}>Top 5 Instituciones con más usuarios estudiantes</h2>
                     {reportData.estudiantesInstitucion.map(x => (
                         <div style={{padding:'0.5rem 1rem',borderRadius:'1rem',backgroundColor:'white', margin:'0.5rem 0rem',
-                         display:'flex', justifyContent:'space-between'}} key={x.ID_INSTITUCION}>
+                         display:'flex', justifyContent:'space-between'}} key={x.NOMBRE}>
                             <strong>{x.NOMBRE}</strong><span style={{marginRight:'0.5rem'}}>{x.TOTAL_ESTUDIANTES}</span></div>
                     ))}
                 </div>
@@ -39,7 +39,7 @@ export default function Report2Panel() {
                     <h2 style={{marginBottom:'1rem'}}>Top 5 ciudades con más usuarios estudiantes</h2>
                     {reportData.estudiantesCiudad.map(x => (
                         <div style={{padding:'0.5rem 1rem',borderRadius:'1rem',backgroundColor:'white', margin:'0.5rem 0rem',
-                         display:'flex', justifyContent:'space-between'}} key={x.ID_INSTITUCION}>
+                         display:'flex', justifyContent:'space-between'}} key={x.NOMBRE}>
                             <strong>{x.NOMBRE}</strong><span style={{marginRight:'0.5rem'}}>{x.TOTAL_ESTUDIANTES}</span></div>
                     ))}
                 </div>

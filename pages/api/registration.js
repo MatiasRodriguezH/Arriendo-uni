@@ -58,7 +58,7 @@ export default async function handler(req, res){
     return res.status(200).json({token});
 
   } catch (error) {
-    if (error.errorNum == -20030){
+    if (error.errorNum == 20030){
       return res.status(410).json({ error: error.message });
     }
     console.error("API error:", error);

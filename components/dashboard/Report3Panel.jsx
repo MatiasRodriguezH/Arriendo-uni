@@ -33,12 +33,17 @@ export default function Report3Panel() {
                     }))}
                 />
 
-                <div display="flex" flexDirection="column" gap="10px">
+                <div display="flex" flexdirection="column" gap="10px">
                     <h2 style={{marginBottom:'1rem'}}>Estadistica de precios en los arriendos de intéres por los usuarios</h2>
-                    <div style={{}}></div>
+                    <h3 style={{fontWeight:'bold', marginTop:'0.5rem'}}>Precio mínimo de interes</h3>
+                    <span>{reportData.preciosInteres[0].PRECIO_MINIMO}</span>
+                    <h3 style={{fontWeight:'bold', marginTop:'0.5rem'}}>Precio maximo de interes</h3>
+                    <span>{reportData.preciosInteres[0].PRECIO_MAXIMO}</span>
+                    <h3 style={{fontWeight:'bold', marginTop:'0.5rem'}}>Precio mediano de interes</h3>
+                    <span>{reportData.preciosInteres[0].PRECIO_MEDIANO}</span>
                 </div>
 
-                <div display="flex" flexDirection="column" gap="10px">
+                <div display="flex" flexdirection="column" gap="10px">
                     <h2 style={{marginBottom:'1rem'}}>Ciudades con mayor precio promedio de arriendo</h2>
                     {reportData.precioCiudadMayores.map(x => (
                         <div style={{padding:'0.5rem 1rem',borderRadius:'1rem',backgroundColor:'white', margin:'0.5rem 0rem',
@@ -47,7 +52,7 @@ export default function Report3Panel() {
                     ))}
                 </div>
 
-                <div display="flex" flexDirection="column" gap="10px">
+                <div display="flex" flexdirection="column" gap="10px">
                     <h2 style={{marginBottom:'1rem'}}>Ciudades con menor precio promedio de arriendo</h2>
                     {reportData.precioCiudadMenores.map(x => (
                         <div style={{padding:'0.5rem 1rem',borderRadius:'1rem',backgroundColor:'white', margin:'0.5rem 0rem',
@@ -56,7 +61,7 @@ export default function Report3Panel() {
                     ))}
                 </div>
 
-                <div display="flex" flexDirection="column" gap="10px">
+                <div display="flex" flexdirection="column" gap="10px">
                     <h2 style={{marginBottom:'1rem'}}>Regiones con mayor precio promedio de arriendo</h2>
                     {reportData.precioRegionMayores.map(x => (
                         <div style={{padding:'0.5rem 1rem',borderRadius:'1rem',backgroundColor:'white', margin:'0.5rem 0rem',
@@ -65,7 +70,7 @@ export default function Report3Panel() {
                     ))}
                 </div>
 
-                <div display="flex" flexDirection="column" gap="10px">
+                <div display="flex" flexdirection="column" gap="10px">
                     <h2 style={{marginBottom:'1rem'}}>Regiones con menor precio promedio de arriendo</h2>
                     {reportData.precioRegionMenores.map(x => (
                         <div style={{padding:'0.5rem 1rem',borderRadius:'1rem',backgroundColor:'white', margin:'0.5rem 0rem',

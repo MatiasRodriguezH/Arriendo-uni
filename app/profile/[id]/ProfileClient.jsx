@@ -17,11 +17,11 @@ export default function ProfileClient({ id }) {
             const data = await result.json()
             setProfile(data);
         }
+        fetchUsuario(id);
 
         if(!loading){
             if (!isLogin) router.push('/login');
-            if (user.ID_USUARIO == id) router.push('/my-profile');
-            fetchUsuario(id);
+            if (isLogin && user.ID_USUARIO == id) router.push('/my-profile');
         }
     }, [id, loading, isLogin]);
 

@@ -90,7 +90,7 @@ export default function UpdateForm({ user }) {
     }
 
   return (
-    <div style={{width:'40vw'}} className="content">
+    <div style={{width:'40vw', maxWidth:'600px'}} className="content">
       <h2>Editar Usuario</h2>
       <form onSubmit={handleSubmit}>
         <h3 style={{marginTop:'1rem'}}>Información</h3>

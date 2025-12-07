@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "@/styles/dashboard.css";
 import InstitutionsPanel from "@/components/dashboard/InstitutionsPanel";
@@ -9,12 +9,29 @@ import CitiesPanel from "@/components/dashboard/CitiesPanel";
 import Report1Panel from "@/components/dashboard/Report1Panel";
 import Report2Panel from "@/components/dashboard/Report2Panel";
 import Report3Panel from "@/components/dashboard/Report3Panel";
+import AdminUsersList from "@/components/dashboard/AdminUserList";
+import RegisterAdmin from "@/components/dashboard/RegisterAdmin";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useContext } from "react";
 
 export default function Dashboard() {
   const [section, setSection] = useState("inicio");
+  const {user, isLogin, loading} = useContext(AuthContext);
   const router = useRouter();
 
-  return (
+  useEffect(()=>{
+    if (!loading){
+      if (!isLogin){
+        router.push('/login');
+      }
+      else{
+        if (user.ROL_USUARIO != "admin") router.push('/');
+      }
+
+    }
+  },[]);
+
+  if(!loading && isLogin) return (
     <div className="dashboard-container">
 
       {/* Sidebar */}
@@ -27,8 +44,8 @@ export default function Dashboard() {
           <button onClick={() => setSection("sedes")}>Sedes</button>
           <button onClick={() => setSection("ciudades")}>Ciudades</button>
 
-          <h4>Gestión de Usuarios</h4>
-          <button onClick={() => setSection("usuarios")}>Usuarios</button>
+          <h4>Gestión de Administradores</h4>
+          <button onClick={() => setSection("usuarios")}>Lista</button>
           <button onClick={() => setSection("crear-admin")}>Crear Administrador</button>
 
           <h4>Reportes</h4>
@@ -62,8 +79,13 @@ export default function Dashboard() {
           </>
         )}
 
-        {section === "usuarios" && <h1>Gestión de Usuarios</h1>}
-        {section === "crear-admin" && <h1>Crear Nuevo Administrador</h1>}
+        {section === "usuarios" && (
+          <AdminUsersList/>
+        )}
+
+        {section === "crear-admin" && (
+          <RegisterAdmin/>
+        )}
 
         {section === "reporte1" && (
           <Report1Panel/>
