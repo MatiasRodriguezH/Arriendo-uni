@@ -136,6 +136,7 @@ export default function NuevoArriendo() {
 
     const resultado = await res.json();
     alert("Arriendo actualizado con exito");
+    router.back();
   }
 
   function Alerta(){

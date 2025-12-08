@@ -126,7 +126,7 @@ export default function EditarInmueble() {
             SetError("Habitaciones del inmueble no pueden ser menor a las habitaciones en arriendo");
             return null;
         }
-        if (!direccion.calle || !direccion.numero  || !direccion.region ){
+        if (!direccion.calle || !direccion.region || !direccion.ciudad ){
             SetError("Campos de direccion obligatorios no pueden estar vacíos");
             return null;
         }
@@ -171,6 +171,7 @@ export default function EditarInmueble() {
 
         const resultado = await res.json();
         alert("Arriendo actualizado con exito");
+        router.back();
     }
 
     return (
