@@ -73,6 +73,7 @@ body {
   background-color: white;
   cursor: pointer;
   font-weight: 600;
+  position: relative;
 }
 
 .region-search:hover{
@@ -85,7 +86,9 @@ body {
   flex-direction: column;
   position: absolute;
   max-height: 20rem;
-  margin-top: 5rem;
+  top: 100%;
+  margin-top: 4px;  /* solo un pequeño espacio opcional */
+  left: 15px;
   overflow-y: auto;
   border: 1px solid #ccc;
   background-color: white;
