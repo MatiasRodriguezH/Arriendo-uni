@@ -1,17 +1,7 @@
+--ARCHIVO PARA CONSTRUIR MANTENEDORES
+--MATIAS RODRIGUEZ, JUAN ROJAS, ANGEL SILVA, MATIAS VALENZUELA
 
-CREATE OR REPLACE TRIGGER TRG_USUARIO_ID
-BEFORE INSERT ON TCDB_USUARIO
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_USUARIO IS NULL THEN
-        SELECT NVL(MAX(ID_USUARIO),0)+1
-        INTO :NEW.ID_USUARIO
-        FROM TCDB_USUARIO;
-    END IF;
-END;
-
-create or replace PROCEDURE crud_usuario(
+CREATE OR REPLACE PROCEDURE CRUD_USUARIO(
     p_operacion        IN VARCHAR2,          -- 'I', 'U', 'D'
     p_id_usuario       IN NUMBER,        
     p_rol_usuario      IN VARCHAR2 DEFAULT NULL,
@@ -99,19 +89,7 @@ BEGIN
     END IF;
 END;
 
-create or replace TRIGGER TRG_CIUDAD_ID
-BEFORE INSERT ON TCDB_CIUDAD
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_CIUDAD IS NULL THEN
-        SELECT NVL(MAX(ID_CIUDAD),0)+1
-        INTO :NEW.ID_CIUDAD
-        FROM TCDB_CIUDAD;
-    END IF;
-END;
-
-create or replace PROCEDURE CRUD_CIUDAD (
+CREATE OR REPLACE PROCEDURE CRUD_CIUDAD (
     p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
     p_id_ciudad   IN  OUT NUMBER,   -- Para insertar se retorna, para U/D se envía
     p_nombre      IN  VARCHAR2 DEFAULT NULL,
@@ -162,38 +140,6 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
     END IF;
 
-END;
-
-create or replace FUNCTION FN_EXIST_CIUDAD (
-    p_nombre     IN VARCHAR2,
-    p_id_region  IN NUMBER
-) RETURN NUMBER IS
-    v_id_ciudad  NUMBER;
-BEGIN
-    SELECT id_ciudad
-    INTO v_id_ciudad
-    FROM TCDB_CIUDAD
-    WHERE UPPER(nombre) = UPPER(p_nombre)
-      AND id_region = p_id_region;
-
-    RETURN v_id_ciudad;
-
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        CRUD_CIUDAD('I',v_id_ciudad,p_nombre,p_id_region);
-        RETURN v_id_ciudad;
-END;
-
-create or replace TRIGGER TRG_DIRECCION_ID
-BEFORE INSERT ON TCDB_DIRECCION
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_DIRECCION IS NULL THEN
-        SELECT NVL(MAX(ID_DIRECCION),0)+1
-        INTO :NEW.ID_DIRECCION
-        FROM TCDB_DIRECCION;
-    END IF;
 END;
 
 create or replace PROCEDURE CRUD_DIRECCION (
@@ -251,41 +197,7 @@ BEGIN
 
 END;
 
-create or replace FUNCTION FN_EXIST_DIRECCION (
-    p_calle    IN VARCHAR2,
-    p_numero  IN NUMBER,
-    p_id_ciudad IN NUMBER
-) RETURN NUMBER IS
-    v_id_direccion NUMBER;
-BEGIN
-    SELECT id_direccion
-    INTO v_id_direccion
-    FROM TCDB_DIRECCION
-    WHERE UPPER(calle) = UPPER(p_calle)
-      AND numero = p_numero
-      AND id_ciudad = p_id_ciudad;
-
-    RETURN v_id_direccion;
-
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        CRUD_DIRECCION('I',v_id_direccion,p_calle,p_numero,p_id_ciudad);
-        RETURN v_id_direccion;
-END;
-
-create or replace TRIGGER TRG_INMUEBLE_ID
-BEFORE INSERT ON TCDB_INMUEBLE
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_INMUEBLE IS NULL THEN
-        SELECT NVL(MAX(ID_INMUEBLE),0)+1
-        INTO :NEW.ID_INMUEBLE
-        FROM TCDB_INMUEBLE;
-    END IF;
-END;
-
-create or replace PROCEDURE CRUD_INMUEBLE (
+CREATE OR REPLACE PROCEDURE CRUD_INMUEBLE (
     p_operacion            IN  VARCHAR2,     -- 'I', 'U', 'D'
     p_id_inmueble          IN OUT NUMBER,    -- Retorna en insert, se envía en update/delete
     p_tipo_inmueble        IN VARCHAR2 DEFAULT NULL,
@@ -370,18 +282,6 @@ BEGIN
     END IF;
 END;
 
-create or replace TRIGGER TRG_ARRIENDO_ID
-BEFORE INSERT ON TCDB_ARRIENDO
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_ARRIENDO IS NULL THEN
-        SELECT NVL(MAX(ID_ARRIENDO),0)+1
-        INTO :NEW.ID_ARRIENDO
-        FROM TCDB_ARRIENDO;
-    END IF;
-END;
-
 CREATE OR REPLACE PROCEDURE CRUD_ARRIENDO (
     p_operacion        IN  VARCHAR2,    -- 'I', 'U', 'D'
     p_id_arriendo      IN OUT NUMBER,   -- Retorna en insert, se envía en update/delete
@@ -453,19 +353,7 @@ BEGIN
     END IF;
 END;
 
-create or replace TRIGGER TRG_HABITACION_ID
-BEFORE INSERT ON TCDB_HABITACION
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_HABITACION IS NULL THEN
-        SELECT NVL(MAX(ID_HABITACION),0)+1
-        INTO :NEW.ID_HABITACION
-        FROM TCDB_HABITACION;
-    END IF;
-END;
-
-create or replace PROCEDURE CRUD_HABITACION (
+CREATE OR REPLACE PROCEDURE CRUD_HABITACION (
     p_operacion        IN  VARCHAR2,     -- 'I', 'U', 'D'
     p_id_habitacion    IN NUMBER,    -- Retorna en insert, se envía en update/delete
     p_id_arriendo      IN NUMBER   DEFAULT NULL,
@@ -527,19 +415,7 @@ BEGIN
     END IF;
 END;
 
-create or replace TRIGGER TRG_IMAGEN_INMUEBLE_ID
-BEFORE INSERT ON TCDB_IMAGEN_INMUEBLE
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_IMAGEN IS NULL THEN
-        SELECT NVL(MAX(ID_IMAGEN),0)+1
-        INTO :NEW.ID_IMAGEN
-        FROM TCDB_IMAGEN_INMUEBLE;
-    END IF;
-END;
-
-create or replace PROCEDURE CRUD_IMAGEN_INMUEBLE(
+CREATE OR REPLACE PROCEDURE CRUD_IMAGEN_INMUEBLE(
     p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
     p_id_imagen   IN  NUMBER,   -- Para insertar se retorna, para U/D se envía
     p_id_inmueble     IN  NUMBER DEFAULT NULL,
@@ -591,18 +467,6 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
     END IF;
 
-END;
-
-create or replace TRIGGER TRG_INSTITUCION_ID
-BEFORE INSERT ON TCDB_INSTITUCION
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_INSTITUCION IS NULL THEN
-        SELECT NVL(MAX(ID_INSTITUCION),0)+1
-        INTO :NEW.ID_INSTITUCION
-        FROM TCDB_INSTITUCION;
-    END IF;
 END;
 
 CREATE OR REPLACE PROCEDURE CRUD_INSTITUCION (
@@ -671,18 +535,6 @@ BEGIN
 
 END;
 
-create or replace TRIGGER TRG_SEDE_INSTITUCION_ID
-BEFORE INSERT ON TCDB_SEDE_INSTITUCION
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_SEDE IS NULL THEN
-        SELECT NVL(MAX(ID_SEDE),0)+1
-        INTO :NEW.ID_SEDE
-        FROM TCDB_SEDE_INSTITUCION;
-    END IF;
-END;
-
 CREATE OR REPLACE PROCEDURE CRUD_SEDE_INSTITUCION (
     p_operacion      IN  VARCHAR2,     -- 'I', 'U', 'D'
     p_id_sede        IN OUT NUMBER,    -- Solo OUT en insert, IN en update/delete
@@ -746,20 +598,7 @@ BEGIN
 
 END CRUD_SEDE_INSTITUCION;
 
-
-create or replace TRIGGER TRG_REGION_ID
-BEFORE INSERT ON TCDB_REGION
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_REGION IS NULL THEN
-        SELECT NVL(MAX(ID_REGION),0)+1
-        INTO :NEW.ID_REGION
-        FROM TCDB_REGION;
-    END IF;
-END;
-
-create or replace PROCEDURE CRUD_REGION (
+CREATE OR REPLACE PROCEDURE CRUD_REGION (
     p_operacion   IN  VARCHAR2,     -- 'I', 'U', 'D'
     p_id_REGION   IN  OUT NUMBER,   -- Para insertar se retorna, para U/D se envía
     p_nombre      IN  VARCHAR2 DEFAULT NULL
@@ -926,17 +765,6 @@ BEGIN
 
 END;
 
-CREATE OR REPLACE TRIGGER TRG_NOTIFICACION_ID
-BEFORE INSERT ON TCDB_NOTIFICACION
-FOR EACH ROW
-DECLARE
-BEGIN
-    IF :NEW.ID_NOTIFICACION IS NULL THEN
-        SELECT NVL(MAX(ID_NOTIFICACION),0)+1
-        INTO :NEW.ID_NOTIFICACION
-        FROM TCDB_NOTIFICACION;
-    END IF;
-END;
 
 CREATE OR REPLACE PROCEDURE CRUD_NOTIFICACION (
     p_operacion        IN  VARCHAR2,     -- 'I', 'U', 'D'
@@ -1017,268 +845,3 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20001, 'Operación inválida. Use I, U o D.');
     END IF;
 END;
-
-CREATE OR REPLACE PROCEDURE SP_MOSTRAR_ARRIENDOS (
-    p_cursor OUT SYS_REFCURSOR
-)
-AS
-BEGIN
-    OPEN p_cursor FOR
-        SELECT 
-            a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo,
-            CASE 
-                WHEN a.tipo_arriendo = 'por habitaciones' THEN
-                    TO_CHAR(MIN(h.precio), '$999,999') || ' - ' || TO_CHAR(MAX(h.precio), '$999,999')
-                ELSE
-                    TO_CHAR(a.precio, '$999,999')
-            END AS precio_mostrado,
-            i.num_habitaciones,i.num_banios, m.nombre_imagen AS imagen_portada, d.calle || ' ' || d.numero AS direccion
-        FROM TCDB_ARRIENDO a
-        JOIN TCDB_INMUEBLE i 
-            ON i.id_inmueble = a.id_inmueble
-        LEFT JOIN TCDB_DIRECCION d 
-            ON d.id_direccion = i.id_direccion
-        LEFT JOIN TCDB_IMAGEN_INMUEBLE m 
-            ON m.id_inmueble = i.id_inmueble AND m.orden_imagen = 0
-        LEFT JOIN TCDB_HABITACION h
-            ON h.id_arriendo = a.id_arriendo
-        GROUP BY 
-            a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo, a.precio,
-            i.num_habitaciones, i.num_banios, m.nombre_imagen, d.calle, d.numero;
-END;
-
-CREATE OR REPLACE TRIGGER TRG_UPDATE_ESTADO_INMUEBLE_INS
-AFTER INSERT ON TCDB_ARRIENDO
-FOR EACH ROW
-BEGIN
-    UPDATE TCDB_INMUEBLE
-    SET estado = 'en arriendo'
-    WHERE id_inmueble = :NEW.id_inmueble;
-END;
-
-CREATE OR REPLACE PROCEDURE SP_NOTIFICAR_SOLICITUD_CONTACTO (
-    p_id_arriendo        IN NUMBER,
-    p_id_solicitante     IN NUMBER
-) IS
-    v_id_arrendador   NUMBER;
-    v_titulo_arriendo VARCHAR2(100);
-    v_nombre_solic    VARCHAR2(100);
-    v_enlace VARCHAR2(100);
-BEGIN
-    --------------------------------------------------------------------
-    -- 1. Obtener id_arrendador del arriendo
-    --------------------------------------------------------------------
-    SELECT i.id_arrendador
-    INTO v_id_arrendador
-    FROM TCDB_ARRIENDO a JOIN TCDB_INMUEBLE i ON (i.id_inmueble = a.id_inmueble)
-    WHERE a.id_arriendo = p_id_arriendo;
-
-    --------------------------------------------------------------------
-    -- 2. Obtener titulo del arriendo
-    --------------------------------------------------------------------
-    SELECT titulo
-    INTO v_titulo_arriendo
-    FROM TCDB_ARRIENDO
-    WHERE id_arriendo = p_id_arriendo;
-
-    --------------------------------------------------------------------
-    -- 3. Obtener nombre completo del solicitante
-    --------------------------------------------------------------------
-    SELECT nombre || ' ' || apellido1
-    INTO v_nombre_solic
-    FROM TCDB_USUARIO
-    WHERE id_usuario = p_id_solicitante;
-
-    v_enlace := '/request?u='|| p_id_solicitante ||CHR(38)||'r='|| p_id_arriendo;
-    --------------------------------------------------------------------
-    -- 3. Llamar al CRUD_NOTIFICACION
-    --------------------------------------------------------------------
-    CRUD_NOTIFICACION(
-        'I',                 
-        NULL, 
-        v_id_arrendador,     
-        'solicitud',         
-        v_nombre_solic || 'ha solicitado contacto',   
-        'El usuario ' || v_nombre_solic ||' ha solicitado contacto para tu arriendo '|| v_titulo_arriendo,
-        'nuevo',           
-        v_enlace,             
-        SYSDATE             
-    );
-END;
-
-CREATE OR REPLACE PROCEDURE SP_NOTIFICAR_RESPUESTA_SOLICITUD (
-    p_id_arriendo        IN NUMBER,
-    p_id_solicitante     IN NUMBER,
-    p_respuesta         IN VARCHAR2
-) IS
-    v_titulo_arriendo VARCHAR2(100);
-    v_nombre_solic    VARCHAR2(100);
-    v_enlace VARCHAR2(100);
-BEGIN
-
-    --------------------------------------------------------------------
-    -- 1. Obtener titulo del arriendo
-    --------------------------------------------------------------------
-    SELECT titulo
-    INTO v_titulo_arriendo
-    FROM TCDB_ARRIENDO
-    WHERE id_arriendo = p_id_arriendo;
-
-    --------------------------------------------------------------------
-    -- 2. Obtener nombre completo del solicitante
-    --------------------------------------------------------------------
-    SELECT nombre || ' ' || apellido1
-    INTO v_nombre_solic
-    FROM TCDB_USUARIO
-    WHERE id_usuario = p_id_solicitante;
-
-    v_enlace := '/request?u='|| p_id_solicitante ||CHR(38)||'r='|| p_id_arriendo;
-    --------------------------------------------------------------------
-    -- 3. Llamar al CRUD_NOTIFICACION
-    --------------------------------------------------------------------
-    CRUD_NOTIFICACION(
-        'I',                 
-        NULL, 
-        p_id_solicitante,     
-        'solicitud',         
-        'Solicitud de contacto ha recibido una respuesta',   
-        'Tu solicitud contacto para el arriendo '|| v_titulo_arriendo ||' ha sido '|| p_respuesta,
-        'nuevo',           
-        v_enlace,             
-        SYSDATE             
-    );
-END;
-
-
-CREATE OR REPLACE PROCEDURE SP_NOTIFICAR_CAMBIO_PRECIO (
-    p_id_arriendo        IN NUMBER,
-    p_id_usuario     IN NUMBER,
-    p_tipo IN VARCHAR2,
-    p_precio_anterior IN NUMBER,
-    p_precio_nuevo IN NUMBER
-) IS
-    v_titulo_arriendo VARCHAR2(100);
-    v_enlace VARCHAR2(100);
-
-BEGIN
-    --------------------------------------------------------------------
-    -- 1. Obtener titulo del arriendo
-    --------------------------------------------------------------------
-    SELECT titulo
-    INTO v_titulo_arriendo
-    FROM TCDB_ARRIENDO
-    WHERE id_arriendo = p_id_arriendo;
-
-    v_enlace := '/rental/' || p_id_arriendo;
-    --------------------------------------------------------------------
-    -- 3. Llamar al CRUD_NOTIFICACION
-    --------------------------------------------------------------------
-    IF p_tipo = 'arriendo' THEN
-        CRUD_NOTIFICACION(
-            'I',                 
-            NULL, 
-            p_id_usuario,     
-            'interaccion',         
-            'Un arriendo de tu interés a cambiado de precio',   
-            'El precio del arriendo' || v_titulo_arriendo ||' ha cambiado de '|| TO_CHAR(p_precio_anterior, '$99,999,999') || ' a ' || TO_CHAR(p_precio_nuevo, '$99,999,999'),
-            'nuevo',           
-            v_enlace,             
-            SYSDATE             
-        );
-    ELSIF p_tipo = 'habitacion' THEN
-        CRUD_NOTIFICACION(
-            'I',                 
-            NULL, 
-            p_id_usuario,     
-            'interaccion',         
-            'Un arriendo de tu interés a cambiado de precio',   
-            'El precio de una habitacion del arriendo' || v_titulo_arriendo ||' ha cambiado de '|| TO_CHAR(p_precio_anterior, '$99,999,999') || ' a ' || TO_CHAR(p_precio_nuevo, '$99,999,999'),
-            'nuevo',           
-            v_enlace,             
-            SYSDATE             
-        );
-    END IF;
-END;
-
-CREATE OR REPLACE TRIGGER TRG_CAMBIO_PRECIO_ARRIENDO
-FOR UPDATE OF precio ON TCDB_ARRIENDO
-COMPOUND TRIGGER
-
-    TYPE t_precio_info IS RECORD (
-        id_arriendo     NUMBER,
-        precio_old      NUMBER,
-        precio_new      NUMBER
-    );
-
-    TYPE t_precio_tab IS TABLE OF t_precio_info;
-    v_cambios t_precio_tab := t_precio_tab();
-
-BEFORE EACH ROW IS
-BEGIN
-    IF :NEW.precio <> :OLD.precio THEN
-        v_cambios.EXTEND;
-        v_cambios(v_cambios.COUNT).id_arriendo := :NEW.id_arriendo;
-        v_cambios(v_cambios.COUNT).precio_old  := :OLD.precio;
-        v_cambios(v_cambios.COUNT).precio_new  := :NEW.precio;
-    END IF;
-END BEFORE EACH ROW;
-
-AFTER STATEMENT IS
-BEGIN
-    FOR i IN 1 .. v_cambios.COUNT LOOP
-
-        -- Buscar usuarios que tienen guardado este arriendo
-        FOR u IN (
-            SELECT id_usuario
-            FROM TCDB_INTERACCION
-            WHERE tipo_interaccion = 'guardado'
-              AND id_arriendo = v_cambios(i).id_arriendo
-        ) LOOP
-            -- Crear notificación
-            SP_NOTIFICAR_CAMBIO_PRECIO(v_cambios(i).id_arriendo, u.id_usuario,'arriendo', v_cambios(i).precio_old, v_cambios(i).precio_new);
-
-        END LOOP;
-    END LOOP;
-END AFTER STATEMENT;
-END TRG_CAMBIO_PRECIO_ARRIENDO;
-
-CREATE OR REPLACE TRIGGER TRG_CAMBIO_PRECIO_HABITACION
-FOR UPDATE OF precio ON TCDB_HABITACION
-COMPOUND TRIGGER
-
-    TYPE t_precio_info IS RECORD (
-        id_arriendo  NUMBER,
-        precio_old   NUMBER,
-        precio_new   NUMBER
-    );
-
-    TYPE t_precio_tab IS TABLE OF t_precio_info;
-    v_cambios t_precio_tab := t_precio_tab();
-
-BEFORE EACH ROW IS
-BEGIN
-    IF :NEW.precio <> :OLD.precio THEN
-        v_cambios.EXTEND;
-        v_cambios(v_cambios.COUNT).id_arriendo := :NEW.id_arriendo;
-        v_cambios(v_cambios.COUNT).precio_old  := :OLD.precio;
-        v_cambios(v_cambios.COUNT).precio_new  := :NEW.precio;
-    END IF;
-END BEFORE EACH ROW;
-
-AFTER STATEMENT IS
-BEGIN
-    FOR i IN 1 .. v_cambios.COUNT LOOP
-        -- Buscar todos los usuarios que guardaron el arriendo asociado
-        FOR u IN (
-            SELECT id_usuario
-            FROM TCDB_INTERACCION
-            WHERE tipo_interaccion = 'guardado'
-            AND id_arriendo = v_cambios(i).id_arriendo
-        ) LOOP
-            -- Crear notificación
-            SP_NOTIFICAR_CAMBIO_PRECIO(v_cambios(i).id_arriendo, u.id_usuario,'habitacion', v_cambios(i).precio_old, v_cambios(i).precio_new);
-
-        END LOOP;
-    END LOOP;
-    END AFTER STATEMENT;
-END TRG_CAMBIO_PRECIO_HABITACION;
