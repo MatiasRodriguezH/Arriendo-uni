@@ -28,7 +28,7 @@ IS
     v_modalidad      VARCHAR2(50);
     v_nombre         VARCHAR2(200);
     v_descripcion    VARCHAR2(500);
-    v_propietario    NUMBER;
+    v_propietario    VARCHAR2(50);
     v_arrendador     NUMBER;
     v_num_habs       NUMBER;
     v_num_banios     NUMBER;
@@ -59,7 +59,7 @@ BEGIN
     v_tipo           := j_inmueble.get_String('tipo_inmueble');
     v_modalidad      := j_inmueble.get_String('modalidad');
     v_nombre         := j_inmueble.get_String('nombre');
-    v_propietario    := j_inmueble.get_Number('propietario');
+    v_propietario    := j_inmueble.get_String('propietario');
     v_arrendador     := j_inmueble.get_Number('id_arrendador');
     v_descripcion    := j_inmueble.get_String('descripcion');
     v_num_habs       := j_inmueble.get_Number('num_habitaciones');
