@@ -75,7 +75,7 @@ export default function InputUniversidad({ region, onSelect }) {
       <input
         type="text"
         value={texto}
-        placeholder="Escribe tu universidad…"
+        placeholder="Ej: UCM - Sede San Miguel"
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         className="uni-input"
