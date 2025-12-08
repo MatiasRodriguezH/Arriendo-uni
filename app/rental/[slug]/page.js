@@ -13,6 +13,7 @@ async function fetchArriendo(slug) {
 
 export default async function ArriendoPage({ params }) {
   const { slug } = await params;
+  console.log(slug);
   const rental = await fetchArriendo(slug);
 
   if (!rental) {

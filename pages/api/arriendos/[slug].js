@@ -20,20 +20,8 @@ export default async function handler(req, res) {
   let conn;
   try {
     conn = await getConnection();
-    
-    const lightQuery = await conn.execute(
-      `SELECT id_arriendo, titulo FROM TCDB_ARRIENDO`,
-      [], { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
-    const lightRows = lightQuery?.rows || [];
-    // Buscar coincidencia con el slug
-    const found = lightRows.find(r => slugify(r.TITULO || r.titulo) === slug);
-
-    if (!found) {
-      return res.status(404).json({ error: "Arriendo no encontrado" });
-    }
-
-    const idArriendo = found.ID_ARRIENDO;
+    const idArriendo = Number(slug);
 
     const result = await conn.execute(
       `SELECT a.id_arriendo, i.tipo_inmueble, a.tipo_arriendo, a.titulo, a.descripcion AS "DESCRIPCION_ARRIENDO", i.id_arrendador, arr.nombre ||' '|| arr.apellido1 AS "ARRENDADOR",
